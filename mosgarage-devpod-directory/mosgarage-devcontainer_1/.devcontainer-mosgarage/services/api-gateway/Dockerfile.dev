@@ -1,0 +1,29 @@
+# =============================================================================
+# Dockerfile.dev — Node.js microservice (hot-reload dev mode)
+# Used by: api-gateway, auth-service, content-service,
+#          learner-service, notification-service
+#
+# Copy this into each services/<name>/ directory.
+# =============================================================================
+
+FROM node:20-alpine
+
+# Install curl for healthchecks
+RUN apk add --no-cache curl
+
+WORKDIR /app
+
+# Install dependencies first (layer cache — only re-runs if package.json changes)
+COPY package*.json ./
+RUN npm install
+
+# Source is mounted as a volume in dev — no COPY src needed
+# (docker compose mounts ../services/<name>:/app)
+
+# nodemon watches for changes and restarts automatically
+RUN npm install -g nodemon ts-node typescript
+
+EXPOSE 3000
+
+# Override per service via docker-compose environment PORT=300x
+CMD ["nodemon", "--exec", "ts-node", "src/index.ts"]

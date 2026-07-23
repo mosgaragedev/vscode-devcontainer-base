@@ -1,0 +1,22 @@
+{
+  "id": "postgres",
+  "name": "PostgreSQL Database",
+  "type": "docker",
+  "autoStart": true,
+  "image": "postgres:16-alpine",
+  "containerName": "mgd-postgres",
+  "env": {
+    "POSTGRES_USER": "mosgarage",
+    "POSTGRES_PASSWORD": "changeme",
+    "POSTGRES_DB": "workspace"
+  },
+  "ports": ["5432:5432"],
+  "volumes": [
+    "./data/postgres:/var/lib/postgresql/data"
+  ],
+  "restartPolicy": "always",
+  "healthcheck": {
+    "type": "docker"
+  },
+  "tags": ["database", "docker"]
+}

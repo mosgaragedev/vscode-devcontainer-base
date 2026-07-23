@@ -1,0 +1,7 @@
+node_modules/
+logs/
+.mosgaraged.pid
+*.env
+.env
+data/
+dist/

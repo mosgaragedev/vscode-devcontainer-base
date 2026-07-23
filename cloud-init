@@ -1,0 +1,29 @@
+{
+  "builder": {
+    "gc": {
+      "defaultKeepStorage": "20GB",
+      "enabled": true
+    }
+  },
+  "default-ulimits": {
+    "nofile": {
+      "Hard": 64000,
+      "Name": "nofile",
+      "Soft": 64000
+    }
+  },
+  "experimental": false,
+  "features": {
+    "containerd-snapshotter": true
+  },
+  "insecure-registries": null,
+  "live-restore": true,
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-file": "3",
+    "max-size": "10m"
+  },
+  "max-concurrent-downloads": 10,
+  "max-concurrent-uploads": 5,
+  "registry-mirrors": null
+}

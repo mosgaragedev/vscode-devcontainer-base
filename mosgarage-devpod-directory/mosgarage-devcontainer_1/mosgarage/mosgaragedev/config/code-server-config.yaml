@@ -1,0 +1,6 @@
+bind-addr: 0.0.0.0:8080
+auth: password
+password: ${CODE_SERVER_PASSWORD}
+cert: false
+user-data-dir: /home/mosgarage/.code-server
+extensions-dir: /home/mosgarage/.code-server/extensions
