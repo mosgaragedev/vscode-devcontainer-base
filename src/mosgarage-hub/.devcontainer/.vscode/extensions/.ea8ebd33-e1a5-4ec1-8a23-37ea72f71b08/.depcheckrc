@@ -1,0 +1,20 @@
+ignores:
+ - "@mongodb-js/prettier-config-devtools"
+ - "@types/jest"
+ - "buffer"
+ - "eslint-config-mongodb-js"
+ - "mocha-junit-reporter"
+ - "mocha-multi"
+ - "mongodb-client-encryption"
+ - "pre-commit"
+ - "process"
+ - "vscode-languageserver-textdocument"
+ - "vscode"
+ - "webpack-cli"
+ - "@mongodb-js/oidc-plugin"
+ - node-loader
+ - ts-loader
+ - mongodb-runner
+ - tabbable # Mocha register testing workaround stub.
+ - focus-trap # Mocha register testing workaround stub.
+ - ejson-shell-parser # Used by the connection-form.

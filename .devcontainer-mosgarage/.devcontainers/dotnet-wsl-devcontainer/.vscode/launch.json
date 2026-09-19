@@ -1,0 +1,115 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Listen for Xdebug",
+      "type": "php",
+      "request": "launch",
+      "hostname": "0.0.0.0",
+      "port": 9003,
+      "pathMappings": {
+        "/var/www/html": "${workspaceFolder}"
+      },
+      "preLaunchTask": "DDEV: Enable Xdebug",
+      "postDebugTask": "DDEV: Disable Xdebug"
+    },
+    {
+      "name": "Attach to Mosgarage.Server",
+      "type": "coreclr",
+      "request": "attach",
+      "processId": "${command:pickProcess}",
+      "justMyCode": false,
+      "sourceFileMap": {
+        "/workspace": "${workspaceFolder}"
+      }
+    },
+    {
+      "name": "▶ Launch Mosgarage.Server",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build-server",
+      "program": "${workspaceFolder}/src/Mosgarage.Server/bin/Debug/net8.0/Mosgarage.Server.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/Mosgarage.Server",
+      "stopAtEntry": false,
+      "env": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://+:7070;http://+:7071",
+        "MOSGARAGE_ACCESS_URL": "http://localhost:7070",
+        "MOSGARAGE_PG_CONNECTION": "Host=database;Port=5432;Database=mosgarage;Username=mosgarage;Password=mosgarage;",
+        "MOSGARAGE_SECRET_KEY": "dev-secret-key-change-in-production-32c",
+        "MOSGARAGE_PROVISIONER": "docker",
+        "MOSGARAGE_ENV": "development"
+      },
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "Now listening on: (https?://\\S+)",
+        "uriFormat": "%s/swagger"
+      },
+      "sourceFileMap": {
+        "/workspace": "${workspaceFolder}"
+      },
+      "justMyCode": false
+    },
+    {
+      "name": "🔥 Hot Reload — Mosgarage.Server",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "watch-server",
+      "program": "${workspaceFolder}/src/Mosgarage.Server/bin/Debug/net8.0/Mosgarage.Server.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/Mosgarage.Server",
+      "stopAtEntry": false,
+      "env": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://+:7070;http://+:7071",
+        "MOSGARAGE_PG_CONNECTION": "Host=database;Port=5432;Database=mosgarage;Username=mosgarage;Password=mosgarage;",
+        "MOSGARAGE_SECRET_KEY": "dev-secret-key-change-in-production-32c",
+        "MOSGARAGE_ENV": "development",
+        "DOTNET_WATCH_RESTART_ON_RUDE_EDIT": "true"
+      },
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "Now listening on: (https?://\\S+)",
+        "uriFormat": "%s/swagger"
+      }
+    },
+    {
+      "name": "▶ Launch Mosgarage.Agent",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build-agent",
+      "program": "${workspaceFolder}/src/Mosgarage.Agent/bin/Debug/net8.0/mosgarage-agent.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/Mosgarage.Agent",
+      "stopAtEntry": false,
+      "env": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "MOSGARAGE_WORKSPACE_ID": "00000000-0000-0000-0000-000000000001",
+        "MOSGARAGE_AGENT_TOKEN": "dev-agent-token",
+        "MOSGARAGE_SERVER_URL": "http://localhost:7070",
+        "MOSGARAGE_TUNNEL_DNA": "dev-tunnel"
+      }
+    },
+    {
+      "name": "🚀 Full Stack (Server + Agent)",
+      "configurations": [
+        "▶ Launch Mosgarage.Server",
+        "▶ Launch Mosgarage.Agent"
+      ]
+    }
+  ],
+
+  "compounds": [
+    {
+      "name":         "🚀 Full Stack (Server + Agent)",
+      "configurations": [
+        "▶ Launch Mosgarage.Server",
+        "▶ Launch Mosgarage.Agent"
+      ],
+      "stopAll": true
+    }
+  ]
+}

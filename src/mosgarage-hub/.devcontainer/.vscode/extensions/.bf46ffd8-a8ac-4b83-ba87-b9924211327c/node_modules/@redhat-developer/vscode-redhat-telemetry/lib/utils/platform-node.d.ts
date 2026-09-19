@@ -1,0 +1,11 @@
+import { Environment } from '..';
+export declare const PLATFORM: string;
+export declare const DISTRO: Promise<string | undefined>;
+export declare const PLATFORM_VERSION: string;
+export declare const TIMEZONE: string;
+export declare const LOCALE: string;
+export declare const COUNTRY: string;
+export declare const UI_KIND: string;
+export declare const USERNAME: string | undefined;
+export declare function getEnvironment(extensionId: string, extensionVersion: string): Promise<Environment>;
+//# sourceMappingURL=platform-node.d.ts.map

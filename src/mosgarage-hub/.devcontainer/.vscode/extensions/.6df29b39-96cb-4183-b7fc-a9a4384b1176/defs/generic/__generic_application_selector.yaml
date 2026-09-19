@@ -1,0 +1,20 @@
+- type: section
+  title: Application
+  subitems:
+    - type: row
+      subitems:
+        - type: dropdown
+          name: Select Application to Deploy
+          items:
+            - id: cloud-az
+              label: Azure
+            - id: cloud-civo
+              label: Civo
+            - id: cloud-doctl
+              label: Digital Ocean
+            - id: cloud-linode
+              label: Linode
+            - id: cloud-upctl
+              label: UpCloud
+          produces:
+            - variable: cloud_provider

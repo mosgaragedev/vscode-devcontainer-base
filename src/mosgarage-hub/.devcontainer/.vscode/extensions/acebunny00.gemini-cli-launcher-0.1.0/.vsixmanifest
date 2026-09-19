@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+		<Metadata>
+			<Identity Language="en-US" Id="gemini-cli-launcher" Version="0.1.0" Publisher="acebunny00" />
+			<DisplayName>Gemini CLI Launcher</DisplayName>
+			<Description xml:space="preserve">Gemini CLI를 편하게 사용할 수 있습니다.</Description>
+			<Tags>agent,ai,amazon,analysis,anthropic,assist,assistant,augment,autocomplete,autonomous,aws,bash,blackbox,bot,c,c#,c++,chat,chatbot,chatgpt,chatreplay,chop,claude,cli,cline,code,codegen,codegpt,codeium,codestral,codewhisperer,codex,codey,coding,cody,companion,completion,copilot,cpp,csharp,css,debuggers,deepseek,dev,developer,development,diff,documentation,domination,duet,editable,explanation,extension,figma,flutter,gcp,gemini,generate,generation,github,go,golang,google,gpt,haskell,html,ide,ignore,integration,intellicode,intellisense,java,javascript,json,jsonc,julia,jupyter,keybindings,kilo,kite,kotlin,language,launcher,llama,llm,log,lua,m,markdown,mcp,method,mistral,model,native,next,node,nodejs,nuxt,objectivec,ocaml,ollama,openai,openrouter,pair,participant,perl,php,pilot,productivity,programmer,programming,prompt,python,q,qodo,react,recommendation,refactor,referencing,roo,roocode,ruby,rust,snippets,sonnet,sourcegraph,summary,swift,tabnine,test,tools,trae,transform,typescript,vibe,vscode,vue,windsurf</Tags>
+			<Categories>AI,Azure,Chat,Data Science,Debuggers,Education,Extension Packs,Formatters,Keymaps,Language Packs,Linters,Machine Learning,Notebooks,Programming Languages,SCM Providers,Snippets,Testing,Visualization,Other</Categories>
+			<GalleryFlags>Public</GalleryFlags>
+			
+			<Properties>
+				<Property Id="Microsoft.VisualStudio.Code.Engine" Value="^1.103.0" />
+				<Property Id="Microsoft.VisualStudio.Code.ExtensionDependencies" Value="" />
+				<Property Id="Microsoft.VisualStudio.Code.ExtensionPack" Value="" />
+				<Property Id="Microsoft.VisualStudio.Code.ExtensionKind" Value="workspace" />
+				<Property Id="Microsoft.VisualStudio.Code.LocalizedLanguages" Value="" />
+				<Property Id="Microsoft.VisualStudio.Code.EnabledApiProposals" Value="" />
+				
+				<Property Id="Microsoft.VisualStudio.Code.ExecutesCode" Value="true" />
+				
+				<Property Id="Microsoft.VisualStudio.Services.Links.Source" Value="https://github.com/acebunny00/gemini-cli-launcher.git" />
+				<Property Id="Microsoft.VisualStudio.Services.Links.Getstarted" Value="https://github.com/acebunny00/gemini-cli-launcher.git" />
+				<Property Id="Microsoft.VisualStudio.Services.Links.GitHub" Value="https://github.com/acebunny00/gemini-cli-launcher.git" />
+				<Property Id="Microsoft.VisualStudio.Services.Links.Support" Value="https://github.com/acebunny00/gemini-cli-launcher/issues" />
+				<Property Id="Microsoft.VisualStudio.Services.Links.Learn" Value="https://github.com/acebunny00" />
+				
+				
+				<Property Id="Microsoft.VisualStudio.Services.GitHubFlavoredMarkdown" Value="true" />
+				<Property Id="Microsoft.VisualStudio.Services.Content.Pricing" Value="Free"/>
+
+				
+				
+			</Properties>
+			<License>extension/LICENSE.txt</License>
+			<Icon>extension/gemini.png</Icon>
+		</Metadata>
+		<Installation>
+			<InstallationTarget Id="Microsoft.VisualStudio.Code"/>
+		</Installation>
+		<Dependencies/>
+		<Assets>
+			<Asset Type="Microsoft.VisualStudio.Code.Manifest" Path="extension/package.json" Addressable="true" />
+			<Asset Type="Microsoft.VisualStudio.Services.Content.Details" Path="extension/readme.md" Addressable="true" />
+<Asset Type="Microsoft.VisualStudio.Services.Content.Changelog" Path="extension/changelog.md" Addressable="true" />
+<Asset Type="Microsoft.VisualStudio.Services.Content.License" Path="extension/LICENSE.txt" Addressable="true" />
+<Asset Type="Microsoft.VisualStudio.Services.Icons.Default" Path="extension/gemini.png" Addressable="true" />
+		</Assets>
+	</PackageManifest>

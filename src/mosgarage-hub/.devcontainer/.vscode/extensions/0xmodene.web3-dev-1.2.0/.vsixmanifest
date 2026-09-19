@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+		<Metadata>
+			<Identity Language="en-US" Id="web3-dev" Version="1.2.0" Publisher="0xModene" />
+			<DisplayName>Web3 Dev Pack</DisplayName>
+			<Description xml:space="preserve">The Web3 Dev extension pack includes many great extensions and themes to get you started</Description>
+			<Tags>Theme,Dark Theme,0xModene,Extensions,Pack,Snippets,Web3,crypto,__web_extension</Tags>
+			<Categories>Extension Packs</Categories>
+			<GalleryFlags>Public</GalleryFlags>
+			
+			<Properties>
+				<Property Id="Microsoft.VisualStudio.Code.Engine" Value="^1.28.0" />
+				<Property Id="Microsoft.VisualStudio.Code.ExtensionDependencies" Value="" />
+				<Property Id="Microsoft.VisualStudio.Code.ExtensionPack" Value="gua.rainbow-brackets,christian-kohler.path-intellisense,dbankier.vscode-instant-markdown,eamodio.gitlens,eg2.vscode-npm-script,esbenp.prettier-vscode,pranaygp.vscode-css-peek,ryu1kn.remote-repo-viewer,shardulm94.trailing-spaces,techer.open-in-browser,wayou.vscode-todo-highlight,quicktype.quicktype,cssho.vscode-svgviewer,beaugunderson.solidity-extended,burkeholland.react-food-truck,wmaurer.vscode-jumpy,gottfired.css2react,dbaeumer.vscode-eslint,DavidAnson.vscode-markdownlint,dsznajder.es7-react-js-snippets,ecmel.vscode-html-css,zadvorny.theme-happy-hipster,azamuddin.calmness-vsc-theme,DryWolf.dark-plus-plus-theme,jolaleye.horizon-theme-vscode,seansassenrath.vscode-theme-superonedark,zacharyparrish.cozy-vsc-theme,juanblanco.solidity,wix.glean" />
+				<Property Id="Microsoft.VisualStudio.Code.ExtensionKind" Value="workspace,web" />
+				<Property Id="Microsoft.VisualStudio.Code.LocalizedLanguages" Value="" />
+				
+				<Property Id="Microsoft.VisualStudio.Services.Links.Source" Value="https://github.com/0xModene/web3-dev-pack.git" />
+				<Property Id="Microsoft.VisualStudio.Services.Links.Getstarted" Value="https://github.com/0xModene/web3-dev-pack.git" />
+				<Property Id="Microsoft.VisualStudio.Services.Links.GitHub" Value="https://github.com/0xModene/web3-dev-pack.git" />
+				<Property Id="Microsoft.VisualStudio.Services.Links.Support" Value="https://github.com/0xModene/web3-dev-pack/issues" />
+				<Property Id="Microsoft.VisualStudio.Services.Links.Learn" Value="https://github.com/0xModene/web3-dev-pack#readme" />
+				<Property Id="Microsoft.VisualStudio.Services.Branding.Color" Value="#061526" />
+				<Property Id="Microsoft.VisualStudio.Services.Branding.Theme" Value="dark" />
+				<Property Id="Microsoft.VisualStudio.Services.GitHubFlavoredMarkdown" Value="true" />
+				
+				
+			</Properties>
+			
+			<Icon>extension/profile.png</Icon>
+		</Metadata>
+		<Installation>
+			<InstallationTarget Id="Microsoft.VisualStudio.Code"/>
+		</Installation>
+		<Dependencies/>
+		<Assets>
+			<Asset Type="Microsoft.VisualStudio.Code.Manifest" Path="extension/package.json" Addressable="true" />
+			<Asset Type="Microsoft.VisualStudio.Services.Content.Details" Path="extension/README.md" Addressable="true" />
+<Asset Type="Microsoft.VisualStudio.Services.Content.Changelog" Path="extension/CHANGELOG.md" Addressable="true" />
+<Asset Type="Microsoft.VisualStudio.Services.Icons.Default" Path="extension/profile.png" Addressable="true" />
+		</Assets>
+	</PackageManifest>

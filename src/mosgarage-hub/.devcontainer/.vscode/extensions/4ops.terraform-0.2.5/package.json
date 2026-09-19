@@ -1,0 +1,120 @@
+{
+	"name": "terraform",
+	"displayName": "Terraform",
+	"description": "Terraform configuration language support (includes Terragrunt)",
+	"version": "0.2.5",
+	"icon": "icon.png",
+	"keywords": [
+		"terraform",
+		"tf",
+		"tfvars",
+		"tfstate",
+		"hashicorp",
+		"hcl",
+		"terragrunt"
+	],
+	"publisher": "4ops",
+	"author": {
+		"name": "Anton Kulikov"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/4ops/vscode-language-terraform.git"
+	},
+	"bugs": {
+		"url": "https://github.com/4ops/vscode-language-terraform/issues"
+	},
+	"license": "MIT",
+	"engines": {
+		"vscode": "^1.34.0"
+	},
+	"categories": [
+		"Programming Languages",
+		"Snippets"
+	],
+	"contributes": {
+		"languages": [
+			{
+				"id": "tf",
+				"aliases": [
+					"Terraform",
+					"terraform"
+				],
+				"extensions": [
+					".tf"
+				],
+				"configuration": "./language-configuration.json"
+			},
+			{
+				"id": "tfvars",
+				"aliases": [
+					"Terraform Variables"
+				],
+				"extensions": [
+					".tfvars"
+				],
+				"configuration": "./language-configuration.json"
+			},
+			{
+				"id": "terragrunt",
+				"aliases": [
+					"Terragrunt"
+				],
+				"extensions": [
+					".hcl"
+				],
+				"configuration": "./language-configuration.json"
+			},
+			{
+				"id": "json",
+				"extensions": [
+					".tfstate"
+				]
+			}
+		],
+		"grammars": [
+			{
+				"language": "tf",
+				"scopeName": "source.tf",
+				"path": "./grammars/tf.json"
+			},
+			{
+				"language": "tfvars",
+				"scopeName": "source.tfvars",
+				"path": "./grammars/tfvars.json"
+			},
+			{
+				"language": "terragrunt",
+				"scopeName": "source.terragrunt",
+				"path": "./grammars/terragrunt.json"
+			}
+		],
+		"snippets": [
+			{
+				"language": "tf",
+				"path": "./snippets/tf.json"
+			}
+		]
+	},
+	"scripts": {
+		"build": "npm run compile -s",
+		"compile-tf": "yq eval --prettyPrint -o=json grammars/tf.yaml > grammars/tf.json",
+		"compile-tfvars": "yq eval --prettyPrint -o=json grammars/tfvars.yaml > grammars/tfvars.json",
+		"compile-terragrunt": "yq eval --prettyPrint -o=json grammars/terragrunt.yaml > grammars/terragrunt.json",
+		"compile-snippets": "yq eval --prettyPrint -o=json snippets/tf.yaml > snippets/tf.json",
+		"compile": "npm run compile-tf && npm run compile-tfvars && npm run compile-terragrunt && npm run compile-snippets",
+		"preversion": "git add -A .",
+		"postversion": "npm run push -s",
+		"prepush": "git push",
+		"push": "git push --tags",
+		"version": "npm run build -s"
+	},
+	"devDependencies": {
+		"vsce": "^2.7.0"
+	},
+	"__metadata": {
+		"installedTimestamp": 1765025790362,
+		"targetPlatform": "undefined",
+		"size": 113035
+	}
+}

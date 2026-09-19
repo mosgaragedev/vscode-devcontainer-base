@@ -1,0 +1,27 @@
+type: layout-form
+id: root
+form:
+  - type: section
+    subitems:
+      - type: link-row
+        text: 'Docker Runner documentation is available here:'
+        link: https://zikalino.substack.com/p/reviving-docker-runner-vscode-extension
+      - type: link-row
+        text: GitHub donations are very welcome!
+        link: https://github.com/sponsors/zikalino
+      - type: link-row
+        text: Subscribe to SmarterCode Substack
+        link: https://zikalino.substack.com
+
+  - type: section
+    title: Prerequisites
+    subitems:
+      - $include: __docker_install_step.yaml
+      - $include: __docker_start_step.yaml
+
+footer:
+  - type: footer
+    subitems:
+      - type: button
+        id: install_button
+        codicon: run-all

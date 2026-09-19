@@ -1,0 +1,1 @@
+{"version":3,"file":"cheIdManager.d.ts","sourceRoot":"","sources":["../../src/che/cheIdManager.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,SAAS,EAAE,MAAM,yBAAyB,CAAC;AAIpD,qBAAa,YAAa,YAAW,SAAS;IACpC,aAAa,IAAI,OAAO,CAAC,MAAM,CAAC;IAOhC,cAAc,IAAI,OAAO,CAAC,MAAM,CAAC;CAyB1C"}

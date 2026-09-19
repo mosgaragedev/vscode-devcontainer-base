@@ -1,0 +1,27 @@
+- type: row
+  subitems:
+    - type: field
+      icon: icon-price.png
+      color: black
+      label: 'Price (m):'
+      value: '-'
+      value-format: '${p[0]} ${p[1]}'
+      value_src:
+        - "$.vm_price_month"
+        - "$.vm_price_currency"
+      consumes:
+        - variable: vm_price_month
+        - variable: vm_price_currency
+
+    - type: field
+      icon: icon-price.png
+      color: black
+      label: 'Price (h):'
+      value: '-'
+      value-format: '${p[0]} ${p[1]}'
+      value_src:
+        - "$.vm_price_hour"
+        - "$.vm_price_currency"
+      consumes:
+        - variable: vm_price_hour
+        - variable: vm_price_currency

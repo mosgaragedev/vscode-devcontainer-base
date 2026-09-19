@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+		<Metadata>
+			<Identity Language="en-US" Id="marquee" Version="3.3.1682654242" Publisher="stateful" />
+			<DisplayName>Marquee</DisplayName>
+			<Description xml:space="preserve">Stay organized with minimal context switching, all inside your VS Code.</Description>
+			<Tags>productivity,multi-workspace,entertainment,dashboard,homescreen,todo,notes,snippets,__web_extension</Tags>
+			<Categories>Snippets,Debuggers,Formatters,Linters,Themes,Other</Categories>
+			<GalleryFlags>Public</GalleryFlags>
+			<Badges><Badge Link="https://discord.gg/BQm8zRCBUY" ImgUri="https://img.shields.io/badge/Marquee-Join%20our%20Community-blue?logo=discord&amp;color=F62459" Description="Join us on Discord" /></Badges>
+			<Properties>
+				<Property Id="Microsoft.VisualStudio.Code.Engine" Value="^1.63.0" />
+				<Property Id="Microsoft.VisualStudio.Code.ExtensionDependencies" Value="" />
+				<Property Id="Microsoft.VisualStudio.Code.ExtensionPack" Value="" />
+				<Property Id="Microsoft.VisualStudio.Code.ExtensionKind" Value="workspace,web" />
+				<Property Id="Microsoft.VisualStudio.Code.LocalizedLanguages" Value="" />
+				<Property Id="Microsoft.VisualStudio.Code.PreRelease" Value="true" />
+				
+				<Property Id="Microsoft.VisualStudio.Services.Links.Source" Value="https://github.com/stateful/vscode-marquee.git" />
+				<Property Id="Microsoft.VisualStudio.Services.Links.Getstarted" Value="https://github.com/stateful/vscode-marquee.git" />
+				<Property Id="Microsoft.VisualStudio.Services.Links.GitHub" Value="https://github.com/stateful/vscode-marquee.git" />
+				<Property Id="Microsoft.VisualStudio.Services.Links.Support" Value="https://github.com/stateful/vscode-marquee/issues" />
+				<Property Id="Microsoft.VisualStudio.Services.Links.Learn" Value="https://marquee.stateful.com" />
+				<Property Id="Microsoft.VisualStudio.Services.Branding.Color" Value="#171923" />
+				<Property Id="Microsoft.VisualStudio.Services.Branding.Theme" Value="dark" />
+				<Property Id="Microsoft.VisualStudio.Services.GitHubFlavoredMarkdown" Value="true" />
+				<Property Id="Microsoft.VisualStudio.Services.Content.Pricing" Value="Free"/>
+
+				
+				
+			</Properties>
+			<License>extension/LICENSE.md</License>
+			<Icon>extension/assets/icon.png</Icon>
+		</Metadata>
+		<Installation>
+			<InstallationTarget Id="Microsoft.VisualStudio.Code"/>
+		</Installation>
+		<Dependencies/>
+		<Assets>
+			<Asset Type="Microsoft.VisualStudio.Code.Manifest" Path="extension/package.json" Addressable="true" />
+			<Asset Type="Microsoft.VisualStudio.Services.Content.Details" Path="extension/README.md" Addressable="true" />
+<Asset Type="Microsoft.VisualStudio.Services.Content.Changelog" Path="extension/CHANGELOG.md" Addressable="true" />
+<Asset Type="Microsoft.VisualStudio.Services.Content.License" Path="extension/LICENSE.md" Addressable="true" />
+<Asset Type="Microsoft.VisualStudio.Services.Icons.Default" Path="extension/assets/icon.png" Addressable="true" />
+		</Assets>
+	</PackageManifest>

@@ -1,0 +1,13 @@
+
+- type: 'action-row'
+  platform: win32
+  name: Install GitHub CLI
+  verify: gh --version
+  install: winget install --id GitHub.cli	
+
+- type: 'action-row'
+  platform: linux
+  name: Install GitHub CLI
+  verify: gh --version
+  interactive: true
+  install: "sudo apt update; sudo apt install gh"

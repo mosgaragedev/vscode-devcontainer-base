@@ -1,0 +1,120 @@
+- type: section
+  title: Basic Information
+  subitems:
+    - type: row
+      subitems:
+        - type: textfield
+          name: Name (required)
+          produces:
+            - variable: name
+        - $include: linode/__linode_regions_list_selector_field.yaml
+        - $include: linode/__linode_type_selector_field.yaml
+
+
+    - $include: generic/generic_vm_size_information.yaml
+    - $include: generic/generic_vm_price_information.yaml
+
+- type: section
+  title: Image / Application
+  subitems:
+    - $include: linode/__linode_images_list_selector.yaml
+
+- type: section
+  title: Security
+  subitems:
+    - type: row
+      subitems:
+        - type: textfield
+          narrow: true
+          name: Root Password
+          produces:
+            - variable: password
+
+- type: section
+  subitems:
+    - type: 'action-row'
+      name: Create Linode
+      consumes:
+        - variable: vm_size
+        - variable: region
+        - variable: name
+        - variable: password
+        - variable: images_id
+          parameter: --image
+      verify: |
+          linode list --label ${name}
+      install: linode linodes create --region ${region} --type ${vm_size} --label ${name}  --root_pass ${password}
+
+# linode-cli linodes create
+# Create a Linode
+# API Documentation: 
+# https://techdocs.akamai.com/linode-api/reference/post-linode-instance
+#
+# Example Usage: 
+#   linode-cli linodes create \
+#     --label linode123 \
+#     --root_pass aComplex@Password \
+#     --booted true \
+#     --stackscript_id 10079 \
+#     --stackscript_data '{"gh_username": "linode"}' \
+#     --region us-east \
+#     --disk_encryption enabled\
+#     --placement_group.id 528 \
+#     --type g6-standard-2 \
+#     --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== 
+# user@their-computer" \
+#     --authorized_users "myUser" \
+#     --authorized_users "secondaryUser" \
+#     --metadata.user_data "I2Nsb3VkLWNvbmZpZw==" \
+#     --firewall_id 9000
+#
+# Arguments:
+#   --region (required): The region where the Linode will be located. See:
+#   https://techdocs.akamai.com/linode-api/reference/get-regions
+#   --type (required): The Linode type of the Linode you are creating. See:
+#   https://techdocs.akamai.com/linode-api/reference/get-linode-types
+#
+#   --authorized_keys: A list of public SSH keys that will be automatically appended 
+#   to the root user's ~/.ssh/authorized_keys file when deploying from an Image.     
+#   --authorized_users: A list of usernames.
+#   --backup_id: A Backup ID from another Linode's available backups.
+#   --backups_enabled: If this field is set to true, the created Linode will
+#   automatically be enrolled in the Linode Backup service.
+#   --booted: This field defaults to true if the Linode is created with an Image or  
+#   from a Backup.
+#   --firewall_id: The id of the Firewall to attach this Linode to upon creation.    
+#   --group: The group label for this Linode.
+#   --image: An Image ID to deploy the Linode Disk from.
+#   --label: Provides a name for the Linode.
+#   --metadata.user_data: Base64-encoded cloud-config data. See:
+#   https://www.linode.com/docs/products/compute/compute-instances/guides/metadata-cl
+#   oud-config/
+#   --placement_group.id: The placement group's ID.
+#   --private_ip: If true, the created Linode will have private networking enabled   
+#   and assigned a private IPv4 address.
+#   --root_pass: This sets the root user's password on a newly created Linode Disk   
+#   when deploying from an Image.
+#   --stackscript_data: This field is required only if the StackScript being deployed
+#   requires input data from the User for successful completion.
+#   --stackscript_id: A StackScript ID that will cause the referenced StackScript to 
+#   be run during deployment of this Linode.
+#   --swap_size: When deploying from an Image, this field is optional, otherwise it  
+#   is ignored.
+#   --tags: Tags to help you organize your content.
+#
+#   --interfaces (JSON, conflicts with children): The Network Interface to apply to  
+#   this Linode's configuration profile.
+#     --interfaces.purpose (required): The type of Interface.
+#     --interfaces.ip_ranges (JSON, nullable): An array of IPv4 CIDR VPC Subnet      
+#     ranges that are routed to this Interface.
+#     --interfaces.ipam_address (nullable): This Network Interface's private IP      
+#     address in Classless Inter-Domain Routing (CIDR) notation.
+#     --interfaces.ipv4.nat_1_1 (nullable): The 1:1 NAT IPv4 address, used to        
+#     associate a public IPv4 address with the VPC Subnet IPv4 address assigned to   
+#     this Interface.
+#     --interfaces.ipv4.vpc (nullable): The VPC Subnet IPv4 address for this
+#     Interface.
+#     --interfaces.label (nullable): The name of this Interface.
+#     --interfaces.primary: The primary Interface is configured as the default route 
+#     to the Linode.
+#     --interfaces.subnet_id (nullable): The id of the VPC Subnet for this Interface.

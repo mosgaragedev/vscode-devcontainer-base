@@ -1,0 +1,3 @@
+steps:
+  - script: 'node ./out/test/runTest.js'
+    displayName: 'Test: Run'

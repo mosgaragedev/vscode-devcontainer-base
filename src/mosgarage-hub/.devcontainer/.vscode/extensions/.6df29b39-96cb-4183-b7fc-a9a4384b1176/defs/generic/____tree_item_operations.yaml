@@ -1,0 +1,31 @@
+#
+# Generic
+#
+- type: create
+  item-types:
+    - generic
+  name: Create Virtual Machine
+  template:
+    name: generic/generic_vm_create.yaml
+- type: create
+  item-types:
+    - generic
+  name: Create Container Registry
+  template:
+    name: generic/generic_container_registry_create.yaml
+- type: create
+  item-types: generic
+  name: Create Container Instance
+  template:
+    name: generic/generic_container_instance_create.yaml
+- type: create
+  item-types:
+    - generic
+  name: Create Kubernetes Cluster
+  template:
+    name: generic/generic_kubernetes_cluster_create.yaml
+- type: create
+  item-types: generic
+  name: Deploy Application
+  template:
+    name: generic/generic_deploy_application.yaml

@@ -1,0 +1,74 @@
+{
+  "name": "virtualbox",
+  "version": "1.0.0",
+  "description": "A library to interact with VirtualBox.",
+  "author": "Azer Koculu <azer@kodfabrik.com>",
+  "license": "MIT",
+  "bugs": "https://github.com/Node-Virtualization/node-virtualbox/issues",
+  "contributors": [
+    {
+      "name": "Azer Koculu",
+      "url": "http://azer.bike",
+      "email": "azer@kodfabrik.com"
+    },
+    {
+      "name": "Michael Sanford",
+      "url": "http://accidentalbeard.com"
+    },
+    {
+      "name": "Steffen Roegner",
+      "url": "http://www.sroegner.org"
+    },
+    {
+      "name": "Jakub Lekstan",
+      "url": "https://github.com/kuebk"
+    },
+    {
+      "name": "Christopher'chief' Najewicz",
+      "url": "http://chiefy.github.io"
+    },
+    {
+      "name": "Cédric Belin",
+      "url": "http://belin.io"
+    },
+    {
+      "name": "bschaepper",
+      "url": "https://github.com/bschaepper"
+    },
+    {
+      "name": "2roy999",
+      "url": "https://github.com/2roy999"
+    },
+    {
+      "name": "Felipe Miranda",
+      "url": "https://github.com/felipemdrs"
+    }
+  ],
+  "keywords": [
+    "virtualbox",
+    "vboxmanage",
+    "vboxheadless"
+  ],
+  "directories": {
+    "lib": "./lib"
+  },
+  "scripts": {
+    "test": "jshint ./lib ./test"
+  },
+  "main": "./lib/virtualbox",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Node-Virtualization/node-virtualbox.git"
+  },
+  "dependencies": {
+    "log4js": "1.x"
+  },
+  "devDependencies": {
+    "async": "^2.1.4",
+    "jshint": "^2.9.6",
+    "nodeunit": "^0.11.3"
+  },
+  "engines": {
+    "engine": "node >= 0.4.1"
+  }
+}

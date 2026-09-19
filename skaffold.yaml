@@ -3,6 +3,6 @@ kind: Config
 
 build:
   artifacts:
-    - image: ghcr.io/mosgarage/basedevcontainer
+    - image: ghcr.io/mosgarage/vscode-basedevcontainer-base
   local:
     push: true

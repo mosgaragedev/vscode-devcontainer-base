@@ -1,0 +1,48 @@
+title: Create Virtual Machine
+type: layout-form
+id: root
+header:
+  - type: header
+    title: Create Virtual Machine
+    logo: icon.webp
+form:
+
+  - type: section
+    subitems:
+      - type: link-row
+        text: Read more about virtual machines here
+        link: https://open.substack.com/pub/zikalino/p/create-virtual-machines-using-cloud
+
+  # cloud provider selection section
+  - $include: generic/__generic_provider_selector.yaml
+
+  - $include: generic/generic_vm_create_linode.yaml
+    show-if:
+      variable: cloud_provider
+      value: cloud-linode
+
+  - $include: generic/generic_vm_create_az.yaml
+    show-if:
+      variable: cloud_provider
+      value: cloud-az
+
+  - $include: generic/generic_vm_create_civo.yaml
+    show-if:
+      variable: cloud_provider
+      value: cloud-civo
+
+  - $include: generic/generic_vm_create_upctl.yaml
+    show-if:
+      variable: cloud_provider
+      value: cloud-upctl
+
+  - $include: generic/generic_vm_create_doctl.yaml
+    show-if:
+      variable: cloud_provider
+      value: cloud-doctl
+
+  - type: section
+    subitems:
+      - type: 'output-row'
+        data: output
+        content: ''

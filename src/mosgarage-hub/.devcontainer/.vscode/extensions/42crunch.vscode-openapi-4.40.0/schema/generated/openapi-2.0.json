@@ -1,0 +1,3966 @@
+{
+    "title": "Swagger 2.0",
+    "id": "openapi-schemas:openapi-2.0.json",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "required": [
+        "swagger",
+        "info",
+        "paths"
+    ],
+    "additionalProperties": false,
+    "patternProperties": {
+        "^x-": {
+            "$ref": "#/definitions/vendorExtension"
+        }
+    },
+    "properties": {
+        "swagger": {
+            "type": "string",
+            "enum": [
+                "2.0"
+            ],
+            "description": "The Swagger version of this document."
+        },
+        "info": {
+            "$ref": "#/definitions/info"
+        },
+        "host": {
+            "type": "string",
+            "pattern": "^[^{}/ :\\\\]+(?::\\d+)?$",
+            "description": "The host (name or ip) of the API. Example: 'swagger.io'"
+        },
+        "basePath": {
+            "type": "string",
+            "pattern": "^/",
+            "description": "The base path to the API. Example: '/api'."
+        },
+        "schemes": {
+            "$ref": "#/definitions/schemesList"
+        },
+        "consumes": {
+            "description": "A list of MIME types accepted by the API.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/mediaTypeList"
+                }
+            ]
+        },
+        "produces": {
+            "description": "A list of MIME types the API can produce.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/mediaTypeList"
+                }
+            ]
+        },
+        "paths": {
+            "$ref": "#/definitions/paths"
+        },
+        "definitions": {
+            "$ref": "#/definitions/definitions"
+        },
+        "parameters": {
+            "$ref": "#/definitions/parameterDefinitions"
+        },
+        "responses": {
+            "$ref": "#/definitions/responseDefinitions"
+        },
+        "security": {
+            "$ref": "#/definitions/security"
+        },
+        "securityDefinitions": {
+            "$ref": "#/definitions/securityDefinitions"
+        },
+        "tags": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/tag"
+            },
+            "uniqueItems": true
+        },
+        "externalDocs": {
+            "$ref": "#/definitions/externalDocs"
+        },
+        "x-42c-request-strategies": {
+            "$ref": "#/definitions/X42cRequestStrategies"
+        },
+        "x-42c-response-strategies": {
+            "$ref": "#/definitions/X42cResponseStrategies"
+        },
+        "x-42c-no-authentication": {
+            "$ref": "#/definitions/X42cNoAuthentication"
+        },
+        "x-42c-mtls": {
+            "$ref": "#/definitions/X42cMTLS"
+        },
+        "x-42c-skipIssues": {
+            "$ref": "#/definitions/X42cSkipIssues"
+        }
+    },
+    "definitions": {
+        "info": {
+            "type": "object",
+            "description": "General information about the API.",
+            "required": [
+                "version",
+                "title"
+            ],
+            "additionalProperties": false,
+            "patternProperties": {
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                }
+            },
+            "properties": {
+                "title": {
+                    "type": "string",
+                    "description": "A unique and precise title of the API."
+                },
+                "version": {
+                    "type": "string",
+                    "description": "A semantic version number of the API."
+                },
+                "description": {
+                    "type": "string",
+                    "description": "A longer description of the API. Should be different from the title.  GitHub Flavored Markdown is allowed."
+                },
+                "termsOfService": {
+                    "type": "string",
+                    "description": "The terms of service for the API."
+                },
+                "contact": {
+                    "$ref": "#/definitions/contact"
+                },
+                "license": {
+                    "$ref": "#/definitions/license"
+                }
+            }
+        },
+        "contact": {
+            "type": "object",
+            "description": "Contact information for the owners of the API.",
+            "additionalProperties": false,
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The identifying name of the contact person/organization."
+                },
+                "url": {
+                    "type": "string",
+                    "description": "The URL pointing to the contact information.",
+                    "format": "uri"
+                },
+                "email": {
+                    "type": "string",
+                    "description": "The email address of the contact person/organization.",
+                    "format": "email"
+                }
+            },
+            "patternProperties": {
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                }
+            }
+        },
+        "license": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The name of the license type. It's encouraged to use an OSI compatible license."
+                },
+                "url": {
+                    "type": "string",
+                    "description": "The URL pointing to the license.",
+                    "format": "uri"
+                }
+            },
+            "patternProperties": {
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                }
+            }
+        },
+        "paths": {
+            "type": "object",
+            "description": "Relative paths to the individual endpoints. They must be relative to the 'basePath'.",
+            "patternProperties": {
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                },
+                "^/": {
+                    "$ref": "#/definitions/pathItem"
+                }
+            },
+            "additionalProperties": false,
+            "properties": {
+                "x-42c-local-strategy": {
+                    "$ref": "#/definitions/X42cLocalStrategy"
+                }
+            }
+        },
+        "definitions": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/schema"
+            },
+            "description": "One or more JSON objects describing the schemas being consumed and produced by the API."
+        },
+        "parameterDefinitions": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/parameter"
+            },
+            "description": "One or more JSON representations for parameters"
+        },
+        "responseDefinitions": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/response"
+            },
+            "description": "One or more JSON representations for responses"
+        },
+        "externalDocs": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "information about external documentation",
+            "required": [
+                "url"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string",
+                    "format": "uri"
+                }
+            },
+            "patternProperties": {
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                }
+            }
+        },
+        "examples": {
+            "type": "object",
+            "additionalProperties": true
+        },
+        "mimeType": {
+            "type": "string",
+            "description": "The MIME type of the HTTP message."
+        },
+        "operation": {
+            "type": "object",
+            "required": [
+                "responses"
+            ],
+            "additionalProperties": false,
+            "patternProperties": {
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                }
+            },
+            "properties": {
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "uniqueItems": true
+                },
+                "summary": {
+                    "type": "string",
+                    "description": "A brief summary of the operation."
+                },
+                "description": {
+                    "type": "string",
+                    "description": "A longer description of the operation, GitHub Flavored Markdown is allowed."
+                },
+                "externalDocs": {
+                    "$ref": "#/definitions/externalDocs"
+                },
+                "operationId": {
+                    "type": "string",
+                    "description": "A unique identifier of the operation."
+                },
+                "produces": {
+                    "description": "A list of MIME types the API can produce.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/mediaTypeList"
+                        }
+                    ]
+                },
+                "consumes": {
+                    "description": "A list of MIME types the API can consume.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/mediaTypeList"
+                        }
+                    ]
+                },
+                "parameters": {
+                    "$ref": "#/definitions/parametersList"
+                },
+                "responses": {
+                    "$ref": "#/definitions/responses"
+                },
+                "schemes": {
+                    "$ref": "#/definitions/schemesList"
+                },
+                "deprecated": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "security": {
+                    "$ref": "#/definitions/security"
+                },
+                "x-42c-local-strategy": {
+                    "$ref": "#/definitions/X42cLocalStrategy"
+                },
+                "x-42c-no-authentication": {
+                    "$ref": "#/definitions/X42cNoAuthentication"
+                },
+                "x-42c-mtls": {
+                    "$ref": "#/definitions/X42cMTLS"
+                },
+                "x-42c-sensitivity": {
+                    "$ref": "#/definitions/X42cSensitivity"
+                },
+                "x-42c-weight-input": {
+                    "$ref": "#/definitions/X42cWeightInput"
+                },
+                "x-42c-weight-output": {
+                    "$ref": "#/definitions/X42cWeightOutput"
+                },
+                "x-42c-weight-parameters": {
+                    "$ref": "#/definitions/X42cWeightParameters"
+                },
+                "x-42c-weight-requestBody": {
+                    "$ref": "#/definitions/X42cWeightRequestBody"
+                }
+            }
+        },
+        "pathItem": {
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                }
+            },
+            "properties": {
+                "$ref": {
+                    "type": "string"
+                },
+                "get": {
+                    "$ref": "#/definitions/operation"
+                },
+                "put": {
+                    "$ref": "#/definitions/operation"
+                },
+                "post": {
+                    "$ref": "#/definitions/operation"
+                },
+                "delete": {
+                    "$ref": "#/definitions/operation"
+                },
+                "options": {
+                    "$ref": "#/definitions/operation"
+                },
+                "head": {
+                    "$ref": "#/definitions/operation"
+                },
+                "patch": {
+                    "$ref": "#/definitions/operation"
+                },
+                "parameters": {
+                    "$ref": "#/definitions/parametersList"
+                },
+                "x-42c-local-strategy": {
+                    "$ref": "#/definitions/X42cLocalStrategy"
+                }
+            }
+        },
+        "responses": {
+            "type": "object",
+            "description": "Response objects names can either be any valid HTTP status code or 'default'.",
+            "minProperties": 1,
+            "additionalProperties": false,
+            "patternProperties": {
+                "^([0-9]{3})$|^(default)$": {
+                    "$ref": "#/definitions/responseValue"
+                },
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                }
+            },
+            "not": {
+                "type": "object",
+                "additionalProperties": false,
+                "patternProperties": {
+                    "^x-": {
+                        "$ref": "#/definitions/vendorExtension"
+                    }
+                }
+            },
+            "x-42c-local-strategy": {
+                "$ref": "#/definitions/X42cLocalStrategy"
+            },
+            "properties": {
+                "x-42c-local-strategy": {
+                    "$ref": "#/definitions/X42cLocalStrategy"
+                }
+            }
+        },
+        "responseValue": {
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/response"
+                },
+                {
+                    "$ref": "#/definitions/jsonReference"
+                }
+            ]
+        },
+        "response": {
+            "type": "object",
+            "required": [
+                "description"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "schema": {
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/schema"
+                        },
+                        {
+                            "$ref": "#/definitions/fileSchema"
+                        }
+                    ]
+                },
+                "headers": {
+                    "$ref": "#/definitions/headers"
+                },
+                "examples": {
+                    "$ref": "#/definitions/examples"
+                },
+                "x-42c-local-strategy": {
+                    "$ref": "#/definitions/X42cLocalStrategy"
+                },
+                "x-42c-weight-content": {
+                    "$ref": "#/definitions/X42cWeightContent"
+                },
+                "x-42c-weight-headers": {
+                    "$ref": "#/definitions/X42cWeightHeader"
+                },
+                "x-42c-weight-success": {
+                    "$ref": "#/definitions/X42cWeightSuccess"
+                },
+                "x-42c-weight-fail": {
+                    "$ref": "#/definitions/X42cWeightFail"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                }
+            }
+        },
+        "headers": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/header"
+            }
+        },
+        "header": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type"
+            ],
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "string",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "array"
+                    ]
+                },
+                "format": {
+                    "type": "string"
+                },
+                "items": {
+                    "$ref": "#/definitions/primitivesItems"
+                },
+                "collectionFormat": {
+                    "$ref": "#/definitions/collectionFormat"
+                },
+                "default": {
+                    "$ref": "#/definitions/default"
+                },
+                "maximum": {
+                    "$ref": "#/definitions/maximum"
+                },
+                "exclusiveMaximum": {
+                    "$ref": "#/definitions/exclusiveMaximum"
+                },
+                "minimum": {
+                    "$ref": "#/definitions/minimum"
+                },
+                "exclusiveMinimum": {
+                    "$ref": "#/definitions/exclusiveMinimum"
+                },
+                "maxLength": {
+                    "$ref": "#/definitions/maxLength"
+                },
+                "minLength": {
+                    "$ref": "#/definitions/minLength"
+                },
+                "pattern": {
+                    "$ref": "#/definitions/pattern"
+                },
+                "maxItems": {
+                    "$ref": "#/definitions/maxItems"
+                },
+                "minItems": {
+                    "$ref": "#/definitions/minItems"
+                },
+                "uniqueItems": {
+                    "$ref": "#/definitions/uniqueItems"
+                },
+                "enum": {
+                    "$ref": "#/definitions/enum"
+                },
+                "multipleOf": {
+                    "$ref": "#/definitions/multipleOf"
+                },
+                "description": {
+                    "type": "string"
+                }
+            },
+            "patternProperties": {
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                }
+            }
+        },
+        "vendorExtension": {
+            "description": "Any property starting with x- is valid.",
+            "additionalProperties": true,
+            "additionalItems": true
+        },
+        "bodyParameter": {
+            "type": "object",
+            "required": [
+                "name",
+                "in",
+                "schema"
+            ],
+            "patternProperties": {
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                }
+            },
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "description": "A brief description of the parameter. This could contain examples of use.  GitHub Flavored Markdown is allowed."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the parameter."
+                },
+                "in": {
+                    "type": "string",
+                    "description": "Determines the location of the parameter.",
+                    "enum": [
+                        "body"
+                    ]
+                },
+                "required": {
+                    "type": "boolean",
+                    "description": "Determines whether or not this parameter is required or optional.",
+                    "default": false
+                },
+                "schema": {
+                    "$ref": "#/definitions/schema"
+                },
+                "x-42c-sensitivity-data": {
+                    "$ref": "#/definitions/X42cSensitivityData"
+                },
+                "x-42c-sample": {
+                    "$ref": "#/definitions/X42cSample"
+                }
+            },
+            "additionalProperties": false
+        },
+        "headerParameterSubSchema": {
+            "additionalProperties": false,
+            "patternProperties": {
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                }
+            },
+            "properties": {
+                "required": {
+                    "type": "boolean",
+                    "description": "Determines whether or not this parameter is required or optional.",
+                    "default": false
+                },
+                "in": {
+                    "type": "string",
+                    "description": "Determines the location of the parameter.",
+                    "enum": [
+                        "header"
+                    ]
+                },
+                "description": {
+                    "type": "string",
+                    "description": "A brief description of the parameter. This could contain examples of use.  GitHub Flavored Markdown is allowed."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the parameter."
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "string",
+                        "number",
+                        "boolean",
+                        "integer",
+                        "array"
+                    ]
+                },
+                "format": {
+                    "type": "string"
+                },
+                "items": {
+                    "$ref": "#/definitions/primitivesItems"
+                },
+                "collectionFormat": {
+                    "$ref": "#/definitions/collectionFormat"
+                },
+                "default": {
+                    "$ref": "#/definitions/default"
+                },
+                "maximum": {
+                    "$ref": "#/definitions/maximum"
+                },
+                "exclusiveMaximum": {
+                    "$ref": "#/definitions/exclusiveMaximum"
+                },
+                "minimum": {
+                    "$ref": "#/definitions/minimum"
+                },
+                "exclusiveMinimum": {
+                    "$ref": "#/definitions/exclusiveMinimum"
+                },
+                "maxLength": {
+                    "$ref": "#/definitions/maxLength"
+                },
+                "minLength": {
+                    "$ref": "#/definitions/minLength"
+                },
+                "pattern": {
+                    "$ref": "#/definitions/pattern"
+                },
+                "maxItems": {
+                    "$ref": "#/definitions/maxItems"
+                },
+                "minItems": {
+                    "$ref": "#/definitions/minItems"
+                },
+                "uniqueItems": {
+                    "$ref": "#/definitions/uniqueItems"
+                },
+                "enum": {
+                    "$ref": "#/definitions/enum"
+                },
+                "multipleOf": {
+                    "$ref": "#/definitions/multipleOf"
+                },
+                "x-42c-sensitivity-data": {
+                    "$ref": "#/definitions/X42cSensitivityData"
+                },
+                "x-42c-sample": {
+                    "$ref": "#/definitions/X42cSample"
+                }
+            }
+        },
+        "queryParameterSubSchema": {
+            "additionalProperties": false,
+            "patternProperties": {
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                }
+            },
+            "properties": {
+                "required": {
+                    "type": "boolean",
+                    "description": "Determines whether or not this parameter is required or optional.",
+                    "default": false
+                },
+                "in": {
+                    "type": "string",
+                    "description": "Determines the location of the parameter.",
+                    "enum": [
+                        "query"
+                    ]
+                },
+                "description": {
+                    "type": "string",
+                    "description": "A brief description of the parameter. This could contain examples of use.  GitHub Flavored Markdown is allowed."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the parameter."
+                },
+                "allowEmptyValue": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "allows sending a parameter by name only or with an empty value."
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "string",
+                        "number",
+                        "boolean",
+                        "integer",
+                        "array"
+                    ]
+                },
+                "format": {
+                    "type": "string"
+                },
+                "items": {
+                    "$ref": "#/definitions/primitivesItems"
+                },
+                "collectionFormat": {
+                    "$ref": "#/definitions/collectionFormatWithMulti"
+                },
+                "default": {
+                    "$ref": "#/definitions/default"
+                },
+                "maximum": {
+                    "$ref": "#/definitions/maximum"
+                },
+                "exclusiveMaximum": {
+                    "$ref": "#/definitions/exclusiveMaximum"
+                },
+                "minimum": {
+                    "$ref": "#/definitions/minimum"
+                },
+                "exclusiveMinimum": {
+                    "$ref": "#/definitions/exclusiveMinimum"
+                },
+                "maxLength": {
+                    "$ref": "#/definitions/maxLength"
+                },
+                "minLength": {
+                    "$ref": "#/definitions/minLength"
+                },
+                "pattern": {
+                    "$ref": "#/definitions/pattern"
+                },
+                "maxItems": {
+                    "$ref": "#/definitions/maxItems"
+                },
+                "minItems": {
+                    "$ref": "#/definitions/minItems"
+                },
+                "uniqueItems": {
+                    "$ref": "#/definitions/uniqueItems"
+                },
+                "enum": {
+                    "$ref": "#/definitions/enum"
+                },
+                "multipleOf": {
+                    "$ref": "#/definitions/multipleOf"
+                },
+                "x-42c-sensitivity-data": {
+                    "$ref": "#/definitions/X42cSensitivityData"
+                },
+                "x-42c-sample": {
+                    "$ref": "#/definitions/X42cSample"
+                }
+            }
+        },
+        "formDataParameterSubSchema": {
+            "additionalProperties": false,
+            "patternProperties": {
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                }
+            },
+            "properties": {
+                "required": {
+                    "type": "boolean",
+                    "description": "Determines whether or not this parameter is required or optional.",
+                    "default": false
+                },
+                "in": {
+                    "type": "string",
+                    "description": "Determines the location of the parameter.",
+                    "enum": [
+                        "formData"
+                    ]
+                },
+                "description": {
+                    "type": "string",
+                    "description": "A brief description of the parameter. This could contain examples of use.  GitHub Flavored Markdown is allowed."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the parameter."
+                },
+                "allowEmptyValue": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "allows sending a parameter by name only or with an empty value."
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "string",
+                        "number",
+                        "boolean",
+                        "integer",
+                        "array",
+                        "file"
+                    ]
+                },
+                "format": {
+                    "type": "string"
+                },
+                "items": {
+                    "$ref": "#/definitions/primitivesItems"
+                },
+                "collectionFormat": {
+                    "$ref": "#/definitions/collectionFormatWithMulti"
+                },
+                "default": {
+                    "$ref": "#/definitions/default"
+                },
+                "maximum": {
+                    "$ref": "#/definitions/maximum"
+                },
+                "exclusiveMaximum": {
+                    "$ref": "#/definitions/exclusiveMaximum"
+                },
+                "minimum": {
+                    "$ref": "#/definitions/minimum"
+                },
+                "exclusiveMinimum": {
+                    "$ref": "#/definitions/exclusiveMinimum"
+                },
+                "maxLength": {
+                    "$ref": "#/definitions/maxLength"
+                },
+                "minLength": {
+                    "$ref": "#/definitions/minLength"
+                },
+                "pattern": {
+                    "$ref": "#/definitions/pattern"
+                },
+                "maxItems": {
+                    "$ref": "#/definitions/maxItems"
+                },
+                "minItems": {
+                    "$ref": "#/definitions/minItems"
+                },
+                "uniqueItems": {
+                    "$ref": "#/definitions/uniqueItems"
+                },
+                "enum": {
+                    "$ref": "#/definitions/enum"
+                },
+                "multipleOf": {
+                    "$ref": "#/definitions/multipleOf"
+                },
+                "x-42c-sensitivity-data": {
+                    "$ref": "#/definitions/X42cSensitivityData"
+                },
+                "x-42c-sample": {
+                    "$ref": "#/definitions/X42cSample"
+                }
+            }
+        },
+        "pathParameterSubSchema": {
+            "additionalProperties": false,
+            "patternProperties": {
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                }
+            },
+            "required": [
+                "required"
+            ],
+            "properties": {
+                "required": {
+                    "type": "boolean",
+                    "enum": [
+                        true
+                    ],
+                    "description": "Determines whether or not this parameter is required or optional."
+                },
+                "in": {
+                    "type": "string",
+                    "description": "Determines the location of the parameter.",
+                    "enum": [
+                        "path"
+                    ]
+                },
+                "description": {
+                    "type": "string",
+                    "description": "A brief description of the parameter. This could contain examples of use.  GitHub Flavored Markdown is allowed."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the parameter."
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "string",
+                        "number",
+                        "boolean",
+                        "integer",
+                        "array"
+                    ]
+                },
+                "format": {
+                    "type": "string"
+                },
+                "items": {
+                    "$ref": "#/definitions/primitivesItems"
+                },
+                "collectionFormat": {
+                    "$ref": "#/definitions/collectionFormat"
+                },
+                "default": {
+                    "$ref": "#/definitions/default"
+                },
+                "maximum": {
+                    "$ref": "#/definitions/maximum"
+                },
+                "exclusiveMaximum": {
+                    "$ref": "#/definitions/exclusiveMaximum"
+                },
+                "minimum": {
+                    "$ref": "#/definitions/minimum"
+                },
+                "exclusiveMinimum": {
+                    "$ref": "#/definitions/exclusiveMinimum"
+                },
+                "maxLength": {
+                    "$ref": "#/definitions/maxLength"
+                },
+                "minLength": {
+                    "$ref": "#/definitions/minLength"
+                },
+                "pattern": {
+                    "$ref": "#/definitions/pattern"
+                },
+                "maxItems": {
+                    "$ref": "#/definitions/maxItems"
+                },
+                "minItems": {
+                    "$ref": "#/definitions/minItems"
+                },
+                "uniqueItems": {
+                    "$ref": "#/definitions/uniqueItems"
+                },
+                "enum": {
+                    "$ref": "#/definitions/enum"
+                },
+                "multipleOf": {
+                    "$ref": "#/definitions/multipleOf"
+                },
+                "x-42c-sensitivity-data": {
+                    "$ref": "#/definitions/X42cSensitivityData"
+                },
+                "x-42c-sample": {
+                    "$ref": "#/definitions/X42cSample"
+                }
+            }
+        },
+        "nonBodyParameter": {
+            "type": "object",
+            "required": [
+                "name",
+                "in",
+                "type"
+            ],
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/headerParameterSubSchema"
+                },
+                {
+                    "$ref": "#/definitions/formDataParameterSubSchema"
+                },
+                {
+                    "$ref": "#/definitions/queryParameterSubSchema"
+                },
+                {
+                    "$ref": "#/definitions/pathParameterSubSchema"
+                }
+            ]
+        },
+        "parameter": {
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/bodyParameter"
+                },
+                {
+                    "$ref": "#/definitions/nonBodyParameter"
+                }
+            ]
+        },
+        "schema": {
+            "type": "object",
+            "description": "A deterministic version of a JSON Schema object.",
+            "patternProperties": {
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                }
+            },
+            "properties": {
+                "$ref": {
+                    "type": "string"
+                },
+                "format": {
+                    "type": "string"
+                },
+                "title": {
+                    "$ref": "http://json-schema.org/draft-04/schema#/properties/title"
+                },
+                "description": {
+                    "$ref": "http://json-schema.org/draft-04/schema#/properties/description"
+                },
+                "default": {
+                    "$ref": "http://json-schema.org/draft-04/schema#/properties/default"
+                },
+                "multipleOf": {
+                    "$ref": "http://json-schema.org/draft-04/schema#/properties/multipleOf"
+                },
+                "maximum": {
+                    "$ref": "http://json-schema.org/draft-04/schema#/properties/maximum"
+                },
+                "exclusiveMaximum": {
+                    "$ref": "http://json-schema.org/draft-04/schema#/properties/exclusiveMaximum"
+                },
+                "minimum": {
+                    "$ref": "http://json-schema.org/draft-04/schema#/properties/minimum"
+                },
+                "exclusiveMinimum": {
+                    "$ref": "http://json-schema.org/draft-04/schema#/properties/exclusiveMinimum"
+                },
+                "maxLength": {
+                    "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveInteger"
+                },
+                "minLength": {
+                    "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveIntegerDefault0"
+                },
+                "pattern": {
+                    "$ref": "http://json-schema.org/draft-04/schema#/properties/pattern"
+                },
+                "maxItems": {
+                    "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveInteger"
+                },
+                "minItems": {
+                    "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveIntegerDefault0"
+                },
+                "uniqueItems": {
+                    "$ref": "http://json-schema.org/draft-04/schema#/properties/uniqueItems"
+                },
+                "maxProperties": {
+                    "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveInteger"
+                },
+                "minProperties": {
+                    "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveIntegerDefault0"
+                },
+                "required": {
+                    "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray"
+                },
+                "enum": {
+                    "$ref": "http://json-schema.org/draft-04/schema#/properties/enum"
+                },
+                "additionalProperties": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/schema"
+                        },
+                        {
+                            "type": "boolean"
+                        }
+                    ],
+                    "default": {}
+                },
+                "type": {
+                    "$ref": "http://json-schema.org/draft-04/schema#/properties/type"
+                },
+                "items": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/schema"
+                        },
+                        {
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {
+                                "$ref": "#/definitions/schema"
+                            }
+                        }
+                    ],
+                    "default": {}
+                },
+                "allOf": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/schema"
+                    }
+                },
+                "properties": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/schema"
+                    },
+                    "default": {}
+                },
+                "discriminator": {
+                    "type": "string"
+                },
+                "readOnly": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "xml": {
+                    "$ref": "#/definitions/xml"
+                },
+                "externalDocs": {
+                    "$ref": "#/definitions/externalDocs"
+                },
+                "example": {},
+                "x-42c-sensitivity-data": {
+                    "$ref": "#/definitions/X42cSensitivityData"
+                },
+                "x-42c-sample": {
+                    "$ref": "#/definitions/X42cSample"
+                }
+            },
+            "additionalProperties": false
+        },
+        "fileSchema": {
+            "type": "object",
+            "description": "A deterministic version of a JSON Schema object.",
+            "patternProperties": {
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                }
+            },
+            "required": [
+                "type"
+            ],
+            "properties": {
+                "format": {
+                    "type": "string"
+                },
+                "title": {
+                    "$ref": "http://json-schema.org/draft-04/schema#/properties/title"
+                },
+                "description": {
+                    "$ref": "http://json-schema.org/draft-04/schema#/properties/description"
+                },
+                "default": {
+                    "$ref": "http://json-schema.org/draft-04/schema#/properties/default"
+                },
+                "required": {
+                    "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "file"
+                    ]
+                },
+                "readOnly": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "externalDocs": {
+                    "$ref": "#/definitions/externalDocs"
+                },
+                "example": {}
+            },
+            "additionalProperties": false
+        },
+        "primitivesItems": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "string",
+                        "number",
+                        "integer",
+                        "boolean",
+                        "array"
+                    ]
+                },
+                "format": {
+                    "type": "string"
+                },
+                "items": {
+                    "$ref": "#/definitions/primitivesItems"
+                },
+                "collectionFormat": {
+                    "$ref": "#/definitions/collectionFormat"
+                },
+                "default": {
+                    "$ref": "#/definitions/default"
+                },
+                "maximum": {
+                    "$ref": "#/definitions/maximum"
+                },
+                "exclusiveMaximum": {
+                    "$ref": "#/definitions/exclusiveMaximum"
+                },
+                "minimum": {
+                    "$ref": "#/definitions/minimum"
+                },
+                "exclusiveMinimum": {
+                    "$ref": "#/definitions/exclusiveMinimum"
+                },
+                "maxLength": {
+                    "$ref": "#/definitions/maxLength"
+                },
+                "minLength": {
+                    "$ref": "#/definitions/minLength"
+                },
+                "pattern": {
+                    "$ref": "#/definitions/pattern"
+                },
+                "maxItems": {
+                    "$ref": "#/definitions/maxItems"
+                },
+                "minItems": {
+                    "$ref": "#/definitions/minItems"
+                },
+                "uniqueItems": {
+                    "$ref": "#/definitions/uniqueItems"
+                },
+                "enum": {
+                    "$ref": "#/definitions/enum"
+                },
+                "multipleOf": {
+                    "$ref": "#/definitions/multipleOf"
+                }
+            },
+            "patternProperties": {
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                }
+            }
+        },
+        "security": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/securityRequirement"
+            },
+            "uniqueItems": true
+        },
+        "securityRequirement": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                },
+                "uniqueItems": true
+            }
+        },
+        "xml": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "namespace": {
+                    "type": "string"
+                },
+                "prefix": {
+                    "type": "string"
+                },
+                "attribute": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "wrapped": {
+                    "type": "boolean",
+                    "default": false
+                }
+            },
+            "patternProperties": {
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                }
+            }
+        },
+        "tag": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "externalDocs": {
+                    "$ref": "#/definitions/externalDocs"
+                }
+            },
+            "patternProperties": {
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                }
+            }
+        },
+        "securityDefinitions": {
+            "type": "object",
+            "additionalProperties": {
+                "oneOf": [
+                    {
+                        "$ref": "#/definitions/basicAuthenticationSecurity"
+                    },
+                    {
+                        "$ref": "#/definitions/apiKeySecurity"
+                    },
+                    {
+                        "$ref": "#/definitions/oauth2ImplicitSecurity"
+                    },
+                    {
+                        "$ref": "#/definitions/oauth2PasswordSecurity"
+                    },
+                    {
+                        "$ref": "#/definitions/oauth2ApplicationSecurity"
+                    },
+                    {
+                        "$ref": "#/definitions/oauth2AccessCodeSecurity"
+                    }
+                ]
+            }
+        },
+        "basicAuthenticationSecurity": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type"
+            ],
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "basic"
+                    ]
+                },
+                "description": {
+                    "type": "string"
+                }
+            },
+            "patternProperties": {
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                }
+            }
+        },
+        "apiKeySecurity": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type",
+                "name",
+                "in"
+            ],
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "apiKey"
+                    ]
+                },
+                "name": {
+                    "type": "string"
+                },
+                "in": {
+                    "type": "string",
+                    "enum": [
+                        "header",
+                        "query"
+                    ]
+                },
+                "description": {
+                    "type": "string"
+                }
+            },
+            "patternProperties": {
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                }
+            }
+        },
+        "oauth2ImplicitSecurity": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type",
+                "flow",
+                "authorizationUrl"
+            ],
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "oauth2"
+                    ]
+                },
+                "flow": {
+                    "type": "string",
+                    "enum": [
+                        "implicit"
+                    ]
+                },
+                "scopes": {
+                    "$ref": "#/definitions/oauth2Scopes"
+                },
+                "authorizationUrl": {
+                    "type": "string",
+                    "format": "uri"
+                },
+                "description": {
+                    "type": "string"
+                }
+            },
+            "patternProperties": {
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                }
+            }
+        },
+        "oauth2PasswordSecurity": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type",
+                "flow",
+                "tokenUrl"
+            ],
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "oauth2"
+                    ]
+                },
+                "flow": {
+                    "type": "string",
+                    "enum": [
+                        "password"
+                    ]
+                },
+                "scopes": {
+                    "$ref": "#/definitions/oauth2Scopes"
+                },
+                "tokenUrl": {
+                    "type": "string",
+                    "format": "uri"
+                },
+                "description": {
+                    "type": "string"
+                }
+            },
+            "patternProperties": {
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                }
+            }
+        },
+        "oauth2ApplicationSecurity": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type",
+                "flow",
+                "tokenUrl"
+            ],
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "oauth2"
+                    ]
+                },
+                "flow": {
+                    "type": "string",
+                    "enum": [
+                        "application"
+                    ]
+                },
+                "scopes": {
+                    "$ref": "#/definitions/oauth2Scopes"
+                },
+                "tokenUrl": {
+                    "type": "string",
+                    "format": "uri"
+                },
+                "description": {
+                    "type": "string"
+                }
+            },
+            "patternProperties": {
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                }
+            }
+        },
+        "oauth2AccessCodeSecurity": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type",
+                "flow",
+                "authorizationUrl",
+                "tokenUrl"
+            ],
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "oauth2"
+                    ]
+                },
+                "flow": {
+                    "type": "string",
+                    "enum": [
+                        "accessCode"
+                    ]
+                },
+                "scopes": {
+                    "$ref": "#/definitions/oauth2Scopes"
+                },
+                "authorizationUrl": {
+                    "type": "string",
+                    "format": "uri"
+                },
+                "tokenUrl": {
+                    "type": "string",
+                    "format": "uri"
+                },
+                "description": {
+                    "type": "string"
+                }
+            },
+            "patternProperties": {
+                "^x-": {
+                    "$ref": "#/definitions/vendorExtension"
+                }
+            }
+        },
+        "oauth2Scopes": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "string"
+            }
+        },
+        "mediaTypeList": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/mimeType"
+            },
+            "uniqueItems": true
+        },
+        "parametersList": {
+            "type": "array",
+            "description": "The parameters needed to send a valid API call.",
+            "additionalItems": false,
+            "items": {
+                "oneOf": [
+                    {
+                        "$ref": "#/definitions/parameter"
+                    },
+                    {
+                        "$ref": "#/definitions/jsonReference"
+                    }
+                ]
+            },
+            "uniqueItems": true
+        },
+        "schemesList": {
+            "type": "array",
+            "description": "The transfer protocol of the API.",
+            "items": {
+                "type": "string",
+                "enum": [
+                    "http",
+                    "https",
+                    "ws",
+                    "wss"
+                ]
+            },
+            "uniqueItems": true
+        },
+        "collectionFormat": {
+            "type": "string",
+            "enum": [
+                "csv",
+                "ssv",
+                "tsv",
+                "pipes"
+            ],
+            "default": "csv"
+        },
+        "collectionFormatWithMulti": {
+            "type": "string",
+            "enum": [
+                "csv",
+                "ssv",
+                "tsv",
+                "pipes",
+                "multi"
+            ],
+            "default": "csv"
+        },
+        "title": {
+            "$ref": "http://json-schema.org/draft-04/schema#/properties/title"
+        },
+        "description": {
+            "$ref": "http://json-schema.org/draft-04/schema#/properties/description"
+        },
+        "default": {
+            "$ref": "http://json-schema.org/draft-04/schema#/properties/default"
+        },
+        "multipleOf": {
+            "$ref": "http://json-schema.org/draft-04/schema#/properties/multipleOf"
+        },
+        "maximum": {
+            "$ref": "http://json-schema.org/draft-04/schema#/properties/maximum"
+        },
+        "exclusiveMaximum": {
+            "$ref": "http://json-schema.org/draft-04/schema#/properties/exclusiveMaximum"
+        },
+        "minimum": {
+            "$ref": "http://json-schema.org/draft-04/schema#/properties/minimum"
+        },
+        "exclusiveMinimum": {
+            "$ref": "http://json-schema.org/draft-04/schema#/properties/exclusiveMinimum"
+        },
+        "maxLength": {
+            "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveInteger"
+        },
+        "minLength": {
+            "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveIntegerDefault0"
+        },
+        "pattern": {
+            "$ref": "http://json-schema.org/draft-04/schema#/properties/pattern"
+        },
+        "maxItems": {
+            "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveInteger"
+        },
+        "minItems": {
+            "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveIntegerDefault0"
+        },
+        "uniqueItems": {
+            "$ref": "http://json-schema.org/draft-04/schema#/properties/uniqueItems"
+        },
+        "enum": {
+            "$ref": "http://json-schema.org/draft-04/schema#/properties/enum"
+        },
+        "jsonReference": {
+            "type": "object",
+            "required": [
+                "$ref"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "$ref": {
+                    "type": "string"
+                }
+            }
+        },
+        "X42cLocalStrategy": {
+            "type": "object",
+            "properties": {
+                "x-42c-strategy": {
+                    "$ref": "#/definitions/X42cStrategy"
+                }
+            }
+        },
+        "X42cRequestStrategies": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "operations": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "get",
+                                "put",
+                                "post",
+                                "delete",
+                                "options",
+                                "head",
+                                "patch",
+                                "trace"
+                            ]
+                        }
+                    },
+                    "x-42c-strategy": {
+                        "$ref": "#/definitions/X42cStrategy"
+                    }
+                }
+            }
+        },
+        "X42cResponseStrategies": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "responses": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "pattern": "^([1-5](?:\\d{2}|XX)|default)$"
+                        }
+                    },
+                    "x-42c-strategy": {
+                        "$ref": "#/definitions/X42cStrategy"
+                    }
+                }
+            }
+        },
+        "X42cStrategy": {
+            "type": "object",
+            "properties": {
+                "protections": {
+                    "type": "array",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/definitions/X42cDeactivateAllowList"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-access-control-based-on-ip-range_0.1"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-forward-client-certificate_0.1"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-ip-allowlist_0.1"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-jws-validation_0.1"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-request-allowlist_0.1"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-request-limiter-based-on-ip_0.1"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-request-limiter_0.1"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-response-allowlist_0.1"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-security-headers_0.1"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-set-client-ip_0.1"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-jwt-validation-ec_0.1"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-jwt-validation-ec_0.2"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-jwt-validation-ec_0.3"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-jwt-validation-hmac_0.1"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-jwt-validation-hmac_0.2"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-jwt-validation-hmac_0.3"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-jwt-validation-no-sig-check_0.1"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-jwt-validation-no-sig-check_0.3"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-jwt-validation-rsa-no-sig-check_0.1"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-jwt-validation-rsa-no-sig-check_0.3"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-jwt-validation-rsa_0.1"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-jwt-validation-rsa_0.2"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-jwt-validation-rsa_0.3"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-jwt-validation_0.1"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-jwt-validation_0.2"
+                            },
+                            {
+                                "$ref": "#/definitions/x-42c-jwt-validation_0.3"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "X42cNoAuthentication": {
+            "type": "boolean",
+            "default": false
+        },
+        "X42cMTLS": {
+            "type": "boolean",
+            "default": false
+        },
+        "X42cSensitivity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5,
+            "default": 3
+        },
+        "X42cSensitivityData": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5,
+            "default": 3
+        },
+        "X42cSkipIssues": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "X42cWeightContent": {
+            "type": "integer",
+            "default": 80,
+            "maximum": 100,
+            "minimum": 0
+        },
+        "X42cWeightHeader": {
+            "type": "integer",
+            "default": 20,
+            "maximum": 100,
+            "minimum": 0
+        },
+        "X42cWeightSuccess": {
+            "type": "integer",
+            "default": 70,
+            "maximum": 100,
+            "minimum": 0
+        },
+        "X42cWeightFail": {
+            "type": "integer",
+            "default": 30,
+            "maximum": 100,
+            "minimum": 0
+        },
+        "X42cWeightInput": {
+            "type": "integer",
+            "default": 80,
+            "maximum": 100,
+            "minimum": 0
+        },
+        "X42cWeightOutput": {
+            "type": "integer",
+            "default": 20,
+            "maximum": 100,
+            "minimum": 0
+        },
+        "X42cWeightParameters": {
+            "type": "integer",
+            "default": 50,
+            "maximum": 100,
+            "minimum": 0
+        },
+        "X42cWeightRequestBody": {
+            "type": "integer",
+            "default": 50,
+            "maximum": 100,
+            "minimum": 0
+        },
+        "X42cSample": {
+            "additionalProperties": true,
+            "additionalItems": true
+        },
+        "X42cDeactivateAllowList": {
+            "type": "object",
+            "required": [
+                "x-42c-deactivate-allowlist"
+            ],
+            "properties": {
+                "x-42c-deactivate-allowlist": {
+                    "type": "boolean",
+                    "default": false
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-access-control-based-on-ip-range_0.1": {
+            "type": "object",
+            "required": [
+                "x-42c-access-control-based-on-ip-range_0.1"
+            ],
+            "properties": {
+                "x-42c-access-control-based-on-ip-range_0.1": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "ip.range.list"
+                    ],
+                    "properties": {
+                        "ip.range.list": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "minItems": 1,
+                            "maxItems": 10,
+                            "additionalItems": false,
+                            "description": "IP Range list"
+                        }
+                    },
+                    "description": "Access Control based on IP"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-forward-client-certificate_0.1": {
+            "type": "object",
+            "required": [
+                "x-42c-forward-client-certificate_0.1"
+            ],
+            "properties": {
+                "x-42c-forward-client-certificate_0.1": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "backend.header.name"
+                    ],
+                    "properties": {
+                        "backend.header.name": {
+                            "type": "string",
+                            "pattern": "",
+                            "minLength": 1,
+                            "maxLength": 9999,
+                            "description": "Client certificate"
+                        }
+                    },
+                    "description": "Forward client certificate to backend service"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-ip-allowlist_0.1": {
+            "type": "object",
+            "required": [
+                "x-42c-ip-allowlist_0.1"
+            ],
+            "properties": {
+                "x-42c-ip-allowlist_0.1": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "ip.allow.list"
+                    ],
+                    "properties": {
+                        "ip.allow.list": {
+                            "type": "array",
+                            "additionalItems": false,
+                            "items": {
+                                "type": "string",
+                                "pattern": "[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}",
+                                "minLength": 7,
+                                "maxLength": 15
+                            }
+                        }
+                    },
+                    "description": "Automatic allowlist protection based on the client ip"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-jws-validation_0.1": {
+            "type": "object",
+            "required": [
+                "x-42c-jws-validation_0.1"
+            ],
+            "properties": {
+                "x-42c-jws-validation_0.1": {
+                    "type": "object",
+                    "properties": {
+                        "header.name": {
+                            "type": "string",
+                            "pattern": "^[0-9a-zA-Z\\-_]{1,100}$",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "Header name"
+                        },
+                        "jp.signed.data": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "Signed data"
+                        },
+                        "jwk.envvar": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "JWK env variable name",
+                            "default": "JWK"
+                        },
+                        "authorized.algorithms": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "HS256",
+                                    "HS384",
+                                    "HS512",
+                                    "RS256",
+                                    "RS384",
+                                    "RS512",
+                                    "PS256",
+                                    "PS384",
+                                    "PS512",
+                                    "ES256",
+                                    "ES384",
+                                    "ES512"
+                                ]
+                            },
+                            "description": "Authorized algorithms"
+                        },
+                        "jp.jose.header.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer jose header schema"
+                        },
+                        "jose.header.schema": {
+                            "type": "object",
+                            "description": "JOSE header schema"
+                        }
+                    },
+                    "required": [
+                        "header.name",
+                        "authorized.algorithms"
+                    ],
+                    "additionalProperties": false,
+                    "description": "JWS validation"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-request-allowlist_0.1": {
+            "type": "object",
+            "required": [
+                "x-42c-request-allowlist_0.1"
+            ],
+            "properties": {
+                "x-42c-request-allowlist_0.1": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {},
+                    "description": "Automatic allowlist protection on the incoming request sent by the client"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-request-limiter-based-on-ip_0.1": {
+            "type": "object",
+            "required": [
+                "x-42c-request-limiter-based-on-ip_0.1"
+            ],
+            "properties": {
+                "x-42c-request-limiter-based-on-ip_0.1": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "hits",
+                        "window"
+                    ],
+                    "properties": {
+                        "hits": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 999999999,
+                            "description": "Max request number"
+                        },
+                        "window": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 999999999,
+                            "description": "Window"
+                        },
+                        "burst.enabled": {
+                            "type": "boolean",
+                            "description": "Activate 'burst'",
+                            "default": false
+                        },
+                        "burst.hits": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 999999999,
+                            "description": "Max burst request number",
+                            "default": 5
+                        },
+                        "burst.window": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 999999999,
+                            "description": "Burst window size",
+                            "default": 2
+                        },
+                        "cache.name": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 255,
+                            "pattern": "^[a-zA-Z0-9_]{1,255}$",
+                            "description": "Cache name",
+                            "default": "default"
+                        },
+                        "cache.type": {
+                            "type": "string",
+                            "enum": [
+                                "MEMORY"
+                            ],
+                            "description": "Cache type",
+                            "default": "MEMORY"
+                        },
+                        "add.retry_after": {
+                            "type": "boolean",
+                            "description": "Add 'Retry-After' header",
+                            "default": false
+                        }
+                    },
+                    "description": "Request limiter"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-request-limiter_0.1": {
+            "type": "object",
+            "required": [
+                "x-42c-request-limiter_0.1"
+            ],
+            "properties": {
+                "x-42c-request-limiter_0.1": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "key"
+                    ],
+                    "properties": {
+                        "hits": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 999999999,
+                            "description": "Max request number"
+                        },
+                        "window": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 999999999,
+                            "description": "Window"
+                        },
+                        "burst.enabled": {
+                            "type": "boolean",
+                            "description": "Activate 'burst'",
+                            "default": false
+                        },
+                        "burst.hits": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 999999999,
+                            "description": "Max burst request number",
+                            "default": 5
+                        },
+                        "burst.window": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 999999999,
+                            "description": "Burst window size",
+                            "default": 2
+                        },
+                        "cache.name": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 255,
+                            "pattern": "^[a-zA-Z0-9_]{1,255}$",
+                            "description": "Cache name",
+                            "default": "default"
+                        },
+                        "cache.type": {
+                            "type": "string",
+                            "enum": [
+                                "MEMORY"
+                            ],
+                            "description": "Cache type",
+                            "default": "MEMORY"
+                        },
+                        "key": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 255,
+                            "pattern": "^[a-zA-Z0-9_]{1,255}$",
+                            "description": "Key"
+                        },
+                        "add.retry_after": {
+                            "type": "boolean",
+                            "description": "Add 'Retry-After' header",
+                            "default": false
+                        }
+                    },
+                    "description": "Request limiter"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-response-allowlist_0.1": {
+            "type": "object",
+            "required": [
+                "x-42c-response-allowlist_0.1"
+            ],
+            "properties": {
+                "x-42c-response-allowlist_0.1": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {},
+                    "description": "Automatic allowlist protection on the response sent by the backend service"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-security-headers_0.1": {
+            "type": "object",
+            "required": [
+                "x-42c-security-headers_0.1"
+            ],
+            "properties": {
+                "x-42c-security-headers_0.1": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "mode"
+                    ],
+                    "properties": {
+                        "hsts.max_age": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 999999999,
+                            "description": "HSTS max age",
+                            "default": 3600
+                        },
+                        "csp.policy": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 1000,
+                            "description": "Content Security Policy",
+                            "default": "default-src: 'self'; upgrade-insecure-requests; referrer no-referrer"
+                        },
+                        "mode": {
+                            "type": "string",
+                            "enum": [
+                                "add-only",
+                                "add-replace"
+                            ],
+                            "description": "Mode",
+                            "default": "add-only"
+                        },
+                        "remove.headers": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "minItems": 0,
+                            "maxItems": 99,
+                            "additionalItems": false,
+                            "description": "Headers to remove",
+                            "default": [
+                                "X-Powered-By",
+                                "X-AspNet-Version",
+                                "X-AspNetMvc-Version"
+                            ]
+                        }
+                    },
+                    "description": "Add HTTP security headers in response"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-set-client-ip_0.1": {
+            "type": "object",
+            "required": [
+                "x-42c-set-client-ip_0.1"
+            ],
+            "properties": {
+                "x-42c-set-client-ip_0.1": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "ip.header.name",
+                        "ip.header.mandatory"
+                    ],
+                    "properties": {
+                        "ip.header.name": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z_\\-]+$",
+                            "description": "IP Header name"
+                        },
+                        "ip.header.mandatory": {
+                            "type": "boolean",
+                            "description": "IP Header must be present ",
+                            "default": true
+                        },
+                        "remote.ip.allowlist": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "minLength": 10,
+                                "maxLength": 255
+                            },
+                            "maxItems": 10,
+                            "description": "IPs/Network addresses of trusted network frontends",
+                            "default": []
+                        }
+                    },
+                    "description": "Set Client IP"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-jwt-validation-ec_0.1": {
+            "type": "object",
+            "required": [
+                "x-42c-jwt-validation-ec_0.1"
+            ],
+            "properties": {
+                "x-42c-jwt-validation-ec_0.1": {
+                    "type": "object",
+                    "properties": {
+                        "header.name": {
+                            "type": "string",
+                            "pattern": "^[0-9a-zA-Z\\-_]{1,100}$",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "Header name"
+                        },
+                        "jwk.envvar": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "JWK env variable name",
+                            "default": "JWK"
+                        },
+                        "forward.jwt": {
+                            "type": "boolean",
+                            "description": "Forward the JWT to backend",
+                            "default": true
+                        },
+                        "lifetime": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 99999999,
+                            "description": "Token lifetime (seconds)",
+                            "default": 5
+                        },
+                        "drift": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 86400,
+                            "description": "Drift time (in seconds)",
+                            "default": 10
+                        },
+                        "jti.timeout": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 99999999,
+                            "description": "JTI timeout (seconds)",
+                            "default": 86400
+                        },
+                        "jp.claims.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer claims schema"
+                        },
+                        "claims.schema": {
+                            "type": "object",
+                            "description": "Claims schema"
+                        },
+                        "jp.jose.header.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer jose header schema"
+                        },
+                        "jose.header.schema": {
+                            "type": "object",
+                            "description": "JOSE header schema"
+                        }
+                    },
+                    "required": [
+                        "header.name"
+                    ],
+                    "additionalProperties": false,
+                    "description": "JWT Elliptic Curve validation"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-jwt-validation-ec_0.2": {
+            "type": "object",
+            "required": [
+                "x-42c-jwt-validation-ec_0.2"
+            ],
+            "properties": {
+                "x-42c-jwt-validation-ec_0.2": {
+                    "type": "object",
+                    "properties": {
+                        "header.name": {
+                            "type": "string",
+                            "pattern": "^[0-9a-zA-Z\\-_]{1,100}$",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "Header name"
+                        },
+                        "allow.basic.value": {
+                            "type": "boolean",
+                            "description": "Is Basic or Digest Allowed",
+                            "default": false
+                        },
+                        "jwk.envvar": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "JWK env variable name",
+                            "default": "JWK"
+                        },
+                        "jwks.uri": {
+                            "schema": {
+                                "type": "string",
+                                "pattern": "((([A-Za-z]{3,9}:(?:\\/\\/)?)(?:[-;:&=\\+\\$,\\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\\+\\$,\\w]+@)[A-Za-z0-9.-]+)((?:\\/[\\+~%/.\\w-_]*)?\\??(?:[-\\+=&;%@.\\w_]*)#?(?:[.\\!/\\w]*))?)",
+                                "minLength": 1,
+                                "maxLength": 500
+                            },
+                            "description": "JWKS endpoint"
+                        },
+                        "forward.jwt": {
+                            "type": "boolean",
+                            "description": "Forward the JWT to backend",
+                            "default": true
+                        },
+                        "lifetime": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 99999999,
+                            "description": "Token lifetime (seconds)",
+                            "default": 5
+                        },
+                        "drift": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 86400,
+                            "description": "Drift time (in seconds)",
+                            "default": 10
+                        },
+                        "jti.timeout": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 99999999,
+                            "description": "JTI timeout (seconds)",
+                            "default": 86400
+                        },
+                        "jp.claims.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer claims schema"
+                        },
+                        "claims.schema": {
+                            "type": "object",
+                            "description": "Claims schema"
+                        },
+                        "jp.jose.header.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer jose header schema"
+                        },
+                        "jose.header.schema": {
+                            "type": "object",
+                            "description": "JOSE header schema"
+                        },
+                        "jwk.cache.timeout": {
+                            "type": "number",
+                            "minimum": 60,
+                            "maximum": 28000,
+                            "description": "Cache expiration time for JWK entry",
+                            "default": 3600
+                        }
+                    },
+                    "required": [
+                        "header.name"
+                    ],
+                    "additionalProperties": false,
+                    "description": "JWT Elliptic Curve validation"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-jwt-validation-ec_0.3": {
+            "type": "object",
+            "required": [
+                "x-42c-jwt-validation-ec_0.3"
+            ],
+            "properties": {
+                "x-42c-jwt-validation-ec_0.3": {
+                    "type": "object",
+                    "properties": {
+                        "header.name": {
+                            "type": "string",
+                            "pattern": "^[0-9a-zA-Z\\-_]{1,100}$",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "Header name"
+                        },
+                        "allow.basic.value": {
+                            "type": "boolean",
+                            "description": "Is Basic or Digest Allowed",
+                            "default": false
+                        },
+                        "jwk.envvar": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "JWK env variable name",
+                            "default": "JWK"
+                        },
+                        "jwks.uri": {
+                            "schema": {
+                                "type": "string",
+                                "pattern": "^(?:https?://\\w+(?:[\\-.]\\w+)*(?::\\d+)?/(?:\\.?\\w[\\w\\-./+%]*)?(?:[?;][\\w\\-./+%&=;,@]*)?)$",
+                                "minLength": 9,
+                                "maxLength": 500
+                            },
+                            "description": "JWKS endpoint"
+                        },
+                        "jwks.proxy": {
+                            "schema": {
+                                "type": "string",
+                                "pattern": "^(?:\\w+(?:[\\-.]\\w+)*:\\d+)$",
+                                "minLength": 3,
+                                "maxLength": 250
+                            },
+                            "description": "JWKS connect proxy"
+                        },
+                        "forward.jwt": {
+                            "type": "boolean",
+                            "description": "Forward the JWT to backend",
+                            "default": true
+                        },
+                        "lifetime": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 99999999,
+                            "description": "Token lifetime (seconds)",
+                            "default": 5
+                        },
+                        "drift": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 86400,
+                            "description": "Drift time (in seconds)",
+                            "default": 10
+                        },
+                        "jti.timeout": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 99999999,
+                            "description": "JTI timeout (seconds)",
+                            "default": 86400
+                        },
+                        "jp.claims.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer claims schema"
+                        },
+                        "claims.schema": {
+                            "type": "object",
+                            "description": "Claims schema"
+                        },
+                        "jp.jose.header.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer jose header schema"
+                        },
+                        "jose.header.schema": {
+                            "type": "object",
+                            "description": "JOSE header schema"
+                        },
+                        "jwk.cache.timeout": {
+                            "type": "number",
+                            "minimum": 60,
+                            "maximum": 28000,
+                            "description": "Cache expiration time for JWK entry",
+                            "default": 3600
+                        }
+                    },
+                    "required": [
+                        "header.name"
+                    ],
+                    "additionalProperties": false,
+                    "description": "JWT Elliptic Curve validation"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-jwt-validation-hmac_0.1": {
+            "type": "object",
+            "required": [
+                "x-42c-jwt-validation-hmac_0.1"
+            ],
+            "properties": {
+                "x-42c-jwt-validation-hmac_0.1": {
+                    "type": "object",
+                    "properties": {
+                        "header.name": {
+                            "type": "string",
+                            "pattern": "^[0-9a-zA-Z\\-_]{1,100}$",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "Header name"
+                        },
+                        "jwk.envvar": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "JWK env variable name",
+                            "default": "JWK"
+                        },
+                        "forward.jwt": {
+                            "type": "boolean",
+                            "description": "Forward the JWT to backend",
+                            "default": true
+                        },
+                        "lifetime": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 99999999,
+                            "description": "Token lifetime (seconds)",
+                            "default": 5
+                        },
+                        "drift": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 86400,
+                            "description": "Drift time (in seconds)",
+                            "default": 10
+                        },
+                        "jti.timeout": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 99999999,
+                            "description": "JTI timeout (seconds)",
+                            "default": 86400
+                        },
+                        "jp.claims.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer claims schema"
+                        },
+                        "claims.schema": {
+                            "type": "object",
+                            "description": "Claims schema"
+                        },
+                        "jp.jose.header.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer jose header schema"
+                        },
+                        "jose.header.schema": {
+                            "type": "object",
+                            "description": "JOSE header schema"
+                        }
+                    },
+                    "required": [
+                        "header.name"
+                    ],
+                    "additionalProperties": false,
+                    "description": "JWT HMAC validation"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-jwt-validation-hmac_0.2": {
+            "type": "object",
+            "required": [
+                "x-42c-jwt-validation-hmac_0.2"
+            ],
+            "properties": {
+                "x-42c-jwt-validation-hmac_0.2": {
+                    "type": "object",
+                    "properties": {
+                        "header.name": {
+                            "type": "string",
+                            "pattern": "^[0-9a-zA-Z\\-_]{1,100}$",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "Header name"
+                        },
+                        "allow.basic.value": {
+                            "type": "boolean",
+                            "description": "Is Basic or Digest value Allowed",
+                            "default": false
+                        },
+                        "jwk.envvar": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "JWK env variable name",
+                            "default": "JWK"
+                        },
+                        "jwks.uri": {
+                            "schema": {
+                                "type": "string",
+                                "pattern": "((([A-Za-z]{3,9}:(?:\\/\\/)?)(?:[-;:&=\\+\\$,\\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\\+\\$,\\w]+@)[A-Za-z0-9.-]+)((?:\\/[\\+~%/.\\w-_]*)?\\??(?:[-\\+=&;%@.\\w_]*)#?(?:[.\\!/\\w]*))?)",
+                                "minLength": 1,
+                                "maxLength": 500
+                            },
+                            "description": "JWKS endpoint"
+                        },
+                        "forward.jwt": {
+                            "type": "boolean",
+                            "description": "Forward the JWT to backend",
+                            "default": true
+                        },
+                        "lifetime": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 99999999,
+                            "description": "Token lifetime (seconds)",
+                            "default": 5
+                        },
+                        "drift": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 86400,
+                            "description": "Drift time (in seconds)",
+                            "default": 10
+                        },
+                        "jti.timeout": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 99999999,
+                            "description": "JTI timeout (seconds)",
+                            "default": 86400
+                        },
+                        "jp.claims.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer claims schema"
+                        },
+                        "claims.schema": {
+                            "type": "object",
+                            "description": "Claims schema"
+                        },
+                        "jp.jose.header.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer jose header schema"
+                        },
+                        "jose.header.schema": {
+                            "type": "object",
+                            "description": "JOSE header schema"
+                        },
+                        "jwk.cache.timeout": {
+                            "type": "number",
+                            "minimum": 60,
+                            "maximum": 28000,
+                            "description": "Cache expiration time for JWK entry",
+                            "default": 3600
+                        }
+                    },
+                    "required": [
+                        "header.name"
+                    ],
+                    "additionalProperties": false,
+                    "description": "JWT HMAC validation"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-jwt-validation-hmac_0.3": {
+            "type": "object",
+            "required": [
+                "x-42c-jwt-validation-hmac_0.3"
+            ],
+            "properties": {
+                "x-42c-jwt-validation-hmac_0.3": {
+                    "type": "object",
+                    "properties": {
+                        "header.name": {
+                            "type": "string",
+                            "pattern": "^[0-9a-zA-Z\\-_]{1,100}$",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "Header name"
+                        },
+                        "allow.basic.value": {
+                            "type": "boolean",
+                            "description": "Is Basic or Digest value Allowed",
+                            "default": false
+                        },
+                        "jwk.envvar": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "JWK env variable name",
+                            "default": "JWK"
+                        },
+                        "jwks.uri": {
+                            "schema": {
+                                "type": "string",
+                                "pattern": "^(?:https?://\\w+(?:[\\-.]\\w+)*(?::\\d+)?/(?:\\.?\\w[\\w\\-./+%]*)?(?:[?;][\\w\\-./+%&=;,@]*)?)$",
+                                "minLength": 9,
+                                "maxLength": 500
+                            },
+                            "description": "JWKS endpoint"
+                        },
+                        "jwks.proxy": {
+                            "schema": {
+                                "type": "string",
+                                "pattern": "^(?:\\w+(?:[\\-.]\\w+)*:\\d+)$",
+                                "minLength": 3,
+                                "maxLength": 250
+                            },
+                            "description": "JWKS connect proxy"
+                        },
+                        "forward.jwt": {
+                            "type": "boolean",
+                            "description": "Forward the JWT to backend",
+                            "default": true
+                        },
+                        "lifetime": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 99999999,
+                            "description": "Token lifetime (seconds)",
+                            "default": 5
+                        },
+                        "drift": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 86400,
+                            "description": "Drift time (in seconds)",
+                            "default": 10
+                        },
+                        "jti.timeout": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 99999999,
+                            "description": "JTI timeout (seconds)",
+                            "default": 86400
+                        },
+                        "jp.claims.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer claims schema"
+                        },
+                        "claims.schema": {
+                            "type": "object",
+                            "description": "Claims schema"
+                        },
+                        "jp.jose.header.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer jose header schema"
+                        },
+                        "jose.header.schema": {
+                            "type": "object",
+                            "description": "JOSE header schema"
+                        },
+                        "jwk.cache.timeout": {
+                            "type": "number",
+                            "minimum": 60,
+                            "maximum": 28000,
+                            "description": "Cache expiration time for JWK entry",
+                            "default": 3600
+                        }
+                    },
+                    "required": [
+                        "header.name"
+                    ],
+                    "additionalProperties": false,
+                    "description": "JWT HMAC validation"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-jwt-validation-no-sig-check_0.1": {
+            "type": "object",
+            "required": [
+                "x-42c-jwt-validation-no-sig-check_0.1"
+            ],
+            "properties": {
+                "x-42c-jwt-validation-no-sig-check_0.1": {
+                    "type": "object",
+                    "properties": {
+                        "header.name": {
+                            "type": "string",
+                            "pattern": "^[0-9a-zA-Z\\-_]{1,100}$",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "Header name"
+                        },
+                        "forward.jwt": {
+                            "type": "boolean",
+                            "description": "Forward the JWT to backend",
+                            "default": true
+                        },
+                        "lifetime": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 99999999,
+                            "description": "Token lifetime (seconds)",
+                            "default": 5
+                        },
+                        "drift": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 86400,
+                            "description": "Drift time (in seconds)",
+                            "default": 10
+                        },
+                        "authorized.algorithms": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "HS256",
+                                    "HS384",
+                                    "HS512",
+                                    "RS256",
+                                    "RS384",
+                                    "RS512",
+                                    "PS256",
+                                    "PS384",
+                                    "PS512",
+                                    "ES256",
+                                    "ES384",
+                                    "ES512"
+                                ]
+                            },
+                            "description": "Authorized algorithms"
+                        },
+                        "jti.timeout": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 99999999,
+                            "description": "JTI timeout (seconds)"
+                        },
+                        "jp.claims.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer claims schema"
+                        },
+                        "claims.schema": {
+                            "type": "object",
+                            "description": "Claims schema"
+                        },
+                        "jp.jose.header.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer jose header schema"
+                        },
+                        "jose.header.schema": {
+                            "type": "object",
+                            "description": "JOSE header schema"
+                        }
+                    },
+                    "required": [
+                        "header.name",
+                        "authorized.algorithms"
+                    ],
+                    "additionalProperties": false,
+                    "description": "JWT validation (no signature check)"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-jwt-validation-no-sig-check_0.3": {
+            "type": "object",
+            "required": [
+                "x-42c-jwt-validation-no-sig-check_0.3"
+            ],
+            "properties": {
+                "x-42c-jwt-validation-no-sig-check_0.3": {
+                    "type": "object",
+                    "properties": {
+                        "header.name": {
+                            "type": "string",
+                            "pattern": "^[0-9a-zA-Z\\-_]{1,100}$",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "Header name"
+                        },
+                        "forward.jwt": {
+                            "type": "boolean",
+                            "description": "Forward the JWT to backend",
+                            "default": true
+                        },
+                        "lifetime": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 99999999,
+                            "description": "Token lifetime (seconds)",
+                            "default": 5
+                        },
+                        "drift": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 86400,
+                            "description": "Drift time (in seconds)",
+                            "default": 10
+                        },
+                        "authorized.algorithms": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "HS256",
+                                    "HS384",
+                                    "HS512",
+                                    "RS256",
+                                    "RS384",
+                                    "RS512",
+                                    "PS256",
+                                    "PS384",
+                                    "PS512",
+                                    "ES256",
+                                    "ES384",
+                                    "ES512"
+                                ]
+                            },
+                            "description": "Authorized algorithms"
+                        },
+                        "jti.timeout": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 99999999,
+                            "description": "JTI timeout (seconds)"
+                        },
+                        "jp.claims.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer claims schema"
+                        },
+                        "claims.schema": {
+                            "type": "object",
+                            "description": "Claims schema"
+                        },
+                        "jp.jose.header.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer jose header schema"
+                        },
+                        "jose.header.schema": {
+                            "type": "object",
+                            "description": "JOSE header schema"
+                        }
+                    },
+                    "required": [
+                        "header.name",
+                        "authorized.algorithms"
+                    ],
+                    "additionalProperties": false,
+                    "description": "JWT validation (no signature check)"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-jwt-validation-rsa-no-sig-check_0.1": {
+            "type": "object",
+            "required": [
+                "x-42c-jwt-validation-rsa-no-sig-check_0.1"
+            ],
+            "properties": {
+                "x-42c-jwt-validation-rsa-no-sig-check_0.1": {
+                    "type": "object",
+                    "properties": {
+                        "header.name": {
+                            "type": "string",
+                            "pattern": "^[0-9a-zA-Z\\-_]{1,100}$",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "Header name"
+                        },
+                        "forward.jwt": {
+                            "type": "boolean",
+                            "description": "Forward the JWT to backend",
+                            "default": true
+                        },
+                        "lifetime": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 99999999,
+                            "description": "Token lifetime (seconds)",
+                            "default": 5
+                        },
+                        "drift": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 86400,
+                            "description": "Drift time (in seconds)",
+                            "default": 10
+                        },
+                        "jti.timeout": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 99999999,
+                            "description": "JTI timeout (seconds)",
+                            "default": 86400
+                        },
+                        "jp.claims.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer claims schema"
+                        },
+                        "claims.schema": {
+                            "type": "object",
+                            "description": "Claims schema"
+                        },
+                        "jp.jose.header.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer jose header schema"
+                        },
+                        "jose.header.schema": {
+                            "type": "object",
+                            "description": "JOSE header schema"
+                        }
+                    },
+                    "required": [
+                        "header.name"
+                    ],
+                    "additionalProperties": false,
+                    "description": "JWT RSA validation (no sig check)"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-jwt-validation-rsa-no-sig-check_0.3": {
+            "type": "object",
+            "required": [
+                "x-42c-jwt-validation-rsa-no-sig-check_0.3"
+            ],
+            "properties": {
+                "x-42c-jwt-validation-rsa-no-sig-check_0.3": {
+                    "type": "object",
+                    "properties": {
+                        "header.name": {
+                            "type": "string",
+                            "pattern": "^[0-9a-zA-Z\\-_]{1,100}$",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "Header name"
+                        },
+                        "forward.jwt": {
+                            "type": "boolean",
+                            "description": "Forward the JWT to backend",
+                            "default": true
+                        },
+                        "lifetime": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 99999999,
+                            "description": "Token lifetime (seconds)",
+                            "default": 5
+                        },
+                        "drift": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 86400,
+                            "description": "Drift time (in seconds)",
+                            "default": 10
+                        },
+                        "jti.timeout": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 99999999,
+                            "description": "JTI timeout (seconds)",
+                            "default": 86400
+                        },
+                        "jp.claims.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer claims schema"
+                        },
+                        "claims.schema": {
+                            "type": "object",
+                            "description": "Claims schema"
+                        },
+                        "jp.jose.header.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer jose header schema"
+                        },
+                        "jose.header.schema": {
+                            "type": "object",
+                            "description": "JOSE header schema"
+                        }
+                    },
+                    "required": [
+                        "header.name"
+                    ],
+                    "additionalProperties": false,
+                    "description": "JWT RSA validation (no sig check)"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-jwt-validation-rsa_0.1": {
+            "type": "object",
+            "required": [
+                "x-42c-jwt-validation-rsa_0.1"
+            ],
+            "properties": {
+                "x-42c-jwt-validation-rsa_0.1": {
+                    "type": "object",
+                    "properties": {
+                        "header.name": {
+                            "type": "string",
+                            "pattern": "^[0-9a-zA-Z\\-_]{1,100}$",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "Header name"
+                        },
+                        "jwk.envvar": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "JWK env variable name",
+                            "default": "JWK"
+                        },
+                        "forward.jwt": {
+                            "type": "boolean",
+                            "description": "Forward the JWT to backend",
+                            "default": true
+                        },
+                        "lifetime": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 99999999,
+                            "description": "Token lifetime (seconds)",
+                            "default": 5
+                        },
+                        "drift": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 86400,
+                            "description": "Drift time (in seconds)",
+                            "default": 10
+                        },
+                        "jti.timeout": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 99999999,
+                            "description": "JTI timeout (seconds)",
+                            "default": 86400
+                        },
+                        "jp.claims.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer claims schema"
+                        },
+                        "claims.schema": {
+                            "type": "object",
+                            "description": "Claims schema"
+                        },
+                        "jp.jose.header.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer jose header schema"
+                        },
+                        "jose.header.schema": {
+                            "type": "object",
+                            "description": "JOSE header schema"
+                        }
+                    },
+                    "required": [
+                        "header.name"
+                    ],
+                    "additionalProperties": false,
+                    "description": "JWT RSA validation"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-jwt-validation-rsa_0.2": {
+            "type": "object",
+            "required": [
+                "x-42c-jwt-validation-rsa_0.2"
+            ],
+            "properties": {
+                "x-42c-jwt-validation-rsa_0.2": {
+                    "type": "object",
+                    "properties": {
+                        "header.name": {
+                            "type": "string",
+                            "pattern": "^[0-9a-zA-Z\\-_]{1,100}$",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "Header name",
+                            "default": "Authorization"
+                        },
+                        "allow.basic.value": {
+                            "type": "boolean",
+                            "description": "Is Basic or Digest value allowed",
+                            "default": false
+                        },
+                        "jwk.envvar": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "JWK env variable name",
+                            "default": "JWK"
+                        },
+                        "jwks.uri": {
+                            "schema": {
+                                "type": "string",
+                                "pattern": "((([A-Za-z]{3,9}:(?:\\/\\/)?)(?:[-;:&=\\+\\$,\\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\\+\\$,\\w]+@)[A-Za-z0-9.-]+)((?:\\/[\\+~%/.\\w-_]*)?\\??(?:[-\\+=&;%@.\\w_]*)#?(?:[.\\!/\\w]*))?)",
+                                "minLength": 1,
+                                "maxLength": 500
+                            },
+                            "description": "JWKS endpoint"
+                        },
+                        "forward.jwt": {
+                            "type": "boolean",
+                            "description": "Forward the JWT to backend",
+                            "default": true
+                        },
+                        "lifetime": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 99999999,
+                            "description": "Token lifetime (seconds)",
+                            "default": 5
+                        },
+                        "drift": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 86400,
+                            "description": "Drift time (in seconds)",
+                            "default": 10
+                        },
+                        "jti.timeout": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 99999999,
+                            "description": "JTI timeout (seconds)",
+                            "default": 86400
+                        },
+                        "jp.claims.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer claims schema"
+                        },
+                        "claims.schema": {
+                            "type": "object",
+                            "description": "Claims schema"
+                        },
+                        "jp.jose.header.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer jose header schema"
+                        },
+                        "jose.header.schema": {
+                            "type": "object",
+                            "description": "JOSE header schema"
+                        },
+                        "jwk.cache.timeout": {
+                            "type": "number",
+                            "minimum": 60,
+                            "maximum": 28000,
+                            "description": "Cache expiration time for JWK entry",
+                            "default": 3600
+                        }
+                    },
+                    "required": [
+                        "header.name"
+                    ],
+                    "additionalProperties": false,
+                    "description": "JWT RSA validation"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-jwt-validation-rsa_0.3": {
+            "type": "object",
+            "required": [
+                "x-42c-jwt-validation-rsa_0.3"
+            ],
+            "properties": {
+                "x-42c-jwt-validation-rsa_0.3": {
+                    "type": "object",
+                    "properties": {
+                        "header.name": {
+                            "type": "string",
+                            "pattern": "^[0-9a-zA-Z\\-_]{1,100}$",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "Header name",
+                            "default": "Authorization"
+                        },
+                        "allow.basic.value": {
+                            "type": "boolean",
+                            "description": "Is Basic or Digest value allowed",
+                            "default": false
+                        },
+                        "jwk.envvar": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "JWK env variable name",
+                            "default": "JWK"
+                        },
+                        "jwks.uri": {
+                            "schema": {
+                                "type": "string",
+                                "pattern": "^(?:https?://\\w+(?:[\\-.]\\w+)*(?::\\d+)?/(?:\\.?\\w[\\w\\-./+%]*)?(?:[?;][\\w\\-./+%&=;,@]*)?)$",
+                                "minLength": 9,
+                                "maxLength": 500
+                            },
+                            "description": "JWKS endpoint"
+                        },
+                        "jwks.proxy": {
+                            "schema": {
+                                "type": "string",
+                                "pattern": "^(?:\\w+(?:[\\-.]\\w+)*:\\d+)$",
+                                "minLength": 3,
+                                "maxLength": 250
+                            },
+                            "description": "JWKS connect proxy"
+                        },
+                        "forward.jwt": {
+                            "type": "boolean",
+                            "description": "Forward the JWT to backend",
+                            "default": true
+                        },
+                        "lifetime": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 99999999,
+                            "description": "Token lifetime (seconds)",
+                            "default": 5
+                        },
+                        "drift": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 86400,
+                            "description": "Drift time (in seconds)",
+                            "default": 10
+                        },
+                        "jti.timeout": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 99999999,
+                            "description": "JTI timeout (seconds)",
+                            "default": 86400
+                        },
+                        "jp.claims.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer claims schema"
+                        },
+                        "claims.schema": {
+                            "type": "object",
+                            "description": "Claims schema"
+                        },
+                        "jp.jose.header.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer jose header schema"
+                        },
+                        "jose.header.schema": {
+                            "type": "object",
+                            "description": "JOSE header schema"
+                        },
+                        "jwk.cache.timeout": {
+                            "type": "number",
+                            "minimum": 60,
+                            "maximum": 28000,
+                            "description": "Cache expiration time for JWK entry",
+                            "default": 3600
+                        }
+                    },
+                    "required": [
+                        "header.name"
+                    ],
+                    "additionalProperties": false,
+                    "description": "JWT RSA validation"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-jwt-validation_0.1": {
+            "type": "object",
+            "required": [
+                "x-42c-jwt-validation_0.1"
+            ],
+            "properties": {
+                "x-42c-jwt-validation_0.1": {
+                    "type": "object",
+                    "properties": {
+                        "header.name": {
+                            "type": "string",
+                            "pattern": "^[0-9a-zA-Z\\-_]{1,100}$",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "Header name"
+                        },
+                        "jwk.envvar": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "JWK env variable name",
+                            "default": "JWK"
+                        },
+                        "forward.jwt": {
+                            "type": "boolean",
+                            "description": "Forward the JWT to backend",
+                            "default": true
+                        },
+                        "lifetime": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 99999999,
+                            "description": "Token lifetime (seconds)",
+                            "default": 5
+                        },
+                        "drift": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 86400,
+                            "description": "Drift time (in seconds)",
+                            "default": 10
+                        },
+                        "authorized.algorithms": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "HS256",
+                                    "HS384",
+                                    "HS512",
+                                    "RS256",
+                                    "RS384",
+                                    "RS512",
+                                    "PS256",
+                                    "PS384",
+                                    "PS512",
+                                    "ES256",
+                                    "ES384",
+                                    "ES512"
+                                ]
+                            },
+                            "description": "Authorized algorithms"
+                        },
+                        "jti.timeout": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 99999999,
+                            "description": "JTI timeout (seconds)"
+                        },
+                        "jp.claims.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer claims schema"
+                        },
+                        "claims.schema": {
+                            "type": "object",
+                            "description": "Claims schema"
+                        },
+                        "jp.jose.header.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer jose header schema"
+                        },
+                        "jose.header.schema": {
+                            "type": "object",
+                            "description": "JOSE header schema"
+                        }
+                    },
+                    "required": [
+                        "header.name",
+                        "authorized.algorithms"
+                    ],
+                    "additionalProperties": false,
+                    "description": "JWT validation"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-jwt-validation_0.2": {
+            "type": "object",
+            "required": [
+                "x-42c-jwt-validation_0.2"
+            ],
+            "properties": {
+                "x-42c-jwt-validation_0.2": {
+                    "type": "object",
+                    "properties": {
+                        "header.name": {
+                            "type": "string",
+                            "pattern": "^[0-9a-zA-Z\\-_]{1,100}$",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "Header name"
+                        },
+                        "allow.basic.value": {
+                            "type": "boolean",
+                            "description": "Is Basic or Digest value allowed",
+                            "default": false
+                        },
+                        "jwk.envvar": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "JWK env variable name",
+                            "default": "JWK"
+                        },
+                        "jwks.uri": {
+                            "schema": {
+                                "type": "string",
+                                "pattern": "((([A-Za-z]{3,9}:(?:\\/\\/)?)(?:[-;:&=\\+\\$,\\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\\+\\$,\\w]+@)[A-Za-z0-9.-]+)((?:\\/[\\+~%/.\\w-_]*)?\\??(?:[-\\+=&;%@.\\w_]*)#?(?:[.\\!/\\w]*))?)",
+                                "minLength": 1,
+                                "maxLength": 500
+                            },
+                            "description": "JWKS endpoint"
+                        },
+                        "forward.jwt": {
+                            "type": "boolean",
+                            "description": "Forward the JWT to backend",
+                            "default": true
+                        },
+                        "lifetime": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 99999999,
+                            "description": "Token lifetime (seconds)",
+                            "default": 5
+                        },
+                        "drift": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 86400,
+                            "description": "Drift time (in seconds)",
+                            "default": 10
+                        },
+                        "authorized.algorithms": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "HS256",
+                                    "HS384",
+                                    "HS512",
+                                    "RS256",
+                                    "RS384",
+                                    "RS512",
+                                    "PS256",
+                                    "PS384",
+                                    "PS512",
+                                    "ES256",
+                                    "ES384",
+                                    "ES512"
+                                ]
+                            },
+                            "description": "Authorized algorithms"
+                        },
+                        "jti.timeout": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 99999999,
+                            "description": "JTI timeout (seconds)"
+                        },
+                        "jwk.cache.timeout": {
+                            "type": "number",
+                            "minimum": 60,
+                            "maximum": 28000,
+                            "description": "Cache expiration time for JWK entry",
+                            "default": 3600
+                        },
+                        "jp.claims.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer claims schema"
+                        },
+                        "claims.schema": {
+                            "type": "object",
+                            "description": "Claims schema"
+                        },
+                        "jp.jose.header.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer jose header schema"
+                        },
+                        "jose.header.schema": {
+                            "type": "object",
+                            "description": "JOSE header schema"
+                        }
+                    },
+                    "required": [
+                        "header.name",
+                        "authorized.algorithms"
+                    ],
+                    "additionalProperties": false,
+                    "description": "JWT validation"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x-42c-jwt-validation_0.3": {
+            "type": "object",
+            "required": [
+                "x-42c-jwt-validation_0.3"
+            ],
+            "properties": {
+                "x-42c-jwt-validation_0.3": {
+                    "type": "object",
+                    "properties": {
+                        "header.name": {
+                            "type": "string",
+                            "pattern": "^[0-9a-zA-Z\\-_]{1,100}$",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "Header name"
+                        },
+                        "allow.basic.value": {
+                            "type": "boolean",
+                            "description": "Is Basic or Digest value allowed",
+                            "default": false
+                        },
+                        "jwk.envvar": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "JWK env variable name",
+                            "default": "JWK"
+                        },
+                        "jwks.uri": {
+                            "schema": {
+                                "type": "string",
+                                "pattern": "^(?:https?://\\w+(?:[\\-.]\\w+)*(?::\\d+)?/(?:\\.?\\w[\\w\\-./+%]*)?(?:[?;][\\w\\-./+%&=;,@]*)?)$",
+                                "minLength": 9,
+                                "maxLength": 500
+                            },
+                            "description": "JWKS endpoint"
+                        },
+                        "jwks.proxy": {
+                            "schema": {
+                                "type": "string",
+                                "pattern": "^(?:\\w+(?:[\\-.]\\w+)*:\\d+)$",
+                                "minLength": 3,
+                                "maxLength": 250
+                            },
+                            "description": "JWKS connect proxy"
+                        },
+                        "forward.jwt": {
+                            "type": "boolean",
+                            "description": "Forward the JWT to backend",
+                            "default": true
+                        },
+                        "lifetime": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 99999999,
+                            "description": "Token lifetime (seconds)",
+                            "default": 5
+                        },
+                        "drift": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 86400,
+                            "description": "Drift time (in seconds)",
+                            "default": 10
+                        },
+                        "authorized.algorithms": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "HS256",
+                                    "HS384",
+                                    "HS512",
+                                    "RS256",
+                                    "RS384",
+                                    "RS512",
+                                    "PS256",
+                                    "PS384",
+                                    "PS512",
+                                    "ES256",
+                                    "ES384",
+                                    "ES512"
+                                ]
+                            },
+                            "description": "Authorized algorithms"
+                        },
+                        "jti.timeout": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 99999999,
+                            "description": "JTI timeout (seconds)"
+                        },
+                        "jwk.cache.timeout": {
+                            "type": "number",
+                            "minimum": 60,
+                            "maximum": 28000,
+                            "description": "Cache expiration time for JWK entry",
+                            "default": 3600
+                        },
+                        "jp.claims.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer claims schema"
+                        },
+                        "claims.schema": {
+                            "type": "object",
+                            "description": "Claims schema"
+                        },
+                        "jp.jose.header.schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 50000,
+                            "pattern": "^\\#(/([^/~]+|~[01])+)*$",
+                            "description": "JPointer jose header schema"
+                        },
+                        "jose.header.schema": {
+                            "type": "object",
+                            "description": "JOSE header schema"
+                        }
+                    },
+                    "required": [
+                        "header.name",
+                        "authorized.algorithms"
+                    ],
+                    "additionalProperties": false,
+                    "description": "JWT validation"
+                }
+            },
+            "additionalProperties": false
+        }
+    }
+}

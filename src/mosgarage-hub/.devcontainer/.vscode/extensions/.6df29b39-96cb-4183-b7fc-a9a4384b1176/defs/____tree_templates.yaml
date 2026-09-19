@@ -1,0 +1,14 @@
+item-sources:
+  - $include: docker/____tree_item_children_sources.yaml
+
+detail-sources:
+  - $include: docker/____tree_item_detail_sources.yaml
+
+extractors:
+  - $include: docker/____tree_item_extractors.yaml
+
+operations:
+  - $include: docker/____tree_item_operations.yaml
+
+detail-templates:
+  - $include: generic/____tree_item_detail_templates.yaml

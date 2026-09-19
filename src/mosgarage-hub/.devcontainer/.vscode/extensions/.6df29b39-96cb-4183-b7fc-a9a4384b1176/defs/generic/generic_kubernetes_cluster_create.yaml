@@ -1,0 +1,50 @@
+title: Create Kubernetes Cluster
+type: layout-form
+header:
+  - type: header
+    title: Create Kubernetes Cluster
+    logo: icon.webp
+form:
+  - $include: generic/__generic_provider_selector.yaml
+
+  #
+  # Azure
+  #
+  - $include: generic/generic_kubernetes_cluster_create_az.yaml
+    show-if:
+      variable: cloud_provider
+      value: cloud-az
+  #
+  # Civo
+  #
+  - $include: generic/generic_kubernetes_cluster_create_civo.yaml
+    show-if:
+      variable: cloud_provider
+      value: cloud-civo
+  #
+  # Digital Ocean
+  #      
+  - $include: generic/generic_kubernetes_cluster_create_doctl.yaml
+    show-if:
+      variable: cloud_provider
+      value: cloud-doctl
+  #
+  # Linode
+  #      
+  - $include: generic/generic_kubernetes_cluster_create_linode.yaml
+    show-if:
+      variable: cloud_provider
+      value: cloud-linode
+  #
+  # UpCloud
+  #      
+  - $include: generic/generic_kubernetes_cluster_create_upctl.yaml
+    show-if:
+      variable: cloud_provider
+      value: cloud-upctl
+
+  - type: section
+    subitems:
+      - type: 'output-row'
+        data: output
+        content: ''

@@ -1,0 +1,8 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[user]
+	email = 277760424+mosgaragedev@users.noreply.github.com
+	name = Mosgarage Dev

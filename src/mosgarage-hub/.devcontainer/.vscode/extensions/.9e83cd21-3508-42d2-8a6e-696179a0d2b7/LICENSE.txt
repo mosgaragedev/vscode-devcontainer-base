@@ -1,0 +1,25 @@
+PROPRIETARY SOFTWARE LICENSE
+
+Copyright (c) 2025 Gitpod Inc. All rights reserved.
+
+This software ("Extension") is licensed, not sold, and is subject to the Gitpod Terms of Service available at https://www.gitpod.io/terms.
+
+1. **License Grant**
+   Gitpod Inc. grants you a limited, non-exclusive, non-transferable license to use this Extension solely for its intended purpose.
+
+2. **Restrictions**
+   You may not modify, distribute, sell, sublicense, or reverse-engineer this Extension.
+
+3. **Ownership**
+   Gitpod Inc. retains all rights, title, and interest in and to this Extension.
+
+4. **Disclaimer & Liability**
+   This Extension is provided "as is" without warranties. Gitpod Inc. disclaims all liability to the fullest extent permitted by law.
+
+5. **Termination**
+   Gitpod Inc. may revoke this license at any time if you violate these terms.
+
+6. **Governing Law**
+   This License is governed by the laws specified in Gitpod's Terms of Service.
+
+By using this Extension, you agree to these terms.

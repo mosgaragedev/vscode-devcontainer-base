@@ -1,0 +1,18 @@
+
+- type: 'text-block'
+  content: | 
+        Digital Ocean Support is not available yet.
+        You can vote to accelerate feature development below.
+
+- type: 'textarea'
+  content: | 
+        Digital Ocean Support is not available yet.
+        You can vote to accelerate feature development below.
+
+- type: 'action-row'
+  name: Add comment to GitHub issue
+  verify: gh --version
+  install: |
+        gh issue comment 1 --edit-last --repo zikalino/vscode-cloud --body "I need this feature!"
+        if (-Not $?) {gh issue comment 1 --repo zikalino/vscode-cloud --body "I need this feature!"}
+        "empty"

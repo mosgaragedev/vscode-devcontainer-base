@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+		<Metadata>
+			<Identity Language="en-US" Id="powerplatform-vscode" Version="2.0.110" Publisher="microsoft-IsvExpTools" />
+			<DisplayName>Power Platform Tools</DisplayName>
+			<Description xml:space="preserve">Tooling to create Power Platform solutions &amp; packages, manage Power Platform environments and edit Power Apps Portals</Description>
+			<Tags>Power Platform,Power Pages,Power Apps,copilot,chat,theme,icon-theme,snippet,debuggers,json,__web_extension</Tags>
+			<Categories>Snippets,Other,Chat,AI</Categories>
+			<GalleryFlags>Public</GalleryFlags>
+			<Badges><Badge Link="https://github.com/microsoft/powerplatform-vscode/actions?query=workflow%3APullRequest" ImgUri="https://github.com/microsoft/powerplatform-vscode/workflows/PullRequest/badge.svg" Description="Pull Request" />
+<Badge Link="https://dev.azure.com/dynamicscrm/OneCRM/_build/latest?definitionId=12152" ImgUri="https://dev.azure.com/dynamicscrm/OneCRM/_apis/build/status/DPX-Tools/powerplatform-vscode%20Official%20Build?branchName=release/stable" Description="Official Build" /></Badges>
+			<Properties>
+				<Property Id="Microsoft.VisualStudio.Code.Engine" Value="^1.91.0" />
+				<Property Id="Microsoft.VisualStudio.Code.ExtensionDependencies" Value="" />
+				<Property Id="Microsoft.VisualStudio.Code.ExtensionPack" Value="github.vscode-codeql,ms-sarifvscode.sarif-viewer" />
+				<Property Id="Microsoft.VisualStudio.Code.ExtensionKind" Value="workspace,web" />
+				<Property Id="Microsoft.VisualStudio.Code.LocalizedLanguages" Value="" />
+				<Property Id="Microsoft.VisualStudio.Code.EnabledApiProposals" Value="fileSearchProvider,textSearchProvider" />
+				
+				<Property Id="Microsoft.VisualStudio.Code.ExecutesCode" Value="true" />
+				
+				<Property Id="Microsoft.VisualStudio.Services.Links.Source" Value="https://github.com/microsoft/powerplatform-vscode.git" />
+				<Property Id="Microsoft.VisualStudio.Services.Links.Getstarted" Value="https://github.com/microsoft/powerplatform-vscode.git" />
+				<Property Id="Microsoft.VisualStudio.Services.Links.GitHub" Value="https://github.com/microsoft/powerplatform-vscode.git" />
+				<Property Id="Microsoft.VisualStudio.Services.Links.Support" Value="https://github.com/microsoft/powerplatform-vscode/issues" />
+				<Property Id="Microsoft.VisualStudio.Services.Links.Learn" Value="https://github.com/microsoft/powerplatform-vscode/blob/main/README.md" />
+				
+				
+				<Property Id="Microsoft.VisualStudio.Services.GitHubFlavoredMarkdown" Value="true" />
+				<Property Id="Microsoft.VisualStudio.Services.Content.Pricing" Value="Free"/>
+
+				
+				
+			</Properties>
+			<License>extension/LICENSE.txt</License>
+			<Icon>extension/src/client/assets/icon.png</Icon>
+		</Metadata>
+		<Installation>
+			<InstallationTarget Id="Microsoft.VisualStudio.Code"/>
+		</Installation>
+		<Dependencies/>
+		<Assets>
+			<Asset Type="Microsoft.VisualStudio.Code.Manifest" Path="extension/package.json" Addressable="true" />
+			<Asset Type="Microsoft.VisualStudio.Services.Content.Details" Path="extension/README.md" Addressable="true" />
+<Asset Type="Microsoft.VisualStudio.Services.Content.Changelog" Path="extension/CHANGELOG.md" Addressable="true" />
+<Asset Type="Microsoft.VisualStudio.Services.Content.License" Path="extension/LICENSE.txt" Addressable="true" />
+<Asset Type="Microsoft.VisualStudio.Services.Icons.Default" Path="extension/src/client/assets/icon.png" Addressable="true" />
+		</Assets>
+	</PackageManifest>

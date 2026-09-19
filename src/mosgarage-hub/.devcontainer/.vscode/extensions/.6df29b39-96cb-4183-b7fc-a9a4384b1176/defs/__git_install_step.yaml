@@ -1,0 +1,13 @@
+
+- type: 'action-row'
+  platform: win32
+  name: Install Git
+  verify: git --version
+  install: winget install git
+
+- type: 'action-row'
+  platform: linux
+  name: Install Git
+  verify: git --version
+  interactive: true
+  install: "sudo apt update ; sudo apt install git"

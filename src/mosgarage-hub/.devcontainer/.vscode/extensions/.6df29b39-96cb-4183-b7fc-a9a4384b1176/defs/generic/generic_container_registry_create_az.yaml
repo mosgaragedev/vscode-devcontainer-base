@@ -1,0 +1,100 @@
+#    --name -n               [Required] : The name of the container registry. It should be specified
+#                                         in lower case. You can configure the default registry name
+#                                         using `az configure --defaults acr=<registry name>`.
+#    --resource-group -g     [Required] : Name of resource group. You can configure the default group
+#                                         using `az configure --defaults group=<name>`.
+#    --sku                   [Required] : The SKU of the container registry.  Allowed values: Basic,
+#                                         Premium, Standard.
+#    --admin-enabled                    : Indicates whether the admin user is enabled.  Allowed
+#                                         values: false, true.
+#    --allow-exports          [Preview] : Configure exportPolicy to allow/disallow artifacts
+#                                         from being exported from this registry. Artifacts can be
+#                                         exported via import or transfer operations. For more
+#                                         information, please visit https://aka.ms/acr/export-policy.
+#                                         Allowed values: false, true.
+#        Argument '--allow-exports' is in preview and under development. Reference and support
+#        levels: https://aka.ms/CLI_refstatus
+#    --allow-metadata-search  [Preview] : Enable or disable the metadata-search feature for
+#                                         the registry. If not specified, this is set to disabled by
+#                                         default.  Allowed values: false, true.
+#        Argument '--allow-metadata-search' is in preview and under development. Reference and
+#        support levels: https://aka.ms/CLI_refstatus
+#    --location -l                      : Location. Values from: `az account list-locations`. You can
+#                                         configure the default location using `az configure
+#                                         --defaults location=<location>`.
+#    --tags                             : Space-separated tags: key[=value] [key[=value] ...]. Use ""
+#                                         to clear existing tags.
+#    --workspace              [Preview] : Name or ID of the Log Analytics workspace to send
+#                                         registry diagnostic logs to. All events will be enabled.
+#                                         You can use "az monitor log-analytics workspace create" to
+#                                         create one. Extra billing may apply.
+#        Argument '--workspace' is in preview and under development. Reference and support
+#        levels: https://aka.ms/CLI_refstatus
+#    --zone-redundancy        [Preview] : Indicates whether or not zone redundancy should be
+#                                         enabled for this registry or replication. For more
+#                                         information, such as supported locations, please visit
+#                                         https://aka.ms/acr/az. Zone-redundancy cannot be updated.
+#                                         Defaults to 'Disabled'.  Allowed values: Disabled, Enabled.
+#        Argument '--zone-redundancy' is in preview and under development. Reference and support
+#        levels: https://aka.ms/CLI_refstatus
+#
+# Customer managed key Arguments
+#    --identity                         : Use assigned managed identity resource id or name if in the
+#                                         same resource group.
+#    --key-encryption-key               : Key vault key uri. To enable automated rotation, provide a
+#                                         version-less key uri. For manual rotation, provide a
+#                                         versioned key uri.
+#
+# Network Rule Arguments
+#    --allow-trusted-services [Preview] : Allow trusted Azure Services to access network
+#                                         restricted registries. For more information, please visit
+#                                         https://aka.ms/acr/trusted-services. The Default is to
+#                                         allow.  Allowed values: false, true.
+#        Argument '--allow-trusted-services' is in preview and under development. Reference and
+#        support levels: https://aka.ms/CLI_refstatus
+#    --default-action                   : Default action to apply when no rule matches. Only
+#                                         applicable to Premium SKU.  Allowed values: Allow, Deny.
+#    --public-network-enabled           : Allow public network access for the container registry. The
+#                                         Default is to allow.  Allowed values: false, true.
+
+
+- type: section
+  title: Basic Information
+  subitems:
+    - $include: az/__az_resource_group_selector.yaml
+
+    - type: row
+      subitems:
+        - type: textfield
+          name: Name
+          produces:
+            - variable: acr_name
+              regex: ^[a-zA-Z0-9]*$
+    - type: row
+      id: sku-row
+      subitems:
+        - type: dropdown
+          id: sku-combo
+          name: Select SKU
+          items:
+            - Basic
+            - Standard
+            - Premium
+          produces:
+            - variable: sku
+
+- type: section
+  subitems:
+    - type: 'action-row'
+      name: Create Azure Container Registry
+      consumes:
+        - variable: resource_group
+          required: true
+        - variable: acr_name
+          required: true
+        - variable: sku
+          required: true
+      verify: |
+          az acr show --resource-group ${resource_group} --name ${acr_name}
+      install: az acr create --resource-group ${resource_group} --name ${acr_name} --sku ${sku}
+      uninstall: az acr delete --resource-group ${resource_group} --name ${acr_name} --yes

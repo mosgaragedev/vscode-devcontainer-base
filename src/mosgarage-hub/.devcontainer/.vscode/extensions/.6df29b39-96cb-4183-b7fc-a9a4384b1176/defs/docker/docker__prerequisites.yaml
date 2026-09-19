@@ -1,0 +1,18 @@
+type: layout-form
+id: root
+form:
+  - type: section
+    subitems:
+      - type: link-row
+        text: Read more about the extension on SmarterCode's SubStack
+        link: https://zikalino.substack.com/p/reviving-docker-runner-vscode-extension
+
+
+
+footer:
+  - type: footer
+    id: footer
+    subitems:
+      - type: button
+        id: install_button
+        codicon: run-all

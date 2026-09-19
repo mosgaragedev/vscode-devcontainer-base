@@ -1,0 +1,64 @@
+- item-types: '*'
+  definition:
+    type: section
+    title: Basic Information
+    subitems:
+      - type: 'info-row'
+        icon: 'codicon-symbol-field'
+        color: 'black'
+        label: 'ID'
+        value: '${id}'
+      - type: 'row'
+        subitems: 
+          - type: 'field'
+            icon: 'codicon-symbol-string'
+            color: 'black'
+            label: 'Name:'
+            value: '${name}'
+          - type: 'field'
+            icon: 'codicon-symbol-string'
+            color: 'black'
+            label: 'Type:'
+            value: '${type}'
+          - type: 'field'
+            icon: 'codicon-location'
+            color: 'black'
+            label: 'Location:'
+            value: '${location}'
+
+- item-types: vm
+  definition:
+    type: section
+    title: Virtual Machine
+    subitems:
+      - type: row
+        subitems:
+          - type: field
+            icon: icon-square-orange.png
+            color: black
+            label: 'State:'
+            value: '${state}'
+      - type: 'row'
+        subitems:
+          - type: field
+            icon: icon-cores.png
+            color: black
+            label: 'Cores:'
+            value: '${size_cores}'
+          - type: field
+            icon: 'icon-memory.png'
+            color: black
+            label: 'Memory:'
+            value: '${size_memory}'
+          - type: field
+            icon: icon-storage.png
+            color: black
+            label: 'Disk Size:'
+            value: '${size_disk}'
+      - type: 'row'
+        subitems:
+          - type: info-row
+            icon: codicon-file-binary
+            color: black
+            label: 'Image:'
+            value: '${image}'

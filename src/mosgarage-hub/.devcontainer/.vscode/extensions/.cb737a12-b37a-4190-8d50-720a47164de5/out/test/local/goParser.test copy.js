@@ -1,0 +1,502 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const mocha_1 = require("mocha");
+const assert = require("assert");
+const goParser_1 = require("../../goParser");
+(0, mocha_1.suite)('parseSuiteTestFunction', function () {
+    const cases = [
+        {
+            name: "invalid",
+            line: "func TestSomething(x *y.Z) {",
+            expected: undefined,
+        },
+        {
+            name: "ordinary, pointer receiver, pointer argument",
+            line: "func (s *someSuite) TestSomething(x *y.Z) {",
+            expected: {
+                index: 0,
+                entireMatch: "func (s *someSuite) TestSomething(x *y.Z) {",
+                receiverType: "someSuite",
+                functionName: "TestSomething",
+                argTypeModule: "y",
+                argTypeName: "Z",
+            },
+        },
+        {
+            name: "ordinary, value receiver, value argument",
+            line: "func (s someSuite) TestSomething(x y.Z) {",
+            expected: {
+                index: 0,
+                entireMatch: "func (s someSuite) TestSomething(x y.Z) {",
+                receiverType: "someSuite",
+                functionName: "TestSomething",
+                argTypeModule: "y",
+                argTypeName: "Z",
+            },
+        },
+        {
+            name: "receiver variable omitted, pointer receiver",
+            line: "func (*someSuite) TestSomething(x *y.Z) {",
+            expected: {
+                index: 0,
+                entireMatch: "func (*someSuite) TestSomething(x *y.Z) {",
+                receiverType: "someSuite",
+                functionName: "TestSomething",
+                argTypeModule: "y",
+                argTypeName: "Z",
+            },
+        },
+        {
+            name: "receiver variable omitted, value receiver",
+            line: "func (someSuite) TestSomething(x *y.Z) {",
+            expected: {
+                index: 0,
+                entireMatch: "func (someSuite) TestSomething(x *y.Z) {",
+                receiverType: "someSuite",
+                functionName: "TestSomething",
+                argTypeModule: "y",
+                argTypeName: "Z",
+            },
+        },
+    ];
+    for (const x of cases) {
+        (0, mocha_1.test)(x.name, function () {
+            assert.deepStrictEqual((0, goParser_1.parseSuiteTestFunction)(x.line), x.expected);
+        });
+    }
+});
+(0, mocha_1.suite)('GoParser', () => {
+    (0, mocha_1.suite)('parsePackageName', function () {
+        (0, mocha_1.test)('should use content property if no lines given as args', function () {
+            assert.deepStrictEqual(new goParser_1.GoParser('package given-via-constructor-args').parsePackageName(), { name: 'given-via-constructor-args', lineNumber: 0 });
+        });
+        (0, mocha_1.test)('should accept content lines as argument', function () {
+            assert.deepStrictEqual(new goParser_1.GoParser('package given-via-constructor-args').parsePackageName(['package given-via-args']), { name: 'given-via-args', lineNumber: 0 });
+        });
+        (0, mocha_1.suite)('should handle various args', function () {
+            const cases = [
+                {
+                    name: 'should return `undefined` for empty content',
+                    content: '',
+                    expected: undefined
+                },
+                {
+                    name: 'should return `undefined` if no package statement',
+                    content: 'a:=0',
+                    expected: undefined
+                },
+                {
+                    name: 'should work with one package statement',
+                    content: 'package p',
+                    expected: { name: 'p', lineNumber: 0 }
+                },
+                {
+                    name: 'should work with one package statement at second line',
+                    content: '\npackage p',
+                    expected: { name: 'p', lineNumber: 1 }
+                },
+                {
+                    name: 'should pick the first package statement',
+                    content: 'package p1\npackage p2',
+                    expected: { name: 'p1', lineNumber: 0 }
+                }
+            ];
+            for (const x of cases) {
+                (0, mocha_1.test)(x.name, function () {
+                    assert.deepStrictEqual(new goParser_1.GoParser(x.content).parsePackageName(), x.expected);
+                });
+            }
+        });
+    });
+    (0, mocha_1.suite)('parseImports', function () {
+        (0, mocha_1.test)('should use content property if no lines given as args', function () {
+            assert.deepStrictEqual(new goParser_1.GoParser('import "given-via-constructor-args"').parseImports(), [{ moduleName: 'given-via-constructor-args', lineNumber: 0 }]);
+        });
+        (0, mocha_1.test)('should accept content lines as argument', function () {
+            assert.deepStrictEqual(new goParser_1.GoParser('import "given-via-constructor-args"').parseImports(['import "given-via-args"']), [{ moduleName: 'given-via-args', lineNumber: 0 }]);
+        });
+        (0, mocha_1.suite)('should handle various args', function () {
+            const cases = [
+                {
+                    name: 'should return `[]` for empty content',
+                    content: '',
+                    expected: []
+                },
+                {
+                    name: 'should return `[]` if no import statement',
+                    content: 'a:=0',
+                    expected: []
+                },
+                {
+                    name: 'should work with single line import statement',
+                    content: 'import "package"',
+                    expected: [{ moduleName: 'package', lineNumber: 0 }]
+                },
+                {
+                    name: 'should work with single line import statement with alias',
+                    content: 'import alias "package"',
+                    expected: [{ moduleName: 'package', lineNumber: 0, alias: 'alias' }]
+                },
+                {
+                    name: 'should work with multiple single line import statements',
+                    content: 'import alias1 "package1"\nimport alias2 "package2"',
+                    expected: [
+                        { moduleName: 'package1', lineNumber: 0, alias: 'alias1' },
+                        { moduleName: 'package2', lineNumber: 1, alias: 'alias2' }
+                    ]
+                },
+                {
+                    name: 'should work with multiline import statement with single entry',
+                    content: 'import (\n\t"package1"\n)',
+                    expected: [{ moduleName: 'package1', lineNumber: 1 }]
+                },
+                {
+                    name: 'should work with multiline import statement with multiple entry',
+                    content: 'import (\n\t"package1"\n\t"package2"\n)',
+                    expected: [
+                        { moduleName: 'package1', lineNumber: 1 },
+                        { moduleName: 'package2', lineNumber: 2 }
+                    ]
+                },
+                {
+                    name: 'should work with multiline import statement with multiple entry with alias',
+                    content: 'import (\n\talias1 "package1"\n\talias2 "package2"\n)',
+                    expected: [
+                        { moduleName: 'package1', lineNumber: 1, alias: 'alias1' },
+                        { moduleName: 'package2', lineNumber: 2, alias: 'alias2' }
+                    ]
+                },
+                {
+                    name: 'should work with multiple multiline import statements',
+                    content: 'import (\n\talias1 "package1"\n\talias2 "package2"\n)\n\nimport (\n\talias3 "package3"\n\talias4 "package4"\n)',
+                    expected: [
+                        { moduleName: 'package1', lineNumber: 1, alias: 'alias1' },
+                        { moduleName: 'package2', lineNumber: 2, alias: 'alias2' },
+                        { moduleName: 'package3', lineNumber: 6, alias: 'alias3' },
+                        { moduleName: 'package4', lineNumber: 7, alias: 'alias4' }
+                    ]
+                },
+                {
+                    name: 'should work with mixed import statements',
+                    content: 'import "package1"\nimport alias2 "package2"\nimport (\n\talias3 "package3"\n\t"package4"\n)\nimport "package5"',
+                    expected: [
+                        { moduleName: 'package1', lineNumber: 0 },
+                        { moduleName: 'package2', lineNumber: 1, alias: 'alias2' },
+                        { moduleName: 'package3', lineNumber: 3, alias: 'alias3' },
+                        { moduleName: 'package4', lineNumber: 4 },
+                        { moduleName: 'package5', lineNumber: 6 }
+                    ]
+                }
+            ];
+            for (const x of cases) {
+                (0, mocha_1.test)(x.name, function () {
+                    assert.deepStrictEqual(new goParser_1.GoParser(x.content).parseImports(), x.expected);
+                });
+            }
+        });
+    });
+    (0, mocha_1.suite)('parseTestFunctions', function () {
+        (0, mocha_1.test)('should use content property if no lines given as args', function () {
+            assert.deepStrictEqual(new goParser_1.GoParser('package p\nimport "gopkg.in/check.v1"\nfunc (s *SomeSuite) TestSomething(c *check.C) {').parseTestFunctions([{ lineNumber: 1, moduleName: 'gopkg.in/check.v1' }]), [{
+                    kind: 'gocheck',
+                    functionName: 'TestSomething',
+                    lineNumber: 2,
+                    range: [2, 0, 2, 47],
+                    receiverType: 'SomeSuite',
+                    argType: { moduleName: 'gopkg.in/check.v1', typeName: 'C' }
+                }]);
+        });
+        (0, mocha_1.test)('should accept content lines as argument', function () {
+            assert.deepStrictEqual(new goParser_1.GoParser('package p\nimport "gopkg.in/check.v1"\nfunc (s *SomeSuite) TestSomething(c *check.C) {').parseTestFunctions([{ lineNumber: 1, moduleName: 'gopkg.in/check.v1' }]), [{
+                    kind: 'gocheck',
+                    functionName: 'TestSomething',
+                    lineNumber: 2,
+                    range: [2, 0, 2, 47],
+                    receiverType: 'SomeSuite',
+                    argType: { moduleName: 'gopkg.in/check.v1', typeName: 'C' }
+                }]);
+        });
+        (0, mocha_1.suite)('should handle various args', function () {
+            const cases = [
+                {
+                    name: 'should return `[]` for empty content',
+                    content: '',
+                    imports: [],
+                    expected: []
+                },
+                {
+                    name: 'should return `[]` if no import statement',
+                    content: 'a:=0',
+                    imports: [],
+                    expected: []
+                },
+                {
+                    name: 'should detect `gocheck` suite test function (non-aliased import)',
+                    content: 'func (s *SomeSuite) TestSomething(c *check.C) {}',
+                    imports: [{ lineNumber: 0, moduleName: 'gopkg.in/check.v1' }],
+                    expected: [{
+                            kind: 'gocheck',
+                            functionName: 'TestSomething',
+                            argType: { moduleName: 'gopkg.in/check.v1', typeName: 'C' },
+                            receiverType: 'SomeSuite',
+                            lineNumber: 0,
+                            range: [0, 0, 0, 47],
+                        }]
+                },
+                {
+                    name: 'should detect `gocheck` suite test function (aliased import)',
+                    content: 'func (s *SomeSuite) TestSomething(c *alias.C) {}',
+                    imports: [{ lineNumber: 0, moduleName: 'gopkg.in/check.v1', alias: 'alias' }],
+                    expected: [{
+                            kind: 'gocheck',
+                            functionName: 'TestSomething',
+                            argType: { moduleName: 'gopkg.in/check.v1', typeName: 'C' },
+                            receiverType: 'SomeSuite',
+                            lineNumber: 0,
+                            range: [0, 0, 0, 47],
+                        }]
+                },
+                {
+                    name: 'should detect `gocheck` suite test function (dot import)',
+                    content: 'func (s *SomeSuite) TestSomething(c *C) {}',
+                    imports: [{ lineNumber: 0, moduleName: 'gopkg.in/check.v1', alias: '.' }],
+                    expected: [{
+                            kind: 'gocheck',
+                            functionName: 'TestSomething',
+                            argType: { moduleName: 'gopkg.in/check.v1', typeName: 'C' },
+                            receiverType: 'SomeSuite',
+                            lineNumber: 0,
+                            range: [0, 0, 0, 41],
+                        }]
+                },
+                {
+                    name: 'should detect `quicktest` suite test function (non-aliased import)',
+                    content: 'func (s *SomeSuite) TestSomething(c *quicktest.C) {}',
+                    imports: [{ lineNumber: 0, moduleName: 'github.com/frankban/quicktest' }],
+                    expected: [{
+                            kind: 'quicktest',
+                            functionName: 'TestSomething',
+                            argType: { moduleName: 'github.com/frankban/quicktest', typeName: 'C' },
+                            receiverType: 'SomeSuite',
+                            lineNumber: 0,
+                            range: [0, 0, 0, 51],
+                        }]
+                },
+                {
+                    name: 'should detect `quicktest` suite test function (aliased import)',
+                    content: 'func (s *SomeSuite) TestSomething(c *alias.C) {}',
+                    imports: [{ lineNumber: 0, moduleName: 'github.com/frankban/quicktest', alias: 'alias' }],
+                    expected: [{
+                            kind: 'quicktest',
+                            functionName: 'TestSomething',
+                            argType: { moduleName: 'github.com/frankban/quicktest', typeName: 'C' },
+                            receiverType: 'SomeSuite',
+                            lineNumber: 0,
+                            range: [0, 0, 0, 47],
+                        }]
+                },
+                {
+                    name: 'should detect `quicktest` suite test function (dot import)',
+                    content: 'func (s *SomeSuite) TestSomething(c *C) {}',
+                    imports: [{ lineNumber: 0, moduleName: 'github.com/frankban/quicktest', alias: '.' }],
+                    expected: [{
+                            kind: 'quicktest',
+                            functionName: 'TestSomething',
+                            argType: { moduleName: 'github.com/frankban/quicktest', typeName: 'C' },
+                            receiverType: 'SomeSuite',
+                            lineNumber: 0,
+                            range: [0, 0, 0, 41],
+                        }]
+                },
+                {
+                    name: 'should return empty for unknown test functions',
+                    content: 'func (s *SomeSuite) TestSomething(c *unknownLibrary.C) {',
+                    imports: [{ lineNumber: 0, moduleName: 'unknownLibrary' }],
+                    expected: []
+                },
+                {
+                    name: 'should return empty for test functions with missing library imports',
+                    content: 'func (s *SomeSuiteA) TestA(c *check.C) {}\nfunc (s *SomeSuiteB) TestB(c *quicktest.C) {}',
+                    imports: [],
+                    expected: []
+                },
+                {
+                    name: 'should detect suite test function correctly if aliases were changed over',
+                    content: 'func (s *SomeSuiteA) TestA(c *check.C) {}\nfunc (s *SomeSuiteB) TestB(c *quicktest.C) {}',
+                    imports: [
+                        { lineNumber: 0, moduleName: 'github.com/frankban/quicktest', alias: 'check' },
+                        { lineNumber: 1, moduleName: 'gopkg.in/check.v1', alias: 'quicktest' }
+                    ],
+                    expected: [
+                        {
+                            kind: 'quicktest',
+                            functionName: 'TestA',
+                            argType: { moduleName: 'github.com/frankban/quicktest', typeName: 'C' },
+                            receiverType: 'SomeSuiteA',
+                            lineNumber: 0,
+                            range: [0, 0, 0, 40],
+                        },
+                        {
+                            kind: 'gocheck',
+                            functionName: 'TestB',
+                            argType: { moduleName: 'gopkg.in/check.v1', typeName: 'C' },
+                            receiverType: 'SomeSuiteB',
+                            lineNumber: 1,
+                            range: [1, 0, 1, 44],
+                        }
+                    ]
+                },
+                {
+                    name: 'should detect suite test function correctly if one module is dot imported (`gocheck`)',
+                    content: 'func (s *SomeSuiteA) TestA(c *C) {}\nfunc (s *SomeSuiteB) TestB(c *quicktest.C) {}',
+                    imports: [
+                        { lineNumber: 0, moduleName: 'github.com/frankban/quicktest' },
+                        { lineNumber: 1, moduleName: 'gopkg.in/check.v1', alias: '.' }
+                    ],
+                    expected: [
+                        {
+                            kind: 'gocheck',
+                            functionName: 'TestA',
+                            argType: { moduleName: 'gopkg.in/check.v1', typeName: 'C' },
+                            receiverType: 'SomeSuiteA',
+                            lineNumber: 0,
+                            range: [0, 0, 0, 34],
+                        },
+                        {
+                            kind: 'quicktest',
+                            functionName: 'TestB',
+                            argType: { moduleName: 'github.com/frankban/quicktest', typeName: 'C' },
+                            receiverType: 'SomeSuiteB',
+                            lineNumber: 1,
+                            range: [1, 0, 1, 44],
+                        }
+                    ]
+                },
+                {
+                    name: 'should detect suite test function correctly if one module is dot imported (`quicktest`)',
+                    content: 'func (s *SomeSuiteA) TestA(c *C) {}\nfunc (s *SomeSuiteB) TestB(c *check.C) {}',
+                    imports: [
+                        { lineNumber: 0, moduleName: 'github.com/frankban/quicktest', alias: '.' },
+                        { lineNumber: 1, moduleName: 'gopkg.in/check.v1' }
+                    ],
+                    expected: [
+                        {
+                            kind: 'quicktest',
+                            functionName: 'TestA',
+                            argType: { moduleName: 'github.com/frankban/quicktest', typeName: 'C' },
+                            receiverType: 'SomeSuiteA',
+                            lineNumber: 0,
+                            range: [0, 0, 0, 34],
+                        },
+                        {
+                            kind: 'gocheck',
+                            functionName: 'TestB',
+                            argType: { moduleName: 'gopkg.in/check.v1', typeName: 'C' },
+                            receiverType: 'SomeSuiteB',
+                            lineNumber: 1,
+                            range: [1, 0, 1, 40],
+                        }
+                    ]
+                },
+            ];
+            for (const x of cases) {
+                (0, mocha_1.test)(x.name, function () {
+                    assert.deepStrictEqual(new goParser_1.GoParser(x.content).parseTestFunctions(x.imports), x.expected);
+                });
+            }
+        });
+    });
+    (0, mocha_1.suite)('parse', function () {
+        (0, mocha_1.test)('should use content property if no lines given as args', function () {
+            assert.deepStrictEqual(new goParser_1.GoParser('package given-via-constructor-args').parse(), {
+                packageInfo: { name: 'given-via-constructor-args', lineNumber: 0 },
+                imports: [],
+                testFunctions: []
+            });
+        });
+        (0, mocha_1.test)('should accept content lines as argument', function () {
+            assert.deepStrictEqual(new goParser_1.GoParser('package given-via-constructor-args').parse(['package given-via-args']), {
+                packageInfo: { name: 'given-via-args', lineNumber: 0 },
+                imports: [],
+                testFunctions: []
+            });
+        });
+        (0, mocha_1.suite)('should handle various args', function () {
+            const cases = [
+                {
+                    name: 'should return `undefined` for empty content',
+                    content: '',
+                    expected: undefined
+                },
+                {
+                    name: 'should return `undefined` if no package statement',
+                    content: 'a:=1',
+                    expected: undefined
+                },
+                {
+                    name: 'should work with an only package statement',
+                    content: 'package p',
+                    expected: { packageInfo: { name: 'p', lineNumber: 0 }, imports: [], testFunctions: [] }
+                },
+                {
+                    name: 'should pick the first package statement',
+                    content: 'package p1\npackage p2',
+                    expected: { packageInfo: { name: 'p1', lineNumber: 0 }, imports: [], testFunctions: [] }
+                },
+                {
+                    name: 'should pick the first package statement and all imports',
+                    content: 'package p1\nimport "a1"\npackage p2\nimport "a2"',
+                    expected: {
+                        packageInfo: { name: 'p1', lineNumber: 0 },
+                        imports: [{ moduleName: 'a1', lineNumber: 1 }, { moduleName: 'a2', lineNumber: 3 }],
+                        testFunctions: []
+                    }
+                },
+                {
+                    name: 'should pick the imports after the first package statement',
+                    content: 'import "first"\npackage p\nimport "second"',
+                    expected: {
+                        packageInfo: { name: 'p', lineNumber: 1 },
+                        imports: [{ moduleName: 'second', lineNumber: 2 }],
+                        testFunctions: []
+                    }
+                },
+                {
+                    name: 'should detect suite test functions',
+                    content: 'package p\nimport (\n\tgc "gopkg.in/check.v1"\n\tqt "github.com/frankban/quicktest"\n)\nfunc (s* SomeSuiteA) TestA(c *gc.C) {}\nfunc (s* SomeSuiteB) TestB(c *qt.C) {}',
+                    expected: {
+                        packageInfo: { name: 'p', lineNumber: 0 },
+                        imports: [
+                            { moduleName: 'gopkg.in/check.v1', alias: 'gc', lineNumber: 2 },
+                            { moduleName: 'github.com/frankban/quicktest', alias: 'qt', lineNumber: 3 }
+                        ],
+                        testFunctions: [
+                            {
+                                kind: 'gocheck',
+                                functionName: 'TestA',
+                                argType: { moduleName: 'gopkg.in/check.v1', typeName: 'C' },
+                                receiverType: 'SomeSuiteA',
+                                lineNumber: 5,
+                                range: [5, 0, 5, 37],
+                            },
+                            {
+                                kind: 'quicktest',
+                                functionName: 'TestB',
+                                argType: { moduleName: 'github.com/frankban/quicktest', typeName: 'C' },
+                                receiverType: 'SomeSuiteB',
+                                lineNumber: 6,
+                                range: [6, 0, 6, 37],
+                            }
+                        ]
+                    }
+                }
+            ];
+            for (const x of cases) {
+                (0, mocha_1.test)(x.name, function () {
+                    assert.deepStrictEqual(new goParser_1.GoParser(x.content).parse(), x.expected);
+                });
+            }
+        });
+    });
+});
+//# sourceMappingURL=goParser.test%20copy.js.map

@@ -1,0 +1,7 @@
+- type: section
+  title: Feature Information
+  subitems:
+    - type: text-block
+      width: wide
+      content: This feature is not natively available from selected provider, however we may provide alternative solution in the future.
+

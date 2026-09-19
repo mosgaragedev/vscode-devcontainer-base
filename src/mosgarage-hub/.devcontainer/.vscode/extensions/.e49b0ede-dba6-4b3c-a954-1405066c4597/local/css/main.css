@@ -1,0 +1,497 @@
+/* fold-level=1 */
+
+body.vscode-light { color: var(--vscode-foreground); }
+body.vscode-high-contrast { color: var(--vscode-foreground); }
+body.vscode-dark { color: var(--vscode-foreground); }
+
+body {
+	background: transparent;
+	padding: 1.5rem 0.5rem;
+	--font-family: 'Fira Code', 'Consolas', sans-serif;
+	margin: 0px;
+}
+
+.form-control:focus {
+	box-shadow: none;
+	outline: none;
+}
+
+/*******************************************************************************
+*******************************************************************************/
+
+/* build a patch panel for all the css vars vscode sets on the webview that
+allows us to style our contents with the current theme colours. this is mostly
+because i am not personally convinced yet that their naming is solid. if they
+break somethign on me later i want them all crossreferenced here. */
+
+body.vscode-dark,
+body.vscode-light {
+
+	/* themes the top toolbar */
+	--DashboardToolbarBg: #00000066;
+	--DashboardToolbarText: var(--vscode-foreground);
+
+	/* themes each project box */
+	--DashboardProjectBg: #00000044;
+	--DashboardProjectBgHover: #00000066;
+	--DashboardProjectText: var(--vscode-editor-foreground);
+	--DashboardProjectAccent: var(--vscode-editorInfo-foreground);
+
+	/* themes the overlay block */
+	--DashboardOverlayBg: #000000;
+	--DashboardOverlayOpacity: 0.90;
+
+	/* themes the debug widget */
+	--DashboardDebugBg: var(--vscode-editor-background);
+	--DashboardDebugText: var(--vscode-editor-foreground);
+
+	/* themes the dialogs inside overlays */
+	--DashboardDialogBg: var(--vscode-editor-background);
+	--DashboardDialogFg: var(--vscode-editor-foreground);
+
+	/* themes buttons */
+	--DashboardButtonBg: var(--vscode-button-background);
+	--DashboardButtonBorder: var(--vscode-button-background);
+	--DashboardButtonFg: var(--vscode-button-foreground);
+
+	/* themes input fields. */
+	--DashboardInputBg: var(--vscode-editorWidget-background);
+	--DashboardInputBorder: var(--vscode-editorWidget-border);
+	--DashboardInputFg: var(--vscode-editorWidget-foreground);
+
+	/* theme menus */
+	--DashboardMenuBg: #00000099;
+
+}
+
+body.vscode-light {
+	--DashboardOverlayBg: #d4d4d4;
+	--DashboardOverlayOpacity: 0.80;
+	--DashboardToolbarBg: #0000000f;
+	--DashboardProjectBg: #0000000f;
+	--DashboardProjectBgHover: #0000000f;
+	--DashboardMenuBg: #ffffff44;
+}
+
+body.vscode-light .btn-dark {
+	background-color: #d0d0d0;
+	border-color: #d0d0d0;
+	color: #222222;
+}
+
+
+/*******************************************************************************
+** misc hacks *****************************************************************/
+
+em {
+	border-bottom: 1px dotted var(--DashboardToolbarText);
+
+	font-style: normal;
+	font-weight: bold;
+}
+
+hr {
+	border-color: var(--DashboardToolbarBg);
+	margin: 1.0rem 0rem;
+}
+
+input,
+select,
+textarea {
+	background-color: var(--DashboardInputBg) !important;
+	border-color: var(--DashboardInputBorder) !important;
+	color: var(--DashboardInputFg) !important;
+}
+
+/*******************************************************************************
+*******************************************************************************/
+
+#Debug {
+	background: var(--DashboardDebugBg);
+	color: var(--DashboardDebugText);
+
+	border-radius: 6px;
+	font-size: 0.8em;
+	opacity: 0.50;
+	padding: 16px;
+}
+
+#Debug > h4 {
+	color: var(--DashboardDebugText);
+
+	font-size: 1em;
+	font-weight: 300;
+	line-height: 1em;
+	margin: 0px;
+	padding: 0px 0px 4px 0px;
+	text-transform: uppercase;
+}
+
+#Debug > code {
+	color: var(--DashboardDebugText);
+
+	display: block;
+	font-family: 'Consolas', monospace;
+	font-size: 0.8em;
+	padding: 8px 0px 10px 0px;
+	white-space: pre;
+}
+
+/*******************************************************************************
+*******************************************************************************/
+
+.Toolbar {
+	background: var(--DashboardToolbarBg);
+	color: var(--DashboardToolbarText);
+
+	margin-bottom: 1.5rem;
+	padding: 12px 16px;
+}
+
+.ProjectEntry {
+	background-color: var(--DashboardProjectBg);
+	border-left: 4px solid var(--DashboardProjectAccent);
+
+	padding: 16px;
+	transition: background-color 250ms, border-color 250ms;
+	user-select: none;
+}
+
+.ProjectEntry:hover {
+	background-color: var(--DashboardProjectBgHover);
+	transition: background-color 250ms;
+}
+
+.ProjectEntry .ProjectInfo {
+	-display: flex;
+	-align-items: center;
+}
+
+.ProjectEntry .Info {
+	min-width: 0px;
+	flex-grow: 1;
+}
+
+.ProjectEntry .Name {
+	font-weight: bold;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.ProjectEntry .Path {
+	font-weight: light;
+	font-size: 0.8em;
+	opacity: 0.50;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.WhenFolderHovered,
+.WhenProjectHovered {
+	display: none;
+}
+
+.Folder:hover .WhenFolderHovered {
+	display: block;
+}
+
+.Project:hover .WhenProjectHovered {
+	display: block;
+}
+
+.IconButton {
+	color: var(--DashboardProjectText);
+
+	background: transparent;
+	border: 0px;
+	border-radius: 6px;
+	padding: 4px;
+}
+
+/*******************************************************************************
+*******************************************************************************/
+
+.Project .ProjectEntry {
+	cursor: pointer;
+}
+
+.Folder > .ProjectEntry {
+	border-left: 0px;
+	border-top: 4px solid var(--DashboardProjectAccent);
+}
+
+.Folder .Projects {
+	display: none;
+	margin-bottom: -1.25rem;
+}
+
+.Folder.Open .Projects {
+	display: flex;
+	margin-top: 1.5rem;
+}
+
+.Folder .Fold button:nth-of-type(2) {
+	display: none;
+}
+
+.Folder .Fold button:nth-of-type(1) {
+	display: inline;
+}
+
+.Folder.Open .Fold button:nth-of-type(2) {
+	display: inline;
+}
+
+.Folder.Open .Fold button:nth-of-type(1) {
+	display: none;
+}
+
+.Folder.Open {
+	min-width: 100% !important;
+	width: 100% !important;
+	flex-grow: 1 !important;
+}
+
+.ReorderFolder .Folder:hover {
+	filter: invert(25%);
+}
+
+.ReorderProject .Folder:not(:hover) {
+	filter: opacity(50%);
+}
+
+.ReorderProject .Project:hover {
+	filter: invert(25%);
+}
+
+/*******************************************************************************
+*******************************************************************************/
+
+#Overlay {
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	height: 100vh;
+	width: 100vw;
+}
+
+#Overlay .Wash {
+	background-color: var(--DashboardOverlayBg);
+	opacity: var(--DashboardOverlayOpacity);
+
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	height: 100%;
+	width: 100%;
+	z-index: 99;
+}
+
+#Overlay .Mount {
+	position: relative;
+	z-index: 100;
+}
+
+.Dialog {
+	background-color: var(--DashboardDialogBg);
+	color: var(--DashboardDialogFg);
+	font-size: 0.80em;
+
+	width: 50vw;
+	backdrop-filter: blur(4px);
+	box-shadow: 0px 0px 10px #000000;
+
+	overflow: auto;
+	overflow-x: hidden;
+
+	max-height: 92vh;
+	max-width: 92vw;
+}
+
+.Dialog > header {
+	display: flex;
+	align-items: center;
+	font-weight: bold;
+	flex-wrap: nowrap;
+	text-transform: uppercase;
+}
+
+.Dialog > header > div:nth-of-type(1) {
+	flex-grow: 1;
+	font-weight: bold;
+	padding: 8px;
+}
+
+.Dialog > header > div:nth-of-type(2) {
+	flex-grow: 0;
+	padding: 8px;
+}
+
+.Dialog > section {
+	padding: 8px;
+}
+
+.Dialog > footer {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	flex-wrap: nowrap;
+}
+
+.Dialog > footer > div {
+	padding: 8px;
+}
+
+.Dialog .Close {
+	background-color: var(--DashboardDialogCloseBg);
+	color: var(--DashboardDialogCloseFg);
+
+	cursor: pointer;
+	border-radius: 6px;
+	opacity: 0.5;
+	transition: opacity 250ms;
+}
+
+.Dialog .Close:hover {
+	opacity: 1.0;
+	transition: opacity 250ms;
+}
+
+.Dialog .btn {
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+@media(max-width: 1199.98px) {
+	.Dialog {
+		width: 65%;
+	}
+}
+
+@media(max-width: 991.98px) {
+	.Dialog {
+		width: 60%;
+	}
+}
+
+@media(max-width: 767.98px) {
+	.Dialog {
+		width: 92%;
+	}
+}
+
+/*******************************************************************************
+** codicon hacks **************************************************************/
+
+.codicon[class*='codicon-'] {
+	display: block;
+	justify-content: center;
+	font-size: inherit;
+}
+
+.codicon[class*='codicon-']::before {
+	display: block;
+}
+
+/*******************************************************************************
+** bootstrap hacks ************************************************************/
+
+.row.tight {
+	margin-left: -0.25rem;
+	margin-right: -0.25rem;
+}
+
+.row.tight > [class^="col"] {
+	padding-left: 0.25rem;
+	padding-right: 0.25rem;
+}
+
+.btn {
+	border-radius: 0px;
+}
+
+.btn:focus {
+	box-shadow: none !important;
+	outline: none !important;
+}
+
+.btn-primary {
+	background-color: var(--DashboardButtonBg) !important;
+	border-color: var(--DashboardButtonBorder) !important;
+	color: var(--DashboardButtonFg) !important;
+}
+
+.font-size-normal { font-size: 1.0rem !important; }
+.font-size-small { font-size: 0.9rem !important; }
+.font-size-smaller { font-size: 0.8rem !important; }
+.font-size-smallerer { font-size: 0.7rem !important; }
+.font-size-smallerest { font-size: 0.6rem !important; }
+.font-size-most-small { font-size: 0.5rem !important; }
+.font-size-mostest-small { font-size: 0.4rem !important; }
+
+.font-size-large { font-size: 1.10rem !important; }
+.font-size-larger { font-size: 1.20rem !important; }
+.font-size-largerer { font-size: 1.30rem !important; }
+.font-size-largerest { font-size: 1.50rem !important; }
+.font-size-most-large { font-size: 2.00rem !important; }
+.font-size-mostest-large { font-size: 3.00rem !important; }
+
+.opacity-0 { opacity: 0.0; }
+.opacity-10 { opacity: 0.1; }
+.opacity-20 { opacity: 0.2; }
+.opacity-25 { opacity: 0.25; }
+.opacity-30 { opacity: 0.3; }
+.opacity-40 { opacity: 0.4; }
+.opacity-50 { opacity: 0.5; }
+.opacity-60 { opacity: 0.6; }
+.opacity-70 { opacity: 0.7; }
+.opacity-75 { opacity: 0.75; }
+.opacity-80 { opacity: 0.8; }
+.opacity-90 { opacity: 0.9; }
+.opacity-100 { opacity: 1.0; }
+
+.text-nobreak {
+	white-space: nowrap;
+}
+
+.clickable {
+	cursor: pointer;
+}
+
+.cased {
+	text-transform: none !important;
+}
+
+.dropdown-menu {
+	background: var(--DashboardMenuBg) !important;
+	border-color: var(--DashboardMenuBg);
+	color: var(--DashboardDialogFg) !important;
+	backdrop-filter: blur(4px);
+	box-shadow: 0px 0px 10px #000000;
+}
+
+/*******************************************************************************
+*******************************************************************************/
+
+.App.Rounded .ProjectEntry,
+.App.Rounded .Toolbar,
+.App.Rounded .Dialog,
+.App.Rounded .btn {
+	border-radius: 4px;
+}
+
+/**
+
+revisit making the projects reflow based on their container size once vscode
+updates to chrome 105+. as of 2023-01-18 even vscode-insiders is still on 102.
+
+.ProjectInfo { container-type: inline-size; }
+
+@container (width > 1px) {
+	.col-auto { width: 100%; }
+}
+
+**/
+

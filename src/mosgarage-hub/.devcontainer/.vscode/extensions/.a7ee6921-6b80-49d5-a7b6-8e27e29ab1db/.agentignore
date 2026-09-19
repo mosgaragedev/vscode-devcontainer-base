@@ -1,0 +1,15 @@
+.vscode/**
+.vscode-test/**
+.vscode-test-web/**
+node_modules/**
+out/test/**
+test/**
+out/**
+**/*.map
+.gitignore
+tsconfig.json
+webpack.config.js
+*.code-workspace
+tslint.json
+.markdownlint.json
+utils/**

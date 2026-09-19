@@ -1,0 +1,39 @@
+title: Create Container Registry
+type: layout-form
+header:
+  - type: header
+    title: Create Container Registry
+    logo: icon.webp
+form:
+  - $include: generic/__generic_provider_selector.yaml
+
+  - $include: generic/generic_not_available.yaml
+    show-if:
+      variable: cloud_provider
+      value: cloud-linode
+
+  - $include: generic/generic_container_registry_create_az.yaml
+    show-if:
+      variable: cloud_provider
+      value: cloud-az
+
+  - $include: generic/generic_not_available.yaml
+    show-if:
+      variable: cloud_provider
+      value: cloud-upctl
+
+  - $include: generic/generic_not_available.yaml
+    show-if:
+      variable: cloud_provider
+      value: cloud-civo
+
+  - $include: generic/generic_container_registry_create_doctl.yaml
+    show-if:
+      variable: cloud_provider
+      value: cloud-doctl
+
+  - type: section
+    subitems:
+      - type: 'output-row'
+        data: output
+        content: ''

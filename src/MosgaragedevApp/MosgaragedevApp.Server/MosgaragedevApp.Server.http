@@ -1,0 +1,6 @@
+@MosgaragedevApp.Server_HostAddress = http://localhost:5019
+
+GET {{MosgaragedevApp.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

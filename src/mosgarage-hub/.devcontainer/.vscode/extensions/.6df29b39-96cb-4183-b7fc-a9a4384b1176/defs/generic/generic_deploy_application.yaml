@@ -1,0 +1,20 @@
+title: Deploy Application
+type: layout-form
+header:
+  - type: header
+    title: Deploy Application
+    logo: icon.webp
+form:
+  - $include: generic/__generic_application_selector.yaml
+
+  - $include: generic/__generic_infrastructure_type_selector.yaml
+
+  - $include: generic/__generic_provider_selector.yaml
+
+  - $include: generic/generic_not_available.yaml
+
+  - type: section
+    subitems:
+      - type: 'output-row'
+        data: output
+        content: ''

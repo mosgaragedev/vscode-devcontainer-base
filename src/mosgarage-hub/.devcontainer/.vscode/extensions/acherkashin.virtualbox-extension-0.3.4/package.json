@@ -1,0 +1,203 @@
+{
+	"name": "virtualbox-extension",
+	"displayName": "VirtualBox",
+	"description": "%extension.description%",
+	"version": "0.3.4",
+	"publisher": "acherkashin",
+	"icon": "images/virtualbox-extension-icon.png",
+	"engines": {
+		"vscode": "^1.44.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/acherkashin/virtualbox-vscode-extension"
+	},
+	"bugs": {
+		"url": "https://github.com/acherkashin/virtualbox-vscode-extension/issues"
+	},
+	"homepage": "https://github.com/acherkashin/virtualbox-vscode-extension/blob/master/README.md",
+	"license": "MIT",
+	"private": true,
+	"categories": [
+		"Other"
+	],
+	"extensionKind": [
+		"ui",
+		"workspace"
+	],
+	"keywords": [
+		"Virtual Machines",
+		"VMs",
+		"SSH",
+		"Remote"
+	],
+	"preview": true,
+	"activationEvents": [
+		"onView:vb-machines",
+		"onCommand:virtualbox-extension.runVM",
+		"onCommand:virtualbox-extension.runHeadlessVM",
+		"onCommand:virtualbox-extension.saveStateVM",
+		"onCommand:virtualbox-extension.refreshVMs",
+		"onCommand:virtualbox-extension.stopAllVms",
+		"onCommand:virtualbox-extension.poweOffAllVms"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "virtualbox-extension.refreshVMs",
+				"category": "Virtual Box",
+				"title": "%virtualbox-extension.refreshVMs%",
+				"icon": "$(refresh)"
+			},
+			{
+				"command": "virtualbox-extension.runVM",
+				"category": "Virtual Box",
+				"title": "%virtualbox-extension.runVM%",
+				"icon": "$(run)"
+			},
+			{
+				"command": "virtualbox-extension.runHeadlessVM",
+				"category": "Virtual Box",
+				"title": "%virtualbox-extension.runHeadlessVM%",
+				"icon": "$(terminal)"
+			},
+			{
+				"command": "virtualbox-extension.saveStateVM",
+				"category": "Virtual Box",
+				"title": "%virtualbox-extension.saveStateVM%",
+				"icon": "$(debug-stop)"
+			},
+			{
+				"command": "virtualbox-extension.poweroffVm",
+				"category": "Virtual Box",
+				"title": "%virtualbox-extension.poweroffVm%",
+				"icon": "$(stop)"
+			},
+			{
+				"command": "virtualbox-extension.stopAllVms",
+				"category": "Virtual Box",
+				"title": "%virtualbox-extension.stopAllVms%",
+				"icon": "$(save)"
+			},
+			{
+				"command": "virtualbox-extension.poweOffAllVms",
+				"category": "Virtual Box",
+				"title": "%virtualbox-extension.poweOffAllVms%",
+				"icon": "$(stop-circle)"
+			}
+		],
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "virtual-box-explorer",
+					"title": "%virtual-box-explorer%",
+					"icon": "resources/virtualbox.svg"
+				}
+			]
+		},
+		"views": {
+			"virtual-box-explorer": [
+				{
+					"id": "vb-machines",
+					"name": "%vb-machines%"
+				}
+			]
+		},
+		"menus": {
+			"view/title": [
+				{
+					"command": "virtualbox-extension.refreshVMs",
+					"group": "navigation@0",
+					"when": "view == vb-machines"
+				},
+				{
+					"command": "virtualbox-extension.stopAllVms",
+					"group": "navigation@1",
+					"when": "view == vb-machines"
+				},
+				{
+					"command": "virtualbox-extension.poweOffAllVms",
+					"group": "navigation@2",
+					"when": "view == vb-machines"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "virtualbox-extension.runVM",
+					"group": "inline@0",
+					"when": "viewItem == vmStopped && view == vb-machines"
+				},
+				{
+					"command": "virtualbox-extension.runHeadlessVM",
+					"group": "inline@1",
+					"when": "viewItem == vmStopped && view == vb-machines"
+				},
+				{
+					"command": "virtualbox-extension.saveStateVM",
+					"group": "inline@2",
+					"when": "viewItem == vmRunning && view == vb-machines"
+				},
+				{
+					"command": "virtualbox-extension.poweroffVm",
+					"group": "inline@3",
+					"when": "viewItem == vmRunning && view == vb-machines"
+				}
+			],
+			"commandPalette": [
+				{
+					"command": "virtualbox-extension.runVM",
+					"when": "false"
+				},
+				{
+					"command": "virtualbox-extension.runHeadlessVM",
+					"when": "false"
+				},
+				{
+					"command": "virtualbox-extension.saveStateVM",
+					"when": "false"
+				}
+			],
+			"explorer/context": [],
+			"editor/context": []
+		},
+		"keybindings": [
+			{
+				"command": "workbench.view.extension.virtual-box-explorer",
+				"key": "ctrl+shift+v ctrl+shift+b",
+				"mac": "cmd+shift+v cmd+shift+b",
+				"linux": "shif+alt+v shif+alt+b"
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "yarn run compile",
+		"compile": "tsc -p ./",
+		"lint": "eslint src --ext ts",
+		"watch": "tsc -watch -p ./",
+		"pretest": "yarn run compile && yarn run lint",
+		"test": "node ./out/test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.1.1",
+		"@types/mocha": "^7.0.2",
+		"@types/node": "^13.11.0",
+		"@types/vscode": "^1.44.0",
+		"@typescript-eslint/eslint-plugin": "^2.26.0",
+		"@typescript-eslint/parser": "^2.26.0",
+		"eslint": "^6.8.0",
+		"glob": "^7.1.6",
+		"mocha": "^7.1.1",
+		"typescript": "^3.8.3",
+		"vscode-test": "^1.3.0"
+	},
+	"dependencies": {
+		"virtualbox": "^1.0.0",
+		"vscode-nls": "^5.0.0"
+	},
+	"__metadata": {
+		"installedTimestamp": 1768034662014,
+		"targetPlatform": "undefined",
+		"size": 4165692
+	}
+}

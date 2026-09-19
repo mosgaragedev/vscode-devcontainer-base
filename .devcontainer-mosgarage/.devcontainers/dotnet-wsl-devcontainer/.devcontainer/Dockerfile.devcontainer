@@ -1,0 +1,142 @@
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  mosgarage · Dockerfile.devcontainer                             ║
+# ║  Full-fat dev image — .NET 8 SDK + Node 20 + EF tools +          ║
+# ║  PostgreSQL client + Docker CLI + ZSH + all dev utilities        ║
+# ║  This image is NOT used in production (see Dockerfile stages)    ║
+# ╚══════════════════════════════════════════════════════════════════╝
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0-jammy
+
+LABEL org.opencontainers.image.title="mosgarage-devcontainer"
+LABEL org.opencontainers.image.description="mosgarage dev environment for VS Code + Visual Studio"
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
+ENV DOTNET_NOLOGO=1
+ENV NUGET_PACKAGES=/root/.nuget/packages
+
+# ── System packages ───────────────────────────────────────────────
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    # Shell + basics
+    zsh curl wget git ca-certificates unzip zip gnupg lsb-release \
+    # Build tools
+    build-essential python3 python3-pip \
+    # Dev utilities
+    jq htop vim nano net-tools iputils-ping dnsutils inotify-tools \
+    # SSH
+    openssh-client openssh-server \
+    # PostgreSQL client (psql, pg_dump, etc.)
+    postgresql-client \
+    # Process tools
+    procps lsof \
+    && rm -rf /var/lib/apt/lists/*
+
+# ── Node.js 20 LTS ────────────────────────────────────────────────
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && npm install -g npm@latest \
+    && npm install -g \
+        typescript \
+        ts-node \
+        pm2 \
+        @angular/cli \
+        vite \
+    && rm -rf /var/lib/apt/lists/*
+
+# ── Docker CLI (for 'docker compose' inside container) ────────────
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+    | gpg --dearmor -o /usr/share/keyrings/docker.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker.gpg] \
+       https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
+    > /etc/apt/sources.list.d/docker.list \
+    && apt-get update \
+    && apt-get install -y docker-ce-cli docker-compose-plugin \
+    && rm -rf /var/lib/apt/lists/*
+
+# ── .NET global tools ──────────────────────────────────────────────
+RUN dotnet tool install --global dotnet-ef \
+    && dotnet tool install --global dotnet-aspnet-codegenerator \
+    && dotnet tool install --global dotnet-outdated-tool \
+    && dotnet tool install --global dotnet-format \
+    && dotnet tool install --global Microsoft.dotnet-interactive
+
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+# ── GitHub CLI ────────────────────────────────────────────────────
+RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+    | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] \
+       https://cli.github.com/packages stable main" \
+    > /etc/apt/sources.list.d/github-cli.list \
+    && apt-get update && apt-get install -y gh \
+    && rm -rf /var/lib/apt/lists/*
+
+# ── Oh My Zsh ────────────────────────────────────────────────────
+RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+
+# ── Zsh plugins (syntax highlighting + autosuggestions) ───────────
+RUN git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions \
+      ${ZSH_CUSTOM:-/root/.oh-my-zsh/custom}/plugins/zsh-autosuggestions \
+    && git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting \
+      ${ZSH_CUSTOM:-/root/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+
+# ── .zshrc tailored for mosgarage dev ────────────────────────────
+RUN cat >> /root/.zshrc <<'ZSHEOF'
+
+# mosgarage dev environment
+export PATH="$PATH:/root/.dotnet/tools"
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
+export DOTNET_NOLOGO=1
+
+# Plugins
+plugins=(git dotnet docker docker-compose zsh-autosuggestions zsh-syntax-highlighting gh)
+
+# Aliases
+alias mg="cd /workspace"
+alias server="cd /workspace/src/Mosgarage.Server && dotnet watch run"
+alias agent="cd /workspace/src/Mosgarage.Agent && dotnet watch run"
+alias build="cd /workspace && dotnet build Mosgarage.sln"
+alias test="cd /workspace && dotnet test Mosgarage.sln"
+alias ef="dotnet ef"
+alias migrate="cd /workspace/src/Mosgarage.Server && dotnet ef database update"
+alias dc="docker compose"
+alias logs="docker compose logs -f"
+alias psql-mg="psql -h database -U mosgarage -d mosgarage"
+
+# Prompt shows git branch
+PROMPT='%F{cyan}mosgarage%f %F{green}%~%f $(git_prompt_info)%# '
+ZSH_THEME="robbyrussell"
+ZSHEOF
+
+WORKDIR /workspace
+
+# ── SSH config for git ────────────────────────────────────────────
+RUN mkdir -p /root/.ssh && chmod 700 /root/.ssh
+RUN cat > /root/.ssh/config <<'SSHEOF'
+Host github.com
+  HostName github.com
+  User git
+  StrictHostKeyChecking no
+  IdentityFile ~/.ssh/id_ed25519
+
+Host *
+  ServerAliveInterval 60
+  ServerAliveCountMax 5
+  StrictHostKeyChecking accept-new
+SSHEOF
+
+# Warm up the NuGet cache with common packages
+# (speeds up first restore inside the container)
+RUN mkdir -p /tmp/nuget-warm && cd /tmp/nuget-warm \
+    && dotnet new web -n warmup --no-restore 2>/dev/null \
+    && cd warmup \
+    && dotnet add package Microsoft.EntityFrameworkCore --version "8.0.*" \
+    && dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL --version "8.0.*" \
+    && dotnet add package Microsoft.AspNetCore.SignalR.Core --version "8.0.*" \
+    && dotnet add package Serilog.AspNetCore --version "8.*" \
+    && dotnet restore \
+    && cd / && rm -rf /tmp/nuget-warm
+
+VOLUME ["/root/.nuget/packages", "/root/.dotnet/tools"]
+
+CMD ["sleep", "infinity"]

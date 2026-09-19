@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "dgSpecHash": "RQuZcQ+xogU=",
+  "success": true,
+  "projectFilePath": "\\\\wsl.localhost\\Ubuntu-24.04\\workspace\\source\\MosgaragedevApp\\MosgaragedevApp.Server\\MosgaragedevApp.Server.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\igewe\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.9\\microsoft.aspnetcore.openapi.10.0.9.nupkg.sha512",
+    "C:\\Users\\igewe\\.nuget\\packages\\microsoft.aspnetcore.spaproxy\\10.0.12\\microsoft.aspnetcore.spaproxy.10.0.12.nupkg.sha512",
+    "C:\\Users\\igewe\\.nuget\\packages\\microsoft.openapi\\2.0.0\\microsoft.openapi.2.0.0.nupkg.sha512",
+    "C:\\Users\\igewe\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.23.0\\microsoft.visualstudio.azure.containers.tools.targets.1.23.0.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "Package 'Microsoft.OpenApi' 2.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-v5pm-xwqc-g5wc",
+      "projectPath": "\\\\wsl.localhost\\Ubuntu-24.04\\workspace\\source\\MosgaragedevApp\\MosgaragedevApp.Server\\MosgaragedevApp.Server.csproj",
+      "warningLevel": 1,
+      "filePath": "\\\\wsl.localhost\\Ubuntu-24.04\\workspace\\source\\MosgaragedevApp\\MosgaragedevApp.Server\\MosgaragedevApp.Server.csproj",
+      "libraryId": "Microsoft.OpenApi",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    }
+  ]
+}

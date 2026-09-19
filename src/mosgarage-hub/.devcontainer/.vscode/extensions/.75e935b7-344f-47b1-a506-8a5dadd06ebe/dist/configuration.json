@@ -1,0 +1,13 @@
+{
+  "title": "Git Dashboard",
+  "properties": {
+    "gitDashboard.excludePatterns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": "./defaultExcludes.json#/defaultExcludes",
+      "description": "排除文件和目录的模式，支持 .gitignore 风格的语法。这些文件和目录将不会被统计。"
+    }
+  }
+} 

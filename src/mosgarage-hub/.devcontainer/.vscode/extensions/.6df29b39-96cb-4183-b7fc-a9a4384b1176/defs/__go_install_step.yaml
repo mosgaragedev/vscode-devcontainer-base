@@ -1,0 +1,13 @@
+
+- type: 'action-row'
+  platform: win32
+  name: Install Go
+  verify: go version
+  install: winget install go	
+
+- type: 'action-row'
+  platform: linux
+  name: Install Go
+  verify: go version
+  interactive: true
+  install: "sudo snap install --classic --channel=1.16/stable go"

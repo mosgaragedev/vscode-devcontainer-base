@@ -1,0 +1,10 @@
+- type: 'action-row'
+  platform: win32
+  id: idf-install-scoop
+  name: Install Scoop
+  banner: |
+      Installing Scoop as it will be used to install
+      more prerequisites for ESP-IDF that will be
+      installed in following steps.
+  verify: scoop --version
+  install: iwr -useb get.scoop.sh | iex

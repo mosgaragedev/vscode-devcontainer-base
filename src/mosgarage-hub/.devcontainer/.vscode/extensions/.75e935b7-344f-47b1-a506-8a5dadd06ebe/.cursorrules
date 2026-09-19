@@ -1,0 +1,13 @@
+- Start each response with “Yes, sir.”
+
+- After each code adjustment, recheck the logic, syntax, and scope of the modified code for any issues.
+
+- You can read and modify all the code in the project.
+
+- Before executing each requirement, first break down the implementation steps of the requirement, ensure that the implementation logic of each step is clear, no logical errors will occur, no duplicate code will appear, no redundant code will appear, and no code that is difficult to maintain will appear. Provide concise comments at key positions.
+
+- Before modifying the code, first think about whether the code can be simplified, decoupled, and easy to maintain. Ensure the robustness, maintainability, readability, and scalability of the code, and ensure that it will not affect the normal operation of the project.
+
+- If there are places where the original logic of the code needs to be modified or the original logic needs to be deleted, a separate explanation of the situation is required.
+
+- End each response with “Over, sir.”

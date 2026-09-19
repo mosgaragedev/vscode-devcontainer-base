@@ -1,0 +1,42 @@
+<testsuites name="Mocha Tests">
+  <testsuite name="Extension Tests for Runtimes" tests="7" errors="0" failures="0" skipped="0" timestamp="2022-10-13T12:55:09" time="0.182">
+    <testcase classname="Extension Tests for Runtimes" name="Should Filter missions with specific runtime support" time="0">
+    </testcase>
+    <testcase classname="Extension Tests for Runtimes" name="Ensure at least one booster still exists for Camel/Fuse runtime" time="0.15">
+    </testcase>
+    <testcase classname="Extension Tests for Runtimes" name="Ensure at least one booster still exists for Golang runtime" time="0.001">
+    </testcase>
+    <testcase classname="Extension Tests for Runtimes" name="Ensure at least one booster still exists for NodeJS runtime" time="0.001">
+    </testcase>
+    <testcase classname="Extension Tests for Runtimes" name="Ensure at least one booster still exists for Spring Boot runtime" time="0.002">
+    </testcase>
+    <testcase classname="Extension Tests for Runtimes" name="Ensure at least one booster still exists for Thorntail runtime" time="0.001">
+    </testcase>
+    <testcase classname="Extension Tests for Runtimes" name="Ensure at least one booster still exists for Vert.x runtime" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="Extension Tests" tests="4" errors="0" failures="0" skipped="0" timestamp="2022-10-13T12:55:09" time="0.124">
+    <testcase classname="Extension Tests" name="Extension should be present" time="0">
+    </testcase>
+    <testcase classname="Extension Tests" name="should activate" time="0.015">
+    </testcase>
+    <testcase classname="Extension Tests" name="should register all commands" time="0.027">
+    </testcase>
+    <testcase classname="Extension Tests" name="Should load default catalog" time="0.079">
+    </testcase>
+  </testsuite>
+  <testsuite name="Sanitize tests" tests="6" errors="0" failures="0" skipped="0" timestamp="2022-10-13T12:55:10" time="0.005">
+    <testcase classname="Sanitize tests" name="Should Filter 127.0.0.1" time="0.003">
+    </testcase>
+    <testcase classname="Sanitize tests" name="Should Filter ip address" time="0">
+    </testcase>
+    <testcase classname="Sanitize tests" name="Should Filter email addresses" time="0">
+    </testcase>
+    <testcase classname="Sanitize tests" name="Should Filter homedir" time="0.001">
+    </testcase>
+    <testcase classname="Sanitize tests" name="Should Filter temp dir" time="0">
+    </testcase>
+    <testcase classname="Sanitize tests" name="Should Filter user name" time="0">
+    </testcase>
+  </testsuite>
+</testsuites>

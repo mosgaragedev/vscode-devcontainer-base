@@ -1,0 +1,20 @@
+#
+# Docker
+#
+- item-types: docker-image-list
+  cmd: docker image list --format json
+  parser: rows-json
+  path-id: $[::].ID
+  path-name: $[::].Repository
+  path-raw: $[::]
+  item-type-generic: docker-image
+  item-type: docker-image
+
+- item-types: docker-container-list
+  cmd: docker ps --all --format json
+  parser: rows-json
+  path-id: $[::].ID
+  path-name: $[::].Names
+  path-raw: $[::]
+  item-type: docker-container
+  item-type-generic: docker-container

@@ -1,0 +1,9 @@
+- name: Welcome
+  description: Welcome to Docker Runner!
+  id: welcome
+  icon: icon.png
+  details: welcome_details.yaml
+  type: generic
+
+# add definitions for respective sections / resouce providers here
+- $include: docker/____tree_docker.yaml

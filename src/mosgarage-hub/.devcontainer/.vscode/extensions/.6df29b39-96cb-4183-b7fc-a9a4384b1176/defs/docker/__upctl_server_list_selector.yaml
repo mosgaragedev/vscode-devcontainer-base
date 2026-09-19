@@ -1,0 +1,12 @@
+- type: row
+  subitems:
+    - type: dropdown
+      name: Select Server
+      items: []
+      source:
+        cmd: |
+          upctl server list --output json
+        path-id: $.servers.[*].uuid
+        path-name: $.servers.[*].hostname
+      produces:
+        - variable: server_id

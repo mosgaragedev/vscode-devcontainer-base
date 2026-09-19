@@ -1,0 +1,33 @@
+- type: section
+  title: Basic Information
+  subitems:
+    - $include: az/__az_resource_group_selector.yaml
+
+    - type: row
+      subitems:
+        - type: textfield
+          name: Cluster Name
+          produces:
+            - variable: cluster_name
+
+#- type: section
+#  title: Image / Application
+  #subitems:
+  #  - type: row
+  #    subitems:
+  #      - type: textfield
+  #        name: Container Name
+  #        produces:
+  #          - variable: image
+
+- type: section
+  subitems:
+    - type: 'action-row'
+      name: az aks create
+      consumes:
+        - variable: resource_group
+        - variable: cluster_name
+        # - variable: image
+      verify: |
+          az aks show --resource-group ${resource_group} --name ${cluster_name}
+      install: az aks create --resource-group ${resource_group} --name ${cluster_name}

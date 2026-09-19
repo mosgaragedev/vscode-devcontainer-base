@@ -1,0 +1,13 @@
+
+- type: 'action-row'
+  platform: linux
+  name: Install Docker
+  verify: docker info
+  interactive: true
+  install: sudo dockerd &
+
+- type: 'action-row'
+  platform: win32
+  name: Start Docker Daemon
+  verify: docker info
+  install: C:\\Program Files\\Docker\\Docker\\Docker Desktop.exe

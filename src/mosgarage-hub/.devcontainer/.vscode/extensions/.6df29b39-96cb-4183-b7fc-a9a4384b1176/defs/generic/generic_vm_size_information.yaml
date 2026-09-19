@@ -1,0 +1,29 @@
+- type: row
+  subitems:
+    - type: field
+      icon: icon-cores.png
+      color: black
+      label: 'Cores:'
+      value: "-"
+      value_src: "$.vm_size_cores"
+      consumes:
+        - variable: vm_size_cores
+
+    - type: field
+      icon: icon-memory.png
+      color: black
+      label: 'Memory:'
+      value: "-"
+      value-format: '${p[0]} MB'
+      value_src: "$.vm_size_memory"
+      consumes:
+        - variable: vm_size_memory
+    - type: field
+      icon: icon-storage.png
+      color: black
+      label: 'Disk Size:'
+      value: "-"
+      value-format: '${p[0]} GB'
+      value_src: "$.vm_size_disk"
+      consumes:
+        - variable: vm_size_disk

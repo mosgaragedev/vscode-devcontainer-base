@@ -1,0 +1,197 @@
+{
+  // ╔══════════════════════════════════════════════════════════════════╗
+  // ║  mosgarage · devcontainer.json                                   ║
+  // ║  Works with:                                                     ║
+  // ║    VS Code       → Dev Containers extension                      ║
+  // ║    Visual Studio → 2022 v17.4+ Container Tools                  ║
+  // ║    Both use WSL2 as the Docker backend                           ║
+  // ╚══════════════════════════════════════════════════════════════════╝
+
+  "name": "mosgarage dev",
+
+  // ── Extend the existing platform compose ──────────────────────────
+  // We layer a dev-only service on top instead of replacing it,
+  // so the real runtime compose stays untouched.
+  "dockerComposeFile": [
+    "../docker-compose.yml",
+    "docker-compose.devcontainer.yml"
+  ],
+  "service": "devcontainer",
+  "workspaceFolder": "/workspace",
+
+  // ── Shut down behaviour ───────────────────────────────────────────
+  // "none" keeps the database + traefik alive between editor restarts
+  "shutdownAction": "stopCompose",
+
+  // ── Features — installed automatically in the dev container ───────
+  "features": {
+    // .NET 8 SDK (in case the image layer doesn't already have it)
+    "ghcr.io/devcontainers/features/dotnet:2": {
+      "version": "8.0",
+      "installUsingApt": true
+    },
+    // Node.js 20 LTS (for ClientApp)
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20",
+      "nvmVersion": "latest"
+    },
+    // Docker-in-Docker (so 'docker compose' works from inside the container)
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "moby": true,
+      "installDockerBuildx": true
+    },
+    // GitHub CLI
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    // Common tools: git, curl, jq, etc.
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "configureZshAsDefaultShell": true,
+      "installOhMyZsh": true,
+      "username": "mosgarage",
+      "upgradePackages": true
+    },
+    // SSH client (for git-setup / deploy key workflows)
+    "ghcr.io/devcontainers/features/sshd:1": {
+      "version": "latest"
+    }
+  },
+
+  // ── Port forwards ─────────────────────────────────────────────────
+  "forwardPorts": [
+    7070,   // mosgarage control plane (HTTP + SignalR + Swagger)
+    7071,   // agent endpoint
+    5432,   // PostgreSQL — accessible from host for DB tools
+    80,     // Traefik HTTP
+    8090,   // Traefik dashboard
+    2222    // SSH server
+  ],
+  "portsAttributes": {
+    "7070": { "label": "mosgarage control plane", "onAutoForward": "openBrowser" },
+    "7071": { "label": "mosgarage agent endpoint", "onAutoForward": "silent" },
+    "5432": { "label": "PostgreSQL", "onAutoForward": "silent" },
+    "80":   { "label": "Traefik proxy", "onAutoForward": "silent" },
+    "8090": { "label": "Traefik dashboard", "onAutoForward": "notify" },
+    "2222": { "label": "SSH server", "onAutoForward": "silent" }
+  },
+
+  // ── Post-create — runs once after the container is first built ────
+  "postCreateCommand": "bash .devcontainer/scripts/post-create.sh",
+
+  // ── Post-start — runs every time the container starts ─────────────
+  "postStartCommand": "bash .devcontainer/scripts/post-start.sh",
+
+  // ── Environment passed into the dev container ─────────────────────
+  // These mirror your .env.example — override by creating .env locally
+  "containerEnv": {
+    "DOTNET_ENVIRONMENT":        "Development",
+    "ASPNETCORE_ENVIRONMENT":    "Development",
+    "ASPNETCORE_URLS":           "http://+:7070;http://+:7071",
+    "MOSGARAGE_ACCESS_URL":      "http://localhost:7070",
+    "MOSGARAGE_PG_CONNECTION":   "Host=database;Port=5432;Database=mosgarage;Username=mosgarage;Password=mosgarage;",
+    "MOSGARAGE_SECRET_KEY":      "dev-secret-key-change-in-production-32chars",
+    "MOSGARAGE_PROVISIONER":     "docker",
+    "MOSGARAGE_ENV":             "development",
+    "GITHUB_USER":               "mosgaragedev",
+    "GITHUB_ORG":                "mosgarage",
+    "GITHUB_REPO":               "mosgaragedev",
+    "GIT_BRANCH":                "main",
+    "DOTNET_WATCH_RESTART_ON_RUDE_EDIT": "true"
+  },
+
+  // ── Mount the Unix socket from host WSL2 (IPC) ────────────────────
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+  ],
+
+  // ── VS Code specific ──────────────────────────────────────────────
+  "customizations": {
+    "vscode": {
+      "settings": {
+        // .NET
+        "dotnet.defaultSolution":              "Mosgarage.sln",
+        "omnisharp.enableRoslynAnalyzers":     true,
+        "omnisharp.enableEditorConfigSupport": true,
+        "omnisharp.organizeImportsOnFormat":   true,
+        "csharp.referencesCodeLens.enabled":   true,
+        "csharp.testsCodeLens.enabled":        true,
+
+        // Editor
+        "editor.formatOnSave":                 true,
+        "editor.formatOnType":                 true,
+        "editor.inlayHints.enabled":           "on",
+        "[csharp]": {
+          "editor.defaultFormatter": "ms-dotnettools.csharp"
+        },
+        "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+
+        // Terminal — open in workspace root
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.cwd": "/workspace",
+
+        // Docker
+        "docker.host": "unix:///var/run/docker.sock",
+
+        // Git
+        "git.autofetch":     true,
+        "git.confirmSync":   false
+      },
+
+      "extensions": [
+        // ── .NET / C# ──────────────────────────────────────────────
+        "ms-dotnettools.csdevkit",           // C# Dev Kit (VS Code-native)
+        "ms-dotnettools.csharp",             // OmniSharp C#
+        "ms-dotnettools.vscode-dotnet-runtime",
+        "ms-dotnettools.dotnet-interactive-vscode",
+
+        // ── Database ───────────────────────────────────────────────
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-pg",          // PostgreSQL driver for SQLTools
+
+        // ── Docker / Containers ────────────────────────────────────
+        "ms-azuretools.vscode-docker",
+        "ms-vscode-remote.remote-containers",
+        "ms-vscode-remote.remote-wsl",
+
+        // ── Git ────────────────────────────────────────────────────
+        "eamodio.gitlens",
+        "github.vscode-pull-request-github",
+
+        // ── REST / API ─────────────────────────────────────────────
+        "humao.rest-client",                 // test API endpoints inline
+        "42crunch.vscode-openapi",
+
+        // ── Frontend (ClientApp) ───────────────────────────────────
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "bradlc.vscode-tailwindcss",
+
+        // ── YAML / JSON / TOML ─────────────────────────────────────
+        "redhat.vscode-yaml",
+        "tamasfe.even-better-toml",
+
+        // ── Productivity ───────────────────────────────────────────
+        "pkief.material-icon-theme",
+        "usernamehw.errorlens",
+        "streetsidesoftware.code-spell-checker",
+
+        // ── Env files ──────────────────────────────────────────────
+        "mikestead.dotenv"
+      ]
+    },
+
+    // ── Visual Studio 2022 specific ───────────────────────────────
+    "visualstudio": {
+      "extensions": [
+        // These match VS Marketplace IDs
+        "MadsKristensen.EditorConfig",
+        "MadsKristensen.DotNetInstaller"
+      ]
+    }
+  },
+
+  // ── Run as the mosgarage user (matches container UID 1001) ────────
+  "remoteUser": "root",
+  "containerUser": "root"
+}

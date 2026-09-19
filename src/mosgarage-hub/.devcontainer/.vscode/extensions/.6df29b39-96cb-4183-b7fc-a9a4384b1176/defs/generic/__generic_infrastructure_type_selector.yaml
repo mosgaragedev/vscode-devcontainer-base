@@ -1,0 +1,18 @@
+- type: section
+  title: Infrastructure Type
+  subitems:
+    - type: row
+      subitems:
+        - type: dropdown
+          name: Select Infrastructure to Use
+          items:
+            - id: infra-vm
+              label: Virtual Machine
+            - id: infra-container
+              label: Container
+            - id: infra-kubernetes
+              label: Kubernetes
+            - id: infra-serverless
+              label: Serverless
+          produces:
+            - variable: infrastructure_type

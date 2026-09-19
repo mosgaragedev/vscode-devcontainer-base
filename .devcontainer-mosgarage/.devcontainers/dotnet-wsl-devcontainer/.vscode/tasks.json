@@ -1,0 +1,183 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "DDEV: Enable Xdebug",
+      "type": "shell",
+      "command": "ddev xdebug on",
+      "presentation": {
+        "reveal": "silent",
+        "close": true
+      }
+    },
+    {
+      "label": "DDEV: Disable Xdebug",
+      "type": "shell",
+      "command": "ddev xdebug off",
+      "presentation": {
+        "reveal": "silent",
+        "close": true
+      }
+    },
+    {
+      "label": "build-all",
+      "detail": "Build entire Mosgarage solution",
+      "type": "shell",
+      "command": "dotnet build ${workspaceFolder}/Mosgarage.sln -c Debug",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "build-server",
+      "detail": "Build Mosgarage.Server",
+      "type": "shell",
+      "command": "dotnet build ${workspaceFolder}/src/Mosgarage.Server/Mosgarage.Server.csproj -c Debug",
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "build-agent",
+      "detail": "Build Mosgarage.Agent",
+      "type": "shell",
+      "command": "dotnet build ${workspaceFolder}/src/Mosgarage.Agent/Mosgarage.Agent.csproj -c Debug",
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "watch-server",
+      "detail": "dotnet watch run — Mosgarage.Server (hot reload)",
+      "type": "shell",
+      "command": "dotnet watch run --project ${workspaceFolder}/src/Mosgarage.Server/Mosgarage.Server.csproj",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "dotnet-watch",
+        "pattern": {
+          "regexp": "^\\s*error\\s+(\\S+):\\s+(.+)$",
+          "file": 1,
+          "message": 2
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "dotnet watch",
+          "endsPattern": "Now listening on"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "label": "Server watch"
+      }
+    },
+    {
+      "label": "watch-agent",
+      "detail": "dotnet watch run — Mosgarage.Agent",
+      "type": "shell",
+      "command": "dotnet watch run --project ${workspaceFolder}/src/Mosgarage.Agent/Mosgarage.Agent.csproj",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "dotnet-watch-agent",
+        "pattern": {
+          "regexp": "^\\s*error\\s+(\\S+):\\s+(.+)$",
+          "file": 1,
+          "message": 2
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "dotnet watch",
+          "endsPattern": "Agent started"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "label": "Agent watch"
+      }
+    },
+    {
+      "label": "test-all",
+      "detail": "Run all tests",
+      "type": "shell",
+      "command": "dotnet test ${workspaceFolder}/Mosgarage.sln --logger 'console;verbosity=normal'",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "ef-migrate",
+      "detail": "Apply EF Core migrations to dev database",
+      "type": "shell",
+      "command": "dotnet ef database update --project ${workspaceFolder}/src/Mosgarage.Server/Mosgarage.Server.csproj",
+      "problemMatcher": []
+    },
+    {
+      "label": "ef-add-migration",
+      "detail": "Add a new EF Core migration (prompts for name)",
+      "type": "shell",
+      "command": "dotnet ef migrations add ${input:migrationName} --project ${workspaceFolder}/src/Mosgarage.Server/Mosgarage.Server.csproj",
+      "problemMatcher": []
+    },
+    {
+      "label": "npm-install",
+      "detail": "npm ci — install ClientApp dependencies",
+      "type": "shell",
+      "command": "cd ${workspaceFolder}/src/Mosgarage.Server/ClientApp && npm ci",
+      "problemMatcher": [
+        "$eslint-compact"
+      ]
+    },
+    {
+      "label": "vite-dev",
+      "detail": "Start Vite dev server for ClientApp",
+      "type": "shell",
+      "command": "cd ${workspaceFolder}/src/Mosgarage.Server/ClientApp && npm run dev",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "vite",
+        "pattern": {
+          "regexp": ".",
+          "file": 1,
+          "message": 2
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "VITE",
+          "endsPattern": "ready in"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "label": "Vite"
+      }
+    },
+    {
+      "label": "compose-up",
+      "detail": "docker compose up -d (database + traefik)",
+      "type": "shell",
+      "command": "docker compose -f ${workspaceFolder}/docker-compose.yml -f ${workspaceFolder}/.devcontainer/docker-compose.devcontainer.yml up -d database traefik",
+      "problemMatcher": []
+    },
+    {
+      "label": "clean",
+      "detail": "dotnet clean solution",
+      "type": "shell",
+      "command": "dotnet clean ${workspaceFolder}/Mosgarage.sln",
+      "problemMatcher": "$msCompile"
+    }
+  ],
+
+  "inputs": [
+    {
+      "id":          "migrationName",
+      "type":        "promptString",
+      "description": "Migration name (PascalCase e.g. AddWorkspaceTags)"
+    }
+  ]
+}

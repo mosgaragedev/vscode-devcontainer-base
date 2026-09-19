@@ -1,0 +1,305 @@
+# =============================================================================
+# mosgarage devcontainer — Docker Compose
+# No Docker Desktop needed — uses Docker CLI socket in WSL directly.
+#
+# Databases use named volumes → data persists across container rebuilds.
+# All microservices share one internal network.
+# =============================================================================
+
+name: mosgarage
+
+networks:
+  mosgarage-net:
+    driver: bridge
+
+# Named volumes = data survives container rebuilds, image updates, everything
+volumes:
+  postgres-data:
+  mongodb-data:
+  redis-data:
+  workspace-data:
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # WORKSPACE — the container VS Code actually attaches to
+  # Based on your existing mosgarage/build image (falls back to ubuntu if not found)
+  # ---------------------------------------------------------------------------
+  workspace:
+    build:
+      context: .
+      dockerfile: Dockerfile.workspace
+    volumes:
+      - ..:/workspace:cached                    # your project root
+      - workspace-data:/home/mosgarage             # persist home dir (extensions, history)
+      - /var/run/docker.sock:/var/run/docker.sock  # manage other containers from inside
+    environment:
+      - TZ=Europe/London
+      # Database connection strings available in every terminal
+      - DATABASE_URL=postgresql://mosgarage:mosgarage@postgres:5432/mosgarage
+      - MONGODB_URL=mongodb://mosgarage:mosgarage@mongodb:27017/mosgarage
+      - REDIS_URL=redis://redis:6379
+      # Service URLs for local dev
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - CONTENT_SERVICE_URL=http://content-service:3002
+      - LEARNER_SERVICE_URL=http://learner-service:3003
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3004
+    networks:
+      - mosgarage-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: sleep infinity   # keep alive — VS Code manages the shell
+    user: mosgarage
+
+  # ---------------------------------------------------------------------------
+  # POSTGRESQL — primary relational DB (users, courses, enrollments)
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: mg-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER:     mosgarage
+      POSTGRES_PASSWORD: mosgarage
+      POSTGRES_DB:       mosgarage
+      PGDATA:            /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres-data:/var/lib/postgresql/data          # ← persistent
+      - ./init/postgres:/docker-entrypoint-initdb.d:ro  # seed scripts
+    ports:
+      - "5432:5432"
+    networks:
+      - mosgarage-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mosgarage -d mosgarage"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # ---------------------------------------------------------------------------
+  # MONGODB — document store (content, lessons, quizzes, media metadata)
+  # ---------------------------------------------------------------------------
+  mongodb:
+    image: mongo:7
+    container_name: mg-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mosgarage
+      MONGO_INITDB_ROOT_PASSWORD: mosgarage
+      MONGO_INITDB_DATABASE:      mosgarage
+    volumes:
+      - mongodb-data:/data/db                            # ← persistent
+      - ./init/mongodb:/docker-entrypoint-initdb.d:ro    # seed scripts
+    ports:
+      - "27017:27017"
+    networks:
+      - mosgarage-net
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ---------------------------------------------------------------------------
+  # REDIS — cache, sessions, pub/sub for notifications
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: mg-redis
+    restart: unless-stopped
+    command: >
+      redis-server
+      --appendonly yes
+      --appendfsync everysec
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --requirepass mosgarage
+    volumes:
+      - redis-data:/data    # ← persistent (AOF)
+    ports:
+      - "6379:6379"
+    networks:
+      - mosgarage-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "mosgarage", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # MONGO EXPRESS — web UI for MongoDB (localhost:8081)
+  # ---------------------------------------------------------------------------
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mg-mongo-express
+    restart: unless-stopped
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: mosgarage
+      ME_CONFIG_MONGODB_ADMINPASSWORD: mosgarage
+      ME_CONFIG_MONGODB_URL: mongodb://mosgarage:mosgarage@mongodb:27017/
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: mosgarage
+    ports:
+      - "8081:8081"
+    networks:
+      - mosgarage-net
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  # ---------------------------------------------------------------------------
+  # REDIS COMMANDER — web UI for Redis (localhost:8082)
+  # ---------------------------------------------------------------------------
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: mg-redis-commander
+    restart: unless-stopped
+    environment:
+      REDIS_HOSTS: "local:redis:6379:0:mosgarage"
+      HTTP_USER:   admin
+      HTTP_PASSWORD: mosgarage
+    ports:
+      - "8082:8081"
+    networks:
+      - mosgarage-net
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  # ---------------------------------------------------------------------------
+  # MICROSERVICES — each one is a separate composable stack
+  # Run individually:  docker compose up auth-service
+  # Run all:           docker compose up
+  # ---------------------------------------------------------------------------
+
+  api-gateway:
+    build:
+      context: ../services/api-gateway
+      dockerfile: Dockerfile.dev
+    container_name: mg-api-gateway
+    restart: unless-stopped
+    volumes:
+      - ../services/api-gateway:/app:cached
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - CONTENT_SERVICE_URL=http://content-service:3002
+      - LEARNER_SERVICE_URL=http://learner-service:3003
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3004
+      - REDIS_URL=redis://:mosgarage@redis:6379
+    ports:
+      - "3000:3000"
+    networks:
+      - mosgarage-net
+    depends_on:
+      - auth-service
+      - content-service
+      - learner-service
+    profiles: ["services", "full"]
+
+  auth-service:
+    build:
+      context: ../services/auth-service
+      dockerfile: Dockerfile.dev
+    container_name: mg-auth
+    restart: unless-stopped
+    volumes:
+      - ../services/auth-service:/app:cached
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - DATABASE_URL=postgresql://mosgarage:mosgarage@postgres:5432/mosgarage_auth
+      - REDIS_URL=redis://:mosgarage@redis:6379
+      - JWT_SECRET=dev-secret-change-in-prod
+    ports:
+      - "3001:3001"
+    networks:
+      - mosgarage-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    profiles: ["services", "full"]
+
+  content-service:
+    build:
+      context: ../services/content-service
+      dockerfile: Dockerfile.dev
+    container_name: mg-content
+    restart: unless-stopped
+    volumes:
+      - ../services/content-service:/app:cached
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=3002
+      - MONGODB_URL=mongodb://mosgarage:mosgarage@mongodb:27017/mosgarage_content
+      - REDIS_URL=redis://:mosgarage@redis:6379
+    ports:
+      - "3002:3002"
+    networks:
+      - mosgarage-net
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    profiles: ["services", "full"]
+
+  learner-service:
+    build:
+      context: ../services/learner-service
+      dockerfile: Dockerfile.dev
+    container_name: mg-learner
+    restart: unless-stopped
+    volumes:
+      - ../services/learner-service:/app:cached
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=3003
+      - DATABASE_URL=postgresql://mosgarage:mosgarage@postgres:5432/mosgarage_learners
+      - MONGODB_URL=mongodb://mosgarage:mosgarage@mongodb:27017/mosgarage_learners
+      - REDIS_URL=redis://:mosgarage@redis:6379
+    ports:
+      - "3003:3003"
+    networks:
+      - mosgarage-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    profiles: ["services", "full"]
+
+  notification-service:
+    build:
+      context: ../services/notification-service
+      dockerfile: Dockerfile.dev
+    container_name: mg-notifications
+    restart: unless-stopped
+    volumes:
+      - ../services/notification-service:/app:cached
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=3004
+      - REDIS_URL=redis://:mosgarage@redis:6379
+      - MONGODB_URL=mongodb://mosgarage:mosgarage@mongodb:27017/mosgarage_notifications
+    ports:
+      - "3004:3004"
+    networks:
+      - mosgarage-net
+    depends_on:
+      redis:
+        condition: service_healthy
+    profiles: ["services", "full"]
