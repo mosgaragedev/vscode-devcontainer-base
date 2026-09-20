@@ -51,10 +51,16 @@ jobs:
 
       - name: Compute tags
         id: tags
+        env:
+          HAS_DHUB: ${{ secrets.DOCKERHUB_USERNAME != '' }}
         run: |
           DATE_TAG="$(date +%Y%m%d)"
           TAGS=""
-          for REG in "${{ env.GHCR }}" "${{ env.DHUB }}"; do
+          REGS="${{ env.GHCR }}"
+          if [ "${HAS_DHUB}" = "true" ]; then
+            REGS="$REGS ${{ env.DHUB }}"
+          fi
+          for REG in $REGS; do
             if [ "${{ matrix.target }}" = "devcontainer" ]; then
               TAGS="$TAGS,${REG}:latest"
               if [ "${{ github.ref_name }}" = "main" ]; then
