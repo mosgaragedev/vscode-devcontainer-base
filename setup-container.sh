@@ -120,6 +120,7 @@ mkdir -p /var/log/mosgarage
 sudo chown ${USERNAME}:${USERNAME} /var/log/mosgarage
 if [[ -n "${BACKUP_DIR:-}" ]]; then
     sudo mkdir -p "${BACKUP_DIR}"
+    sudo chown ${USERNAME}:${USERNAME} "${BACKUP_DIR}"
     sudo sed -i "s|^#BACKUP_DIR=.*|BACKUP_DIR=${BACKUP_DIR}|" /etc/cron.d/mosgarage-backup || true
 fi
 if sudo service cron start 2>/dev/null || sudo cron 2>/dev/null; then
@@ -129,7 +130,9 @@ else
 fi
 
 # ── Backup directory for cron jobs ────────────────────────────────────────────
-if [[ -w /workspaces ]]; then
+# Backed by the mosgarage-backups named volume (seeded with mosgarage ownership
+# at image build time and mounted at /workspaces/.mosgarage-backups).
+if [[ -d /workspaces ]]; then
     sudo mkdir -p /workspaces/.mosgarage-backups
     sudo chown ${USERNAME}:${USERNAME} /workspaces/.mosgarage-backups
 fi

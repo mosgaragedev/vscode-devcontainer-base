@@ -29,6 +29,7 @@ _base_args() {
         -v ${PROJECT_DIR}:/workspaces/$(basename "${PROJECT_DIR}") \
         -v mosgarage-home:/home/mosgarage/.vscode-server \
         -v mosgarage-code-tunnel:/home/mosgarage/.vscode-cli \
+        -v mosgarage-backups:/workspaces/.mosgarage-backups \
         --hostname mosgarage-dev"
 }
 

@@ -34,6 +34,7 @@
     },
     "mounts": [
         "source=${localEnv:HOME},target=${localEnv:HOME},type=bind,readonly",
-        "source=mosgarage-code-tunnel,target=/home/mosgarage/.vscode-cli,type=volume"
+        "source=mosgarage-code-tunnel,target=/home/mosgarage/.vscode-cli,type=volume",
+        "source=mosgarage-backups,target=/workspaces/.mosgarage-backups,type=volume"
     ]
 }

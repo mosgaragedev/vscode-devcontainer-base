@@ -197,7 +197,9 @@ RUN chmod 0644 /etc/cron.d/mosgarage-backup && \
 RUN mkdir -p /home/${USERNAME}/.docker /home/${USERNAME}/.kube && \
     chown ${USER_UID}:${USER_GID} /home/${USERNAME}/.docker /home/${USERNAME}/.kube && \
     mkdir -p /usr/local/lib/devcontainer/hooks.d/pre-start && \
-    mkdir -p /usr/local/lib/devcontainer/hooks.d/post-start
+    mkdir -p /usr/local/lib/devcontainer/hooks.d/post-start && \
+    mkdir -p /workspaces/.mosgarage-backups && \
+    chown ${USER_UID}:${USER_GID} /workspaces/.mosgarage-backups
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint"]
 
