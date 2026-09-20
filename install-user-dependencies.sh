@@ -30,11 +30,6 @@ export PATH="${HOME}/.local/bin:${PATH}"
 if [ "${INSTALL_AI_TOOLS}" = "true" ]; then
     echo "Installing aider (AI pair programming)..."
     uv tool install --python python3.12 aider-chat || echo "aider install failed — continuing"
-    if [ -f /usr/lib/node_modules/@anthropic-ai/claude-code/install.cjs ]; then
-        echo "Installing Claude Code native binary..."
-        node /usr/lib/node_modules/@anthropic-ai/claude-code/install.cjs \
-            || echo "claude native install failed — continuing"
-    fi
 else
     echo "Skipping AI tools (INSTALL_AI_TOOLS=false)"
 fi

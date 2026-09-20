@@ -13,6 +13,8 @@ IDE_CONTAINER="${MOSGARAGE_IDE_CONTAINER:-mosgarage-ide}"
 PROJECT_DIR="${MOSGARAGE_PROJECT_DIR:-$PWD}"
 HOST_HOME="${MOSGARAGE_HOST_HOME:-$HOME}"
 PASSWORD="${MOSGARAGE_IDE_PASSWORD:-mosgarage}"
+IDE_HTTP_PORT="${MOSGARAGE_IDE_HTTP_PORT:-8080}"
+IDE_SSH_PORT="${MOSGARAGE_IDE_SSH_PORT:-2222}"
 
 _log() { echo "▸ $*"; }
 _ok()  { echo "✓ $*"; }
@@ -47,13 +49,13 @@ cmd_start_ide() {
     _need_docker
     docker image inspect "${IDE_IMAGE}" >/dev/null 2>&1 || { _log "Pulling ${IDE_IMAGE}..."; docker pull "${IDE_IMAGE}"; }
     docker rm -f "${IDE_CONTAINER}" 2>/dev/null || true
-    _log "Starting ${IDE_CONTAINER} (browser IDE on :8080, SSH :2222)"
+    _log "Starting ${IDE_CONTAINER} (browser IDE on :${IDE_HTTP_PORT}, SSH :${IDE_SSH_PORT})"
     # shellcheck disable=SC2086
     docker run -d $(_base_args "${IDE_CONTAINER}") \
-        -p 8080:8080 -p 2222:2222 \
+        -p "${IDE_HTTP_PORT}:8080" -p "${IDE_SSH_PORT}:2222" \
         -e CODE_SERVER_PASSWORD="${PASSWORD}" \
         "${IDE_IMAGE}" >/dev/null
-    _ok "IDE running → http://localhost:8080  (password: ${PASSWORD})"
+    _ok "IDE running → http://localhost:${IDE_HTTP_PORT}  (password: ${PASSWORD})"
 }
 
 cmd_stop() {
@@ -106,7 +108,7 @@ cmd_tunnel_login() {
 }
 
 cmd_open() {
-    local url="http://localhost:8080"
+    local url="http://localhost:${IDE_HTTP_PORT}"
     echo "  ${url}"
     if command -v xdg-open >/dev/null; then xdg-open "${url}" 2>/dev/null || true
     elif command -v open >/dev/null; then open "${url}" 2>/dev/null || true
@@ -120,7 +122,7 @@ cmd_help() {
 
   Commands:
     start [--ide]     Start the container (interactive). --ide starts the
-                      browser IDE variant detached on :8080/:2222
+                      browser IDE variant detached (HTTP ${IDE_HTTP_PORT}, SSH ${IDE_SSH_PORT})
     stop [name]       Remove the running container
     status            List mosgarage containers
     exec [--ide] CMD  Execute a command inside the container (default: zsh)
@@ -138,6 +140,8 @@ cmd_help() {
     MOSGARAGE_IDE_CONTAINER    ide container name  (${IDE_CONTAINER})
     MOSGARAGE_PROJECT_DIR      workspace dir       (${PROJECT_DIR})
     MOSGARAGE_IDE_PASSWORD     IDE password        (change me!)
+    MOSGARAGE_IDE_HTTP_PORT    IDE HTTP port       (${IDE_HTTP_PORT})
+    MOSGARAGE_IDE_SSH_PORT     IDE SSH port        (${IDE_SSH_PORT})
 
   Examples:
     cd ~/my-project && mg start

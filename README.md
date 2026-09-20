@@ -206,9 +206,11 @@ make push         # multi-arch publish (requires Docker Hub login)
 ```
 
 `make auto` is the one-command rebuild-and-run: it rebuilds the local image(s)
-and recreates the IDE container (`:8080`, password via `PASSWORD=`; default
+and recreates the IDE container (password via `PASSWORD=`; default
 `mosgarage`). Re-running it is idempotent — `setup-container.sh` refreshes
 config (hooks, kubeconfig, Helm repos, backups) on every start.
+Ports default to 8080/2222 and can be overridden per run, e.g.
+`MOSGARAGE_IDE_HTTP_PORT=8081 MOSGARAGE_IDE_SSH_PORT=2223 make auto-ide`.
 
 > Note: builds use `--network host` so the container build can reach package
 > repos when the host resolver is a loopback stub (e.g. systemd-resolved).

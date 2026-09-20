@@ -125,11 +125,15 @@ RUN install -d -m 0755 /etc/apt/keyrings && \
     rm -rf /var/lib/apt/lists/*
 
 # ── AI coding agent CLIs (opt out with INSTALL_AI_TOOLS=false) ────────────────
+# The claude-code npm postinstall can silently skip the native binary; run its
+# bundled installer explicitly (as root — it writes into the global package dir).
 RUN if [ "${INSTALL_AI_TOOLS}" = "true" ]; then \
         npm install -g --no-audit --no-fund \
             @anthropic-ai/claude-code \
             @google/gemini-cli \
             @openai/codex; \
+        node /usr/lib/node_modules/@anthropic-ai/claude-code/install.cjs \
+            || echo "claude native install failed — continuing"; \
     fi
 
 # ── .NET aspnetcore runtime (parity with the code-server workspace stack) ─────
