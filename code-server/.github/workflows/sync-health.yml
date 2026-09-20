@@ -1,0 +1,32 @@
+name: Sync Health Check
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'   # every 6 hours
+  workflow_dispatch:
+
+jobs:
+  check-sync:
+    name: Verify GitHub sync is healthy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check last commit age
+        run: |
+          LAST_COMMIT=$(git log -1 --format="%ct")
+          NOW=$(date +%s)
+          AGE=$(( (NOW - LAST_COMMIT) / 3600 ))
+          echo "Last commit: $AGE hours ago"
+          if (( AGE > 25 )); then
+            echo "⚠️ WARNING: Last commit was $AGE hours ago — sync may be down"
+            echo "::warning::mosgarage sync may be unhealthy — last commit ${AGE}h ago"
+          else
+            echo "✅ Sync healthy — last commit ${AGE}h ago"
+          fi
+
+      - name: Report to summary
+        run: |
+          echo "## 🔄 mosgarage Sync Health" >> $GITHUB_STEP_SUMMARY
+          git log -5 --pretty=format:"| %h | %s | %ar |" | \
+            sed 's/^//' >> $GITHUB_STEP_SUMMARY || true

@@ -1,0 +1,73 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/dotnet
+{
+	"name": "Dev-environment",
+	"build": {
+		"dockerfile": "./Dockerfile",
+		"context": "."
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-dotnettools.csdevkit",
+				"ms-dotnettools.dotnet-interactive-vscode",
+				"vscode-icons-team.vscode-icons",
+				"humao.rest-client",
+				"42Crunch.vscode-openapi",
+				"stoplight.spectral",
+				"leosj29.bash-sh-runner",
+				"Codeium.codeium",
+				"ahmedshakill.bash-script-runner",
+				"YasharHabibi.run-bash-script",
+				"firma.shell-runner",
+				"coder.coder-remote",
+				"Codium.codium",
+				"docker.docker",
+				"p1c2u.docker-compose",
+				"ms-azuretools.vscode-containers",
+				"ktock.container-wasm"
+			],
+			"settings": {
+				"editor.tabSize": 4,
+				"terminal.integrated.fontFamily": "MesloLGM Nerd Font",
+				"terminal.integrated.fontLigatures.enabled": true,
+				"terminal.integrated.defaultProfile.linux": "zsh",
+				"terminal.integrated.profiles.linux": {
+					"zsh": {
+						"path": "/bin/zsh",
+						"icon": "terminal-ubuntu"
+					}
+          {
+		"python.linting.pylintEnabled": true,
+
+          }
+				}
+			}
+		}
+	},
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	"features": {
+		"ghcr.io/devcontainers/features/common-utils": {
+			"installZsh": true,
+			"installOhMyZsh": true,
+			"installOhMyZshConfig": true,
+			"configureZshAsDefaultShell": true
+		},
+		"ghcr.io/devcontainers-extra/features/zsh-plugins:0": {
+			"plugins": "zsh-autosuggestions zsh-syntax-highlighting",
+			"omzPlugins": "https://github.com/zsh-users/zsh-autosuggestions.git https://github.com/zsh-users/zsh-syntax-highlighting.git"
+		}
+	},
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	 "forwardPorts": [5000, 5001],
+	 "portsAttributes": {
+		"5001": {
+				"protocol": "https"
+			}
+	 }
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": ".devcontainer/scripts/post-create.sh"
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
+}

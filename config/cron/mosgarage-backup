@@ -1,0 +1,13 @@
+# /etc/cron.d/mosgarage-backup — automatic workspace configuration backups.
+# Managed by the vscode-devcontainer-base image; safe to edit inside the
+# container (setup-container.sh re-applies BACKUP_DIR overrides).
+#
+# Override the schedule by editing the five time fields, or by setting
+# MOSGARAGE_BACKUP_CRON="0 3 * * *" in your devcontainer remoteEnv and
+# re-running setup-container.
+
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+#BACKUP_DIR=/workspaces/.mosgarage-backups
+
+0 2 * * * mosgarage /usr/local/bin/backup-workspace >> /var/log/mosgarage/backup.log 2>&1

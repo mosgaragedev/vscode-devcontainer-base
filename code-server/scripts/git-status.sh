@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+cd /app/workspace 2>/dev/null || { echo "❌ Workspace not found"; exit 1; }
+echo ""
+echo "╔═══════════════════════════════════════════╗"
+echo "║  mosgarage · git status                   ║"
+echo "╚═══════════════════════════════════════════╝"
+echo "  Branch     : $(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
+echo "  Remote     : $(git remote get-url origin 2>/dev/null | sed 's|https://[^@]*@||')"
+echo "  HEAD       : $(git log --oneline -1 2>/dev/null)"
+echo "  Uncommitted: $(git status --short 2>/dev/null | wc -l | tr -d ' ') file(s)"
+echo "  Last push  : $(cat /var/log/mosgarage/git-last-push.txt 2>/dev/null || echo 'never')"
+echo "  Interval   : every ${GIT_SYNC_INTERVAL:-900}s"
+echo ""
+echo "  Force sync:  docker exec mosgarage git-push-now"
+echo "  Tail log:    docker exec mosgarage tail -f /var/log/mosgarage/git-sync.log"
+echo ""

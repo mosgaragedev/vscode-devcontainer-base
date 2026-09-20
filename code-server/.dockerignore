@@ -1,0 +1,15 @@
+node_modules
+**/node_modules
+.git
+*.md
+!README.md
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+ssh-keys/
+ssl/
+ssh-keys/
+*.pem
+*.key

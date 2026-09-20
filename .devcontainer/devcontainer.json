@@ -1,0 +1,39 @@
+{
+    "name": "mosgarage devcontainer",
+    "image": "ghcr.io/mosgaragedev/vscode-devcontainer-base:latest",
+    "features": {
+        "ghcr.io/devcontainers/features/docker-outside-of-docker": {}
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "editorconfig.editorconfig",
+                "davidanson.vscode-markdownlint",
+                "timonwong.shellcheck",
+                "redhat.vscode-yaml",
+                "eamodio.gitlens",
+                "ms-azuretools.vscode-docker",
+                "GitHub.copilot",
+                "GitHub.copilot-chat",
+                "anthropic.claude-code",
+                "vscode-icons-team.vscode-icons"
+            ],
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "zsh",
+                "terminal.integrated.fontFamily": "MesloLGM Nerd Font"
+            }
+        }
+    },
+    "postCreateCommand": "/usr/local/bin/setup-container",
+    "postStartCommand": "/usr/local/bin/start-code-tunnel",
+    "remoteUser": "mosgarage",
+    "remoteEnv": {
+        "HOST_HOME": "${localEnv:HOME}",
+        "CODE_SERVER_PASSWORD": "${localEnv:MOSGARAGE_IDE_PASSWORD}",
+        "VSCODE_CLI_DATA_DIR": "/home/mosgarage/.vscode-cli"
+    },
+    "mounts": [
+        "source=${localEnv:HOME},target=${localEnv:HOME},type=bind,readonly",
+        "source=mosgarage-code-tunnel,target=/home/mosgarage/.vscode-cli,type=volume"
+    ]
+}

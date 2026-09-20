@@ -1,315 +1,230 @@
-# Visual Studio Code Base Container
+# mosgarage/vscode-devcontainer-base
 
-This repository creates a base container that makes using
-Visual Studio Code Development Containers a bit easier.
+> A **powerful Ubuntu 24.04 devcontainer base** — one image that works with VS Code,
+> Cursor, Claude Code, Gemini CLI, OpenAI Codex, code-server (browser IDE), and WSL2.
+> Kubernetes tooling, AI CLIs, automatic cron backups, one-shot bootstrap, and a
+> shareable release pipeline included.
 
-The container created is a Debian Stretch base with the
-following additions:
+[![Build & Push](https://github.com/mosgaragedev/vscode-devcontainer-base/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/mosgaragedev/vscode-devcontainer-base/actions/workflows/docker-publish.yml)
+[![Docker Hub](https://img.shields.io/docker/pulls/mosgarage/vscode-devcontainer-base)](https://hub.docker.com/r/mosgarage/vscode-devcontainer-base)
 
-- Timezone and Locale support
-- Base packages like curl, git, sudo, zsh, python, etc.
-- Skaffold, Helm, and kubectl
-- Visual studio code user configured as uid and gid `1000:1000`.
-- Visual studio code user having passwordless sudo.
-- Post-start script that properly configures kubeconfig and helm.
-- Various kubectl plugins and a comfortable `zsh` based shell.
+---
 
-The container no longer provides docker but is fully compatible
-with the [docker-outside-of-docker](https://github.com/devcontainers/features/tree/main/src/docker-outside-of-docker)
-feature. Simply add the following to your `.devcontainer.json`:
+## What's inside
 
-```json
-"features": {
-    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
-}
+| Layer        | Tools |
+|--------------|-------|
+| Base         | Ubuntu 24.04 LTS, zsh + Oh-My-Zsh + Powerlevel10k, passwordless sudo `mosgarage` user |
+| Languages    | Python 3.12 (+ venv), Node.js 22 LTS, .NET 10 aspnetcore runtime, build-essential |
+| Kubernetes   | kubectl, helm, k9s, kubeseal, skaffold, stern, krew plugins, Mike Farah `yq` |
+| AI agents    | Claude Code, Gemini CLI, OpenAI Codex, aider (opt-out: `INSTALL_AI_TOOLS=false`) |
+| Productivity | gh CLI, fzf, ripgrep, fd, bat, tmux, jq, shellcheck, tree, htop, cron |
+| Remote access | VS Code CLI tunnel in the `:code-server` target; supervised, outbound-only, authenticated interactively |
+| Browser IDE  | **`:code-server` target** — code-server :8080, sshd :2222, supervisor-managed |
+| Backups      | Nightly cron job archiving shell/kube/helm/ssh configs with rotation |
+| Docker       | Via the [docker-outside-of-docker](https://github.com/devcontainers/features/tree/main/src/docker-outside-of-docker) feature — no socket mounts baked in |
+
+## Branches
+
+| Branch      | Purpose |
+|-------------|---------|
+| `main`      | Full workspace: image project + merged `code-server/` stack + `mosgarage-wsl` submodule |
+| `release`   | **Sharable version** — only the image project (Dockerfile, scripts, CI, docs). Ideal for sharing or forking |
+| `gh-pages`  | Landing page (HTML) deployed via GitHub Pages |
+
+Images are published to both registries on every push to `main`:
+
+```
+ghcr.io/mosgaragedev/vscode-devcontainer-base:latest        # devcontainer
+ghcr.io/mosgaragedev/vscode-devcontainer-base:code-server   # browser IDE variant
+docker.io/mosgarage/vscode-devcontainer-base:latest
+docker.io/mosgarage/vscode-devcontainer-base:code-server
 ```
 
-Reminder: Legacy versions of this container expected the `.devcontainer.json`
-to mount the docker socket. **You must remove that mount from legacy
-devcontainers.**
+## Quick start
 
-> Note: This devcontainer may only work on Linux, Mac OS, and inside
-> of WSL on Windows. It will likely fail outside of WSL.
-
-## Security Note
-
-This container uses a passwordless sudo for the user in the container.
-This means you are effectively giving vscode access to root in the
-container, and to your docker engine.
-
-However, in order to run docker, you need to be able to do root things
-and anyone can start a root container. Just be careful.
-
-## Workstation Setup
-
-Before you can start, you need to install a few packages locally.
-You will need git and docker (or podman maybe) at bare minimum.
-
-### Linux
-
-Install git, if not already available.
-
-- RedHat/CentOS/Fedora: `dnf install -y git`
-- Debian/Ubuntu: `apt install -y git`
-
-Install docker (or podman maybe).
-
-- RedHat/CentOS/Fedora: [Install Docker](https://docs.docker.com/engine/install/centos/)
-or `dnf install -y podman podman-docker`
-- Debian/Ubuntu: `apt install -y docker docker.io` or `apt install -y podman
-  podman-docker`
-
-> Note: When using Docker, your local user will have to be in the `docker`
-> group to use docker. You can use `id {user}` to see if your user is
-> already in the group and `sudo gpasswd -a {user} docker` to add
-> yourself to the group.
->
-> You will likely need to logout and back in before your desktop notices
-> the change.
-
-### Mac
-
-We recommend using [Homebrew](https://brew.sh/) to install the required
-packages.
-
-``` bash
-brew install git
-brew install docker
-```
-
-### Windows
-
-For the best container experience on Windows, you'll need to setup WSL.
-Once you have a working WSL environment, you can proceed with the Linux
-steps above.
-
-#### WSL
-
-Windows Subsystem for Linux is a nice tool for running a near-native Linux
-experience on Windows, with your choice of distribution. The most likely
-distribution most will use is Ubuntu LTS, however there are some good options
-using AlmaLinux, SUSE, or Debian. These instructions will not describe *how* to
-install these, there are better guides online to get you there.
-
-Once you have your WSL instance running, you can install Git using the native
-package manager, perform the config, and clone the repo to start working with
-the repo and ansible.
-
-PowerShell: `wsl --update`
-
-Update your WSL distro with one of the following commands
-
-- Debian/Ubuntu: `sudo apt update && sudo apt full-upgrade`
-- RedHat/CentOS/Fedora: `sudo dnf update --refresh`
-
-Edit or create your /etc/wsl.conf in your WSL instance with the following
-content:
-
-```ini
-[boot]
-systemd=true
-```
-
-Restart your WSL
-
-PowerShell: `wsl --shutdown`
-
-Launch your WSL instance again, and then proceed with the native Linux
-instructions above.
-
-## Credentials
-
-You will need to have access to your Docker, Kubernetes, and Helm credentials
-to do much of this work. The easiest way to do this is inside of the container,
-see below.
-
-### Docker Credentials
-
-Visual Studio Code now correctly sets up Docker credentials when
-inside a devcontainer.
-
-### Kubernetes credentials
-
-In order for `kubectl` to work properly, you must have a working `~/.kube/config` file. You can
-generate one from Rancher. Note that these do not currently work in Codespaces. If you don't have
-one, you can do the following:
-
-1. Login to Rancher, open the cluster you want to use, and download the kubeconfig for
-   that cluster using the toolbar at the top.
-2. Repeat step (1) for any all other clusters you need.
-3. **Manually** merge all of the kubeconfig files into one. They all have the same format.
-4. Place the file into `~/.kube/config` on your host. If you're on Windows, this file should
-   go into your WSL environment.
-
-### Helm Credentials
-
-In order for Helm to be able to access your private docker registry inside of the container,
-you'll need to be sure you've done a `helm repo add` for any private registry on your host
-first, you can do that with:
+### One-shot bootstrap (auto pull + setup, runs once)
 
 ```bash
-helm repo add artifactory ${REGISTRY_URL} --username=${YOUR_OHIO_ID}
+curl -fsSL https://raw.githubusercontent.com/mosgaragedev/vscode-devcontainer-base/main/scripts/bootstrap.sh | bash
 ```
 
-Your password must be an API key or personal access token, not your Ohio password. Note
-that these do not currently work in Codespaces. Once you have this done inside of the
-container, you will need to copy this file out of the container onto your system.
+The bootstrap script:
 
-> NOTE: The below commands will erase any configured helm repositories on your host. If
-> you have some, you should run the above command on your host instead.
+1. Clones this repo to `~/.mosgarage/vscode-devcontainer-base` (skipped if already present)
+2. Installs the **`mg`** host CLI to `~/.local/bin`
+3. Pulls the latest image from Docker Hub
+4. Seeds `~/mosgarage-workspace/.devcontainer/devcontainer.json`
 
-#### Linux/Windows
+Re-runs are idempotent — finished steps are skipped.
 
-```bash
-test -d "${HOST_HOME}"/.config/helm || mkdir -p "${HOST_HOME}"/.config/helm
-cp ~/.config/helm/repositories.yaml "${HOST_HOME}/.config/repositories.yaml
-```
+### Use in VS Code / Cursor (devcontainer)
 
-#### Mac OS
-
-```bash
-test -d "${HOST_HOME}"/Library/Preferences/helm || mkdir -p "${HOST_HOME}"/Library/Preferences/helm
-cp ~/.config/helm/repositories.yaml "${HOST_HOME}/Library/Preferences/helm/repositories.yaml
-```
-
-## Usage as in GitHub Codespaces and Visual Studio Code
-
-For basic usage, simply create a `.devcontainer/devcontainer.json`
-in your repository that looks like the following:
+Add to your project's `.devcontainer/devcontainer.json`:
 
 ```json
 {
-    "name": "Devcontainer",
-    "image": "ghcr.io/ohioit/vscode-devcontainer-base",
+    "name": "mosgarage devcontainer",
+    "image": "ghcr.io/mosgaragedev/vscode-devcontainer-base:latest",
     "features": {
         "ghcr.io/devcontainers/features/docker-outside-of-docker": {}
     },
-    "customizations": {
-        "vscode": {
-            "extensions": [
-                "editorconfig.editorconfig",
-                "davidanson.vscode-markdownlint",
-                "timonwong.shellcheck",
-                "redhat.vscode-yaml",
-                "eamodio.gitlens",
-                "ms-azuretools.vscode-docker"
-            ]
-        }
-    },
     "postCreateCommand": "/usr/local/bin/setup-container",
-    "remoteUser": "vscode",
-    "remoteEnv": {
-        "HOST_HOME": "${localEnv:HOME}"
-    },
+    "remoteUser": "mosgarage",
+    "remoteEnv": { "HOST_HOME": "${localEnv:HOME}" },
     "mounts": [
         "source=${localEnv:HOME},target=${localEnv:HOME},type=bind,readonly"
     ]
 }
 ```
 
-Be sure to customize the `extensions` property to add any extensions you'd like
-to automatically install into your container.
+Then **Reopen in Container** (VS Code) or **Reopen in Dev Container** (Cursor).
+A prebuilt config ships in [`.devcontainer/devcontainer.json`](.devcontainer/devcontainer.json).
 
-### Container Customizations
-
-If you'd like to build your own container, you can use this as a base.
-First, change your `.devcontainer.json` so that it builds the image
-instead of using the image directly:
-
-```json
-...
-"name": "Devcontainer",
-"build": {
-    "dockerFile": "Dockerfile"
-},
-"features": {
-    "ghcr.io/devcontainers/features/docker-outside-of-docker": {}
-},
-...
-```
-
-Then, create a `Dockerfile` in `.devcontainer` using the base image, like this:
-
-```dockerfile
-FROM docker.artifactory.oit.ohio.edu/ais/vscode-devcontainer-base:VERSION
-
-# Customize the image as root
-
-# Optionally customize the image as vscode
-USER 1000
-
-# Make sure you switch back to root after
-USER 0
-
-# Do not set an entrypoint
-```
-
-### Hooks
-
-The setup script supports two hooks, pre and post configuration. To run
-hooks before anything else in the script or after everything is done,
-place files into the appropriate directory in the container during your build.
+### Browser IDE (code-server)
 
 ```bash
-PRE_CONFIG_HOOKS=/usr/local/lib/devcontainer/hooks.d/pre-start
-POST_CONFIG_HOOKS=/usr/local/lib/devcontainer/hooks.d/post-start
+docker run -d --name mosgarage-ide \
+    -p 8080:8080 -p 2222:2222 \
+    -e CODE_SERVER_PASSWORD=change-me \
+    -v ~/workspace:/home/mosgarage/workspace \
+    mosgarage/vscode-devcontainer-base:code-server
+# → http://localhost:8080
 ```
 
-In addition to container level hooks, you can also have hooks that run
-only on your machine utilizing the "user hooks". To do this,
-place a shell script in either `~/.devcontainer/hooks.d/pre-start` or
-`~/.devcontainer/hooks.d/post-start`. Note that any command that accesses
-content in your home directory may need to run using `sudo`.
+Or with the `mg` CLI: `mg start --ide` → `mg open`.
 
-Your home directory is mounted readonly with the same path in the container
-as on your host. That is, `/Users/{username}` on Mac OS X and `/home/{username}`
-on Linux and WSL.
+### VS Code Remote Tunnel
 
-An example of a simple hook that will override the internal
-[PowerLevel10k](https://github.com/romkatv/powerlevel10k) shell prompt configuration
-might look like this:
+The image includes the architecture-aware Linux VS Code CLI. In the `:code-server` target,
+`code tunnel` runs as a supervised `mosgarage` service and makes no inbound port
+available. Authenticate once inside the container, using the persisted tunnel volume:
 
 ```bash
-#!/bin/zsh
-sudo cp "${HOST_HOME}/.p10k.zsh" /home/vscode/.p10k.zsh
-sudo chown vscode:vscode /home/vscode/.p10k.zsh
+docker exec -it mosgarage-ide mgw tunnel-login
+# The tunnel URL is available with:
+docker logs mosgarage-ide 2>&1 | grep -E 'vscode.dev/tunnel|code-tunnel'
 ```
 
-This might be placed in the directory `/home/username/.devcontainer/hooks.d/post-start/p10k.sh`.
+The CLI data is stored in the `mosgarage-code-tunnel` volume and is not committed to
+the repository. Check status with `docker exec mosgarage-ide supervisorctl status code-tunnel`
+and logs with `mgw logs code-tunnel`.
 
-## Other Usages
+For the regular devcontainer target, the same tunnel is started by
+`postStartCommand` using `/usr/local/bin/start-code-tunnel`; run
+`code tunnel user login` once in the integrated terminal. The tunnel is outbound-only
+and does not require a forwarded port.
 
-This image is designed to _also_ be run directly. Simply use docker to run
+## The `mg` and `mgw` CLIs
+
+**`mg`** runs on your **host** and manages containers (installed by the bootstrap script):
+
+```
+mg start [--ide]    Start the devcontainer (or browser IDE variant)
+mg stop [name]      Remove the container
+mg status           List mosgarage containers
+mg exec CMD         Run a command inside the container
+mg backup           Trigger a config backup now
+mg update           Backup + pull the latest images
+mg open             Open the IDE in your browser
+mg tunnel-login     Authenticate the VS Code tunnel in the IDE container
+```
+
+**`mgw`** runs **inside** the container (preinstalled in the `:code-server` target):
+
+```
+mgw start|stop|restart    Manage services (code-server, sshd, cron)
+mgw status                Runtime + version summary
+mgw logs [service]        Tail service logs
+mgw password <pw>         Change the code-server password
+mgw keys <github-user>    Import GitHub SSH public keys
+mgw backup [label]        Run a backup now
+mgw open                  Open the IDE (WSL-aware)
+```
+
+## Automatic backups (cron)
+
+The image ships with `/etc/cron.d/mosgarage-backup` running nightly at 02:00 via
+`/usr/local/bin/backup-workspace`. It archives `.kube`, `.config/helm`, `.ssh`,
+zsh/p10k configs, and `.gitconfig` from `/home/mosgarage`, keeping the last 7
+archives in `/workspaces/.mosgarage-backups`.
+
+| Env var               | Default                          | Purpose |
+|-----------------------|----------------------------------|---------|
+| `BACKUP_DIR`          | `/workspaces/.mosgarage-backups` | Where archives go (settable in `remoteEnv` or the cron file) |
+| `BACKUP_KEEP`         | `7`                              | Archives to retain |
+| `BACKUP_EXTRA_SOURCES`| *(empty)*                        | Extra paths in `$HOME` to include |
+| `MOSGARAGE_BACKUP_CRON` | `0 2 * * *`                    | Override the schedule (edit the cron file) |
+
+Run one manually: `sudo -u mosgarage backup-workspace` or `mgw backup`.
+
+## CI / publishing (GitHub Actions)
+
+[`.github/workflows/docker-publish.yml`](.github/workflows/docker-publish.yml) builds
+**both targets** (multi-arch amd64+arm64) and pushes to GHCR + Docker Hub on pushes to
+`main`, the `release` branch, and version tags (`v*`). Smoke tests run on tags.
+
+**One-time setup — add these repo secrets** (Settings → Secrets and variables → Actions):
+
+- `DOCKERHUB_USERNAME` — your Docker Hub username (`mosgarage`)
+- `DOCKERHUB_TOKEN` — a Docker Hub access token
+
+GHCR publishing works out of the box via `GITHUB_TOKEN`. Tags pushed:
+
+- `devcontainer` target → `:latest`, `:main`, `:devcontainer-YYYYMMDD`, `:vX.Y.Z`
+- `code-server` target → `:code-server`, `:code-server-YYYYMMDD`, `:vX.Y.Z-code-server`
+
+## WSL2
+
+Two complementary stacks live in this repo:
+
+- **`mosgarage-wsl`** (git submodule → [mosgarage/mosgarage-wsl](https://github.com/mosgarage/mosgarage-wsl)):
+  the host-side WSL2 maintenance stack — `mgw install`, auto-updates, auto-backups, distro export.
+  Use `make wsl-install`, `make wsl-enter`, `make wsl-backup`. Its `mgw` remains separate
+  from the container `mgw` because the two CLIs manage different runtimes.
+- **`code-server/`**: the standalone code-server stack with `wsl-pack.sh` /
+  `wsl-import.ps1` / `wsl-export.ps1` for turning any image variant into a WSL2 distro.
+
+## Hooks
+
+`setup-container.sh` runs pre/post-start hooks from:
+
+```
+/usr/local/lib/devcontainer/hooks.d/pre-start     # baked into the image
+/usr/local/lib/devcontainer/hooks.d/post-start
+${HOST_HOME}/.devcontainer/hooks.d/pre-start      # per-user, on your host
+${HOST_HOME}/.devcontainer/hooks.d/post-start
+```
+
+## Building locally
 
 ```bash
-docker run -ti --rm ghcr.io/ohioit/vscode-devcontainer-base
+make build        # devcontainer target (local only, no push)
+make build-ide    # code-server target
+make push         # multi-arch publish (requires Docker Hub login)
 ```
 
-The container will start the shell by default. This can be useful to have access to the
-tools in some cases. In addition, it can be used to help debug things in a Kubernetes cluster.
-In this case, use the `/usr/local/bin/wait-for-death` entrypoint to help the container
-start and shut down gracefully. Here's an example deployment:
+> Note: `skaffold build -p local` (config: `config/skaffold.yaml`) still works for the devcontainer target — **always add
+> `--push=false`** when testing so you don't overwrite `:latest`.
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: test
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: test
-  template:
-    metadata:
-      labels:
-        app: test
-    spec:
-      imagePullPolicy: Always
-      containers:
-        - name: test
-          image: ghcr.io/ohioit/vscode-devcontainer-base
-          command: ["/usr/local/bin/wait-for-death"]
-```
-# basedevcontainer
-# basedevcontainer
+## Kubernetes / Helm host configuration
+
+On startup, `setup-container.sh` copies `${HOST_HOME}/.kube/config` and picks Helm
+repositories from `${HOST_HOME}/.config/helm/repositories.yaml` (or the macOS
+`Library/Preferences/helm` path). An optional sibling **`repositories-ohio.yaml`**
+is merged in using `yq eval-all '. as $rc ireduce ({}; . *+ $rc)'`. Chart-derived
+repositories are only added when neither their URL nor name is already configured;
+OCI dependencies are skipped.
+
+## Security notes
+
+- The `mosgarage` user has **passwordless sudo** inside the container — treat the
+  container as root-equivalent.
+- Mounting your home directory read-only is deliberate; remove it if you don't need
+  host credentials.
+- ⚠️ A GitHub token was previously committed in `code-server/.env` / `.env.sample`.
+  It has been scrubbed from this repo — **revoke it** on GitHub if you haven't.
+
+## License
+
+MIT — see [LICENSE](LICENSE).

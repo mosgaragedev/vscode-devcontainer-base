@@ -1,0 +1,96 @@
+# ============================================================
+# mosgarage/mosgarage — Docker Compose
+# GitHub: github.com/mosgarage/mosgaragedev
+# ============================================================
+
+services:
+  mosgarage:
+    image: docker.io/mosgarage/mosgarage:latest
+    container_name: mosgarage
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+
+    # ── Ports ────────────────────────────────────────────────
+    ports:
+      - "${CODE_SERVER_PORT:-8080}:8080"
+      - "${NODE_SERVER_PORT:-3000}:3000"
+      - "${API_PORT:-4000}:4000"
+
+    # ── Environment ──────────────────────────────────────────
+    environment:
+      # Services
+      CODE_SERVER_PASSWORD: ${CODE_SERVER_PASSWORD:-mosgarage}
+      CODE_SERVER_PORT:     ${CODE_SERVER_PORT:-8080}
+      NODE_SERVER_PORT:     ${NODE_SERVER_PORT:-3000}
+      API_PORT:             ${API_PORT:-4000}
+      NODE_ENV:             ${NODE_ENV:-production}
+      API_KEY:              ${API_KEY:-}
+
+      # GitHub identity
+      GITHUB_USER:          ${GITHUB_USER:-mosgaragedev}
+      GITHUB_ORG:           ${GITHUB_ORG:-mosgarage}
+      GITHUB_REPO:          ${GITHUB_REPO:-mosgaragedev}
+      GIT_BRANCH:           ${GIT_BRANCH:-main}
+      GIT_NAME:             ${GIT_NAME:-mosgaragedev}
+      GIT_EMAIL:            ${GIT_EMAIL:-mosgaragedev@users.noreply.github.com}
+
+      # Auth — use ONE of: GITHUB_TOKEN (HTTPS) or SSH key (volume below)
+      GITHUB_TOKEN:         ${GITHUB_TOKEN:-}
+
+      # Sync schedule (seconds). 900 = every 15 min
+      GIT_SYNC_INTERVAL:    ${GIT_SYNC_INTERVAL:-900}
+
+    # ── Volumes ──────────────────────────────────────────────
+    volumes:
+      # Persistent workspace (synced to GitHub)
+      - mosgarage-workspace:/app/workspace
+
+      # VS Code settings + extensions
+      - mosgarage-code-server:/home/mosgarage/.code-server
+
+      # Logs
+      - mosgarage-logs:/var/log/mosgarage
+
+      # SSH deploy key (Option A auth — comment out if using GITHUB_TOKEN)
+      # Generate with: ./scripts/gen-deploy-key.sh
+      # Add public key at: github.com/mosgarage/mosgaragedev/settings/keys
+      - ./ssh-keys/id_ed25519:/home/mosgarage/.ssh/id_ed25519:ro
+      # - ./ssh-keys/id_ed25519.pub:/home/mosgarage/.ssh/id_ed25519.pub:ro
+
+    # ── Health check ─────────────────────────────────────────
+    healthcheck:
+      test: |
+        curl -sf http://localhost:3000/status &&
+        curl -sf http://localhost:4000/api/v1/health
+      interval: 30s
+      timeout:  10s
+      retries:  3
+      start_period: 25s
+
+    # ── Resources ────────────────────────────────────────────
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+          cpus:   "2.0"
+        reservations:
+          memory: 512m
+
+    security_opt:
+      - no-new-privileges:true
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "5"
+
+volumes:
+  mosgarage-workspace:
+    name: mosgarage-workspace
+  mosgarage-code-server:
+    name: mosgarage-code-server
+  mosgarage-logs:
+    name: mosgarage-logs

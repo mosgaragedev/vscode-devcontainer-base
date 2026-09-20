@@ -1,0 +1,198 @@
+#!/usr/bin/env bash
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  mgw — mosgarage workspace CLI                                   ║
+# ║  Runs inside the WSL distro or Docker container.                 ║
+# ║  Manages code-server, SSH keys, agent, updates.                  ║
+# ╚══════════════════════════════════════════════════════════════════╝
+set -euo pipefail
+
+MGW_VERSION="0.3.0"
+SUPERVISOR_CONF="/etc/supervisor/conf.d/workspace.conf"
+SUPERVISOR_SOCK="/run/supervisor.sock"
+CS_CONFIG="/home/mosgarage/.config/code-server/config.yaml"
+
+_log()  { echo "▸ $*"; }
+_ok()   { echo "✓ $*"; }
+_warn() { echo "⚠ $*" >&2; }
+_err()  { echo "✗ $*" >&2; exit 1; }
+_sep()  { printf '%.0s─' {1..42}; echo; }
+
+_ctl() { supervisorctl -c "$SUPERVISOR_CONF" "$@"; }
+_need_supervisor() {
+  [[ -S "$SUPERVISOR_SOCK" ]] \
+    || _err "supervisord not running — start with: mgw start"
+}
+
+# ── Commands ──────────────────────────────────────────────────────────────────
+
+cmd_start() {
+  if [[ -S "$SUPERVISOR_SOCK" ]]; then
+    _log "supervisord already running — starting any stopped programs..."
+    _ctl start all 2>/dev/null || true
+  else
+    _log "Starting supervisord..."
+    mkdir -p /var/log/mosgarage
+    sudo /usr/bin/supervisord -c "$SUPERVISOR_CONF"
+    sleep 2
+  fi
+  _ok "Workspace services running"
+  cmd_status
+}
+
+cmd_stop() {
+  _need_supervisor
+  _log "Stopping all services..."
+  _ctl stop all
+  _ok "All services stopped"
+}
+
+cmd_restart() {
+  _need_supervisor
+  local svc="${1:-all}"
+  _log "Restarting ${svc}..."
+  _ctl restart "$svc"
+  _ok "Restarted ${svc}"
+}
+
+cmd_status() {
+  _sep
+  printf "  mosgarage/code-server  mgw %s\n" "$MGW_VERSION"
+  _sep
+  if [[ -S "$SUPERVISOR_SOCK" ]]; then
+    _ctl status
+  else
+    echo "  supervisord: ✗ not running"
+  fi
+  _sep
+  if command -v code-server &>/dev/null; then
+    printf "  code-server: %s\n" "$(code-server --version 2>/dev/null | head -1)"
+  fi
+  if [[ -f /usr/local/dotnet/dotnet ]]; then
+    printf "  .NET runtime: %s\n" "$(/usr/local/dotnet/dotnet --version 2>/dev/null)"
+  fi
+  if command -v node &>/dev/null; then
+    printf "  Node.js: %s\n" "$(node --version)"
+  fi
+}
+
+cmd_logs() {
+  local svc="${1:-code-server}"
+  local logfile="/var/log/mosgarage/${svc}.log"
+  [[ -f "$logfile" ]] || _err "No log at ${logfile}. Available: $(ls /var/log/mosgarage/ 2>/dev/null)"
+  tail -f "$logfile"
+}
+
+cmd_password() {
+  local pw="${1:-}"
+  if [[ -z "$pw" ]]; then
+    _log "Current auth config:"
+    grep -E "^(auth|password)" "$CS_CONFIG" || echo "  (none set)"
+    return
+  fi
+  if grep -q "^password:" "$CS_CONFIG"; then
+    sed -i "s|^password:.*|password: ${pw}|" "$CS_CONFIG"
+  else
+    echo "password: ${pw}" >> "$CS_CONFIG"
+  fi
+  _ok "Password updated"
+  _warn "Restart to apply: mgw restart code-server"
+}
+
+cmd_keys() {
+  local gh_user="${1:-${GITHUB_USER:-}}"
+  [[ -z "$gh_user" ]] && _err "Usage: mgw keys <github-username>"
+  local ssh_dir="/home/mosgarage/.ssh"
+  mkdir -p "$ssh_dir" && chmod 700 "$ssh_dir"
+  _log "Fetching keys from github.com/${gh_user}..."
+  curl -fsSL "https://github.com/${gh_user}.keys" >> "$ssh_dir/authorized_keys"
+  chmod 600 "$ssh_dir/authorized_keys"
+  chown -R mosgarage:mosgarage "$ssh_dir"
+  _ok "SSH keys added for ${gh_user}"
+}
+
+cmd_agent() {
+  if [[ -f /app/agent/Mosgarage.Agent ]]; then
+    _ok "Agent binary present: /app/agent/Mosgarage.Agent"
+    if [[ -S "$SUPERVISOR_SOCK" ]]; then
+      _ctl status mosgarage-agent
+    fi
+  else
+    _warn "Agent binary not found at /app/agent/Mosgarage.Agent"
+    echo "  The agent is injected by the mosgarage control plane."
+    echo "  In standalone mode the agent is not required."
+  fi
+}
+
+cmd_update() {
+  echo ""
+  echo "  To update this distro, run on Windows PowerShell:"
+  echo ""
+  echo "    # 1. Pull latest image"
+  echo "    docker pull mosgarage/code-server:latest"
+  echo ""
+  echo "    # 2. Snapshot your current state first (recommended)"
+  echo "    .\\scripts\\wsl-export.ps1 -Variant base"
+  echo ""
+  echo "    # 3. Re-pack and re-import"
+  echo "    .\\scripts\\wsl-import.ps1 -Variant base -Force"
+  echo ""
+  echo "  Your /home/mosgarage/workspace data lives in the .vhdx"
+  echo "  and is NOT deleted by --Force (only the rootfs is replaced)."
+  echo ""
+}
+
+cmd_open() {
+  local port="${1:-8080}"
+  echo "  code-server → http://localhost:${port}"
+  # If running inside WSL, open in Windows browser
+  if grep -qi microsoft /proc/version 2>/dev/null; then
+    cmd.exe /c start "http://localhost:${port}" 2>/dev/null || true
+  fi
+}
+
+cmd_help() {
+  cat <<EOF
+
+  mgw — mosgarage workspace CLI ${MGW_VERSION}
+
+  Commands:
+    start                   Start all workspace services (supervisor)
+    stop                    Stop all services
+    restart [service]       Restart all or a specific service
+    status                  Show runtime status and versions
+    logs [service]          Tail logs  (default: code-server)
+    password [pw]           Show or update code-server password
+    keys <github-user>      Import GitHub SSH public keys
+    agent                   Check mosgarage agent status
+    open [port]             Open code-server in browser (WSL-aware)
+    update                  Show update instructions
+    help                    Show this help
+
+  Services (via supervisorctl):
+    code-server, sshd, mosgarage-agent
+
+  Examples:
+    mgw start
+    mgw password mysecret
+    mgw keys mosgaragedev
+    mgw restart code-server
+    mgw logs sshd
+
+EOF
+}
+
+# ── Dispatch ──────────────────────────────────────────────────────────────────
+case "${1:-help}" in
+  start)          cmd_start ;;
+  stop)           cmd_stop ;;
+  restart)        cmd_restart "${2:-all}" ;;
+  status)         cmd_status ;;
+  logs)           cmd_logs "${2:-}" ;;
+  password)       cmd_password "${2:-}" ;;
+  keys)           cmd_keys "${2:-}" ;;
+  agent)          cmd_agent ;;
+  open)           cmd_open "${2:-}" ;;
+  update)         cmd_update ;;
+  help|--help|-h) cmd_help ;;
+  *)              _err "Unknown command: $1 — run 'mgw help'" ;;
+esac

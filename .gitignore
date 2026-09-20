@@ -1,0 +1,72 @@
+# Local env / secrets (never commit real tokens)
+.env
+*.env.local
+.mosgarage/.devcontainer/.devcontainer-secrets/
+
+# Local workspace state (earlier devcontainer generation, holds real .env)
+/.mosgarage/
+
+# Git-recovery object dump and ddev workspace config (workspace-only)
+/.gitdir/
+/.ddev/
+/.qodo/
+
+# Build artifacts
+dist/
+node_modules/
+
+# Landing page is published from the gh-pages branch
+.gh-pages-staging/
+
+# Editor noise (incl. NTFS alternate-data-stream exports)
+*Zone.Identifier
+.DS_Store
+
+# IDE / tool caches (VS Code, Visual Studio, .NET)
+.vs/
+.cache/
+obj/
+bin/
+*.vsidx
+*.user
+**/.vscode/cli/
+**/.vscode/extensions/
+**/.vscode/exports-autocomplete-cache/
+**/.vscode/argv.json
+
+# Local git-recovery / scratch dirs (stripped copies with only .git left)
+/b3e86fec133ee7b90c78c6579af2e06b/
+/ea3b428124bc1e31cd46dfa55469d781/
+
+# ── Workspace-only tooling (lives in the workspace, not the image repo) ─────
+# tools/* are standalone clones (same set tracked as gitlinks); app/ is the
+# workspace web app; the rest are separate projects.
+/tools/
+/app/
+/easy-server-setup/
+/top-github-repos-list/
+/mosgarage-app/
+
+# Nested standalone clones with their own upstream repos (not submodules)
+.antigravity-server/
+
+# Workspace scratch (vendored devcontainers, PDFs, dotnet experiments)
+/.devcontainer-mosgarage/
+
+# Vendored binaries / stray artifacts
+ddev_linux_amd64.deb
+
+# Unreferenced at repo root (image and Makefile never invoke npm)
+/package.json
+/package-lock.json
+
+# Nested clone gitlinks removed from the index (kept as local clones only)
+/tools/vscode-landing-page
+/tools/wsl-configurations
+/tools/zsh-configurations
+/tools/zsh-configs
+/tools/wsl_setup
+
+# Embedded clones at repo root (were stale gitlinks; kept as local clones only)
+/wsl-configurations/
+/zsh-configs/

@@ -1,0 +1,161 @@
+#!/usr/bin/env bash
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  mg — mosgarage devcontainer manager (host-side)                 ║
+# ║  Wraps docker run/stop/backup for the devcontainer base image.   ║
+# ╚══════════════════════════════════════════════════════════════════╝
+set -euo pipefail
+
+MG_VERSION="1.0.0"
+IMAGE="${MOSGARAGE_IMAGE:-mosgarage/vscode-devcontainer-base:latest}"
+IDE_IMAGE="${MOSGARAGE_IDE_IMAGE:-mosgarage/vscode-devcontainer-base:code-server}"
+CONTAINER="${MOSGARAGE_CONTAINER:-mosgarage-dev}"
+IDE_CONTAINER="${MOSGARAGE_IDE_CONTAINER:-mosgarage-ide}"
+PROJECT_DIR="${MOSGARAGE_PROJECT_DIR:-$PWD}"
+HOST_HOME="${MOSGARAGE_HOST_HOME:-$HOME}"
+PASSWORD="${MOSGARAGE_IDE_PASSWORD:-mosgarage}"
+
+_log() { echo "▸ $*"; }
+_ok()  { echo "✓ $*"; }
+_err() { echo "✗ $*" >&2; exit 1; }
+_need_docker() { command -v docker >/dev/null || _err "docker not found"; }
+
+_base_args() {
+    echo "--rm -it --name $1 \
+        -e HOST_HOME=${HOST_HOME} \
+        -e VSCODE_CLI_DATA_DIR=/home/mosgarage/.vscode-cli \
+        -v ${HOST_HOME}:${HOST_HOME}:ro \
+        -v ${PROJECT_DIR}:/workspaces/$(basename "${PROJECT_DIR}") \
+        -v mosgarage-home:/home/mosgarage/.vscode-server \
+        -v mosgarage-code-tunnel:/home/mosgarage/.vscode-cli \
+        --hostname mosgarage-dev"
+}
+
+cmd_start() {
+    _need_docker
+    local image="${IMAGE}" name="${CONTAINER}"
+    if [[ "${1:-}" == "--ide" ]]; then
+        image="${IDE_IMAGE}" name="${IDE_CONTAINER}"
+    fi
+    docker image inspect "${image}" >/dev/null 2>&1 || { _log "Pulling ${image}..."; docker pull "${image}"; }
+    _log "Starting ${name} (${image}) from ${PROJECT_DIR}"
+    # shellcheck disable=SC2086
+    docker run $(_base_args "${name}") "${image}"
+}
+
+cmd_start_ide() {
+    _need_docker
+    docker image inspect "${IDE_IMAGE}" >/dev/null 2>&1 || { _log "Pulling ${IDE_IMAGE}..."; docker pull "${IDE_IMAGE}"; }
+    _log "Starting ${IDE_CONTAINER} (browser IDE on :8080, SSH :2222)"
+    # shellcheck disable=SC2086
+    docker run -d $(_base_args "${IDE_CONTAINER}") \
+        -p 8080:8080 -p 2222:2222 \
+        -e CODE_SERVER_PASSWORD="${PASSWORD}" \
+        "${IDE_IMAGE}" >/dev/null
+    _ok "IDE running → http://localhost:8080  (password: ${PASSWORD})"
+}
+
+cmd_stop() {
+    _need_docker
+    local name="${1:-${CONTAINER}}"
+    docker rm -f "${name}" 2>/dev/null && _ok "Removed ${name}" || _log "${name} not running"
+}
+
+cmd_status() {
+    _need_docker
+    docker ps -a --filter "name=${CONTAINER}" --filter "name=${IDE_CONTAINER}" \
+        --format "table {{.Names}}\t{{.Status}}\t{{.Image}}"
+}
+
+cmd_exec() {
+    _need_docker
+    local name="${CONTAINER}"
+    if [[ "${1:-}" == "--ide" ]]; then name="${IDE_CONTAINER}"; shift; fi
+    docker exec -it "${name}" "${@:-zsh}"
+}
+
+cmd_logs() {
+    _need_docker
+    local name="${1:-${IDE_CONTAINER}}"
+    docker logs -f "${name}"
+}
+
+cmd_backup() {
+    _need_docker
+    local running
+    running="$(docker ps --filter "name=${CONTAINER}" --format "{{.Names}}")"
+    if [[ -z "${running}" ]]; then
+        _err "${CONTAINER} is not running — start it first with: mg start"
+    fi
+    docker exec "${CONTAINER}" /usr/local/bin/backup-workspace
+    _ok "Backup written to /workspaces/.mosgarage-backups"
+}
+
+cmd_update() {
+    _need_docker
+    _log "Backing up, then pulling latest images..."
+    docker exec "${CONTAINER}" /usr/local/bin/backup-workspace 2>/dev/null || true
+    docker pull "${IMAGE}" && _ok "Updated ${IMAGE}"
+    docker pull "${IDE_IMAGE}" && _ok "Updated ${IDE_IMAGE}"
+}
+
+cmd_tunnel_login() {
+    _need_docker
+    docker exec -it "${IDE_CONTAINER}" mgw tunnel-login
+}
+
+cmd_open() {
+    local url="http://localhost:8080"
+    echo "  ${url}"
+    if command -v xdg-open >/dev/null; then xdg-open "${url}" 2>/dev/null || true
+    elif command -v open >/dev/null; then open "${url}" 2>/dev/null || true
+    fi
+}
+
+cmd_help() {
+    cat <<EOF
+
+  mg — mosgarage devcontainer manager ${MG_VERSION}
+
+  Commands:
+    start [--ide]     Start the container (interactive). --ide starts the
+                      browser IDE variant detached on :8080/:2222
+    stop [name]       Remove the running container
+    status            List mosgarage containers
+    exec [--ide] CMD  Execute a command inside the container (default: zsh)
+    logs [name]       Follow container logs
+    backup            Trigger a config backup inside the container
+    update            Backup + pull latest images
+    open              Open the IDE in your browser
+    tunnel-login      Authenticate the VS Code tunnel in the IDE container
+    help              Show this help
+
+  Environment overrides:
+    MOSGARAGE_IMAGE            default image       (${IMAGE})
+    MOSGARAGE_IDE_IMAGE        ide image           (${IDE_IMAGE})
+    MOSGARAGE_CONTAINER        container name      (${CONTAINER})
+    MOSGARAGE_IDE_CONTAINER    ide container name  (${IDE_CONTAINER})
+    MOSGARAGE_PROJECT_DIR      workspace dir       (${PROJECT_DIR})
+    MOSGARAGE_IDE_PASSWORD     IDE password        (change me!)
+
+  Examples:
+    cd ~/my-project && mg start
+    mg start --ide
+    mg exec kubectl get pods
+
+EOF
+}
+
+case "${1:-help}" in
+    start)
+        if [[ "${2:-}" == "--ide" ]]; then cmd_start_ide; else cmd_start; fi ;;
+    stop)    cmd_stop "${2:-}" ;;
+    status)  cmd_status ;;
+    exec)    shift; cmd_exec "$@" ;;
+    logs)    cmd_logs "${2:-}" ;;
+    backup)  cmd_backup ;;
+    update)  cmd_update ;;
+    open)    cmd_open ;;
+    tunnel-login) cmd_tunnel_login ;;
+    help|--help|-h) cmd_help ;;
+    *)       _err "Unknown command: $1 — run 'mg help'" ;;
+esac

@@ -1,0 +1,153 @@
+name: Build & Deploy mosgarage
+
+on:
+  push:
+    branches: [main]
+    tags:     ['v*.*.*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      push_image:
+        description: 'Push image to Docker Hub'
+        required: false
+        default: 'true'
+        type: boolean
+
+env:
+  REGISTRY:       docker.io
+  IMAGE_NAME:     mosgarage/code-server
+  PLATFORMS:      linux/amd64,linux/arm64
+
+jobs:
+  # ── Lint & basic checks ─────────────────────────────────────
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with: { node-version: '20' }
+
+      - name: Install server deps
+        run: cd server && npm ci
+
+      - name: Install API deps
+        run: cd api && npm ci
+
+      - name: Lint server
+        run: cd server && node --check index.js && echo "✅ server syntax OK"
+
+      - name: Lint API
+        run: cd api && node --check index.js && echo "✅ api syntax OK"
+
+      - name: Validate Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+          ignore: DL3008,DL3009,DL4006,SC2039,SC1091
+        continue-on-error: true
+
+  # ── Build & push multi-arch image ───────────────────────────
+  build-push:
+    name: Build & Push
+    runs-on: ubuntu-latest
+    needs: lint
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    outputs:
+      image-digest: ${{ steps.build.outputs.digest }}
+      image-tag:    ${{ steps.meta.outputs.tags }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up QEMU (multi-arch)
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: |
+            image=moby/buildkit:buildx-stable-1
+            network=host
+
+      - name: Login to Docker Hub
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=sha,prefix=sha-,format=short
+            type=raw,value=latest,enable={{is_default_branch}}
+          labels: |
+            org.opencontainers.image.title=code-server
+            org.opencontainers.image.description=mosgarage premium home base
+            org.opencontainers.image.url=https://hub.docker.com/r/mosgarage/code-server
+            org.opencontainers.image.source=https://github.com/mosgarage/code-server
+            org.opencontainers.image.vendor=mosgarage
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context:    .
+          platforms:  ${{ env.PLATFORMS }}
+          push:       ${{ github.event_name != 'pull_request' }}
+          tags:       ${{ steps.meta.outputs.tags }}
+          labels:     ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to:   type=gha,mode=max
+          build-args: |
+            BUILD_DATE=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
+            GIT_SHA=${{ github.sha }}
+            GIT_REF=${{ github.ref_name }}
+
+      - name: Image summary
+        if: github.event_name != 'pull_request'
+        run: |
+          echo "## 🚀 Docker Image Published" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Image | \`docker.io/mosgarage/code-server\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Digest | \`${{ steps.build.outputs.digest }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tags | ${{ steps.meta.outputs.tags }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Platforms | ${{ env.PLATFORMS }} |" >> $GITHUB_STEP_SUMMARY
+
+  # ── Update Docker Hub description ───────────────────────────
+  update-hub-description:
+    name: Update Docker Hub Description
+    runs-on: ubuntu-latest
+    needs: build-push
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update Docker Hub description
+        uses: peter-evans/dockerhub-description@v3
+        with:
+          username:    ${{ secrets.DOCKERHUB_USERNAME }}
+          password:    ${{ secrets.DOCKERHUB_TOKEN }}
+          repository:  mosgarage/code-server
+          readme-filepath: ./README.md
+        continue-on-error: true

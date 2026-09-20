@@ -1,0 +1,32 @@
+# Keep the build context minimal: only files the root Dockerfile COPYs,
+# plus nothing that leaks local state or secrets.
+# (Nested projects, clones and local state are workspace-only.)
+
+.git
+**/.git
+**/node_modules
+
+# Local state / secrets
+.mosgarage
+**/.env
+**/.env.*
+
+# Workspace-only projects (never COPY'd into the image)
+.devcontainer-mosgarage
+.antigravity-server
+app
+easy-server-setup
+mosgarage-app
+tools
+top-github-repos-list
+
+# Standalone code-server stack (root Dockerfile does not COPY it)
+code-server
+
+# Vendored binaries / artifacts / scratch
+*.deb
+dist
+.gh-pages-staging
+/b3e86fec133ee7b90c78c6579af2e06b
+/ea3b428124bc1e31cd46dfa55469d781
+info

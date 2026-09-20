@@ -1,0 +1,19 @@
+# code-server configuration — mosgarage/code-server
+# Docs: https://coder.com/docs/code-server/latest/guide
+#
+# Runtime overrides via environment:
+#   CODE_SERVER_PASSWORD   — set workspace password
+#   CS_DISABLE_AUTH=true   — disable auth (trusted network only)
+
+bind-addr: 0.0.0.0:8080
+auth: password
+# password is injected at startup from CODE_SERVER_PASSWORD env var
+
+cert: false
+
+# Persist extensions and settings across restarts / WSL reimports
+user-data-dir: /home/mosgarage/.local/share/code-server
+extensions-dir: /home/mosgarage/.local/share/code-server/extensions
+
+# Proxy domain — set to MOSGARAGE_WILDCARD_URL base when behind Traefik
+# proxy-domain: try.mosgarage.app

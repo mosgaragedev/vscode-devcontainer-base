@@ -1,26 +1,54 @@
 #!/bin/bash
 set -e
 
-echo "Installing Kubectl Plugins..."
-mkdir /tmp/krew && \
-curl -fsSLo /tmp/krew/krew.tar.gz "https://github.com/kubernetes-sigs/krew/releases/latest/download/krew-linux_amd64.tar.gz"
-tar -C /tmp/krew -zxvf "/tmp/krew/krew.tar.gz"
-/tmp/krew/krew-linux_amd64 install krew
+DPKG_ARCHITECTURE=$(dpkg --print-architecture)
+KREW_BIN="${KREW_ROOT:-${HOME}/.krew}/bin"
 
-export PATH="${PATH}:/home/mosgarage/.krew/bin"
+echo "Installing Kubectl Plugins (krew)..."
+KREW_DIR=/tmp/krew
+mkdir -p "${KREW_DIR}"
+curl -fsSLo "${KREW_DIR}/krew.tar.gz" \
+    "https://github.com/kubernetes-sigs/krew/releases/latest/download/krew-linux_${DPKG_ARCHITECTURE}.tar.gz"
+tar -C "${KREW_DIR}" -zxvf "${KREW_DIR}/krew.tar.gz"
+"${KREW_DIR}/krew-linux_${DPKG_ARCHITECTURE}" install krew
 
-kubectl krew install neat debug-shell exec-cronjob mtail sniff secretdata
+export PATH="${KREW_BIN}:${PATH}"
 
-mkdir -p "/home/mosgarage/.zsh" || true
-kubectl completion zsh > "/home/mosgarage/.zsh/kubernetes.sh"
+# Install plugins one-by-one so a deprecated plugin never breaks the build.
+for PLUGIN in neat debug-shell exec-cronjob whoami; do
+    kubectl krew install "${PLUGIN}" || echo "Skipping krew plugin ${PLUGIN} (unavailable)"
+done
+
+mkdir -p "${HOME}/.zsh"
+kubectl completion zsh > "${HOME}/.zsh/kubernetes.sh"
+
+echo "Installing uv (fast Python tooling)..."
+curl -fsSLo /tmp/uv-install.sh https://astral.sh/uv/install.sh
+sh /tmp/uv-install.sh >/dev/null
+export PATH="${HOME}/.local/bin:${PATH}"
+
+if [ "${INSTALL_AI_TOOLS}" = "true" ]; then
+    echo "Installing aider (AI pair programming)..."
+    uv tool install --python python3.12 aider-chat || echo "aider install failed — continuing"
+else
+    echo "Skipping AI tools (INSTALL_AI_TOOLS=false)"
+fi
 
 echo "Installing Oh-My-ZSH..."
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${HOME}"/.oh-my-zsh/custom/themes/powerlevel10k
-git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting.git "${HOME}"/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
-git clone --depth=1 https://github.com/supercrabtree/k "${HOME}"/.oh-my-zsh/custom/plugins/k
-git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions "${HOME}"/.oh-my-zsh/custom/plugins/zsh-autosuggestions
-git clone --depth=1 https://github.com/johanhaleby/kubetail.git "${HOME}"/.oh-my-zsh/custom/plugins/kubetail
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${HOME}/.oh-my-zsh/custom/themes/powerlevel10k"
+git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting.git "${HOME}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
+git clone --depth=1 https://github.com/supercrabtree/k "${HOME}/.oh-my-zsh/custom/plugins/k"
+git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions "${HOME}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+git clone --depth=1 https://github.com/johanhaleby/kubetail.git "${HOME}/.oh-my-zsh/custom/plugins/kubetail"
 
-echo "Installing ADP Tooling..."
-PATH="${HOME}/.local/bin:${PATH}" /usr/local/bin/adp-connect -D -I || { echo "ADP Tooling installation failed"; exit 1; }
+# ADP tooling is only present in the internal build; the release image ships without it.
+if [ -x /usr/local/bin/adp-connect ]; then
+    echo "Installing ADP Tooling..."
+    PATH="${HOME}/.local/bin:${PATH}" /usr/local/bin/adp-connect -D -I || {
+        echo "ADP Tooling installation failed"
+        exit 1
+    }
+fi
+
+echo "✓ User dependencies installed"

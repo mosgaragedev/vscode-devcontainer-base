@@ -1,8 +1,0 @@
-apiVersion: skaffold/v1beta13
-kind: Config
-
-build:
-  artifacts:
-    - image: ghcr.io/mosgarage/vscode-basedevcontainer-base
-  local:
-    push: true
