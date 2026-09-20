@@ -1,0 +1,3 @@
+[submodule "mosgarage-wsl"]
+	path = mosgarage-wsl
+	url = https://github.com/mosgarage/mosgarage-wsl
