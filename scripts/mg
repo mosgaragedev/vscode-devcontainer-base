@@ -37,6 +37,7 @@ cmd_start() {
         image="${IDE_IMAGE}" name="${IDE_CONTAINER}"
     fi
     docker image inspect "${image}" >/dev/null 2>&1 || { _log "Pulling ${image}..."; docker pull "${image}"; }
+    docker rm -f "${name}" 2>/dev/null || true
     _log "Starting ${name} (${image}) from ${PROJECT_DIR}"
     # shellcheck disable=SC2086
     docker run $(_base_args "${name}") "${image}"
@@ -45,6 +46,7 @@ cmd_start() {
 cmd_start_ide() {
     _need_docker
     docker image inspect "${IDE_IMAGE}" >/dev/null 2>&1 || { _log "Pulling ${IDE_IMAGE}..."; docker pull "${IDE_IMAGE}"; }
+    docker rm -f "${IDE_CONTAINER}" 2>/dev/null || true
     _log "Starting ${IDE_CONTAINER} (browser IDE on :8080, SSH :2222)"
     # shellcheck disable=SC2086
     docker run -d $(_base_args "${IDE_CONTAINER}") \

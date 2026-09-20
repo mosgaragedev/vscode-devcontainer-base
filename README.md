@@ -201,11 +201,20 @@ ${HOST_HOME}/.devcontainer/hooks.d/post-start
 ```bash
 make build        # devcontainer target (local only, no push)
 make build-ide    # code-server target
+make auto         # build both targets + (re)start the browser IDE stack
 make push         # multi-arch publish (requires Docker Hub login)
 ```
 
-> Note: `skaffold build -p local` (config: `config/skaffold.yaml`) still works for the devcontainer target — **always add
-> `--push=false`** when testing so you don't overwrite `:latest`.
+`make auto` is the one-command rebuild-and-run: it rebuilds the local image(s)
+and recreates the IDE container (`:8080`, password via `PASSWORD=`; default
+`mosgarage`). Re-running it is idempotent — `setup-container.sh` refreshes
+config (hooks, kubeconfig, Helm repos, backups) on every start.
+
+> Note: builds use `--network host` so the container build can reach package
+> repos when the host resolver is a loopback stub (e.g. systemd-resolved).
+> `skaffold build -p local` (config: `config/skaffold.yaml`) still works for the
+> devcontainer target — **always add `--push=false`** when testing so you don't
+> overwrite `:latest`.
 
 ## Kubernetes / Helm host configuration
 
