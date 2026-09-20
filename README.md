@@ -445,14 +445,9 @@ GHCR publishing works out of the box via `GITHUB_TOKEN`.
 
 ## WSL2
 
-Two complementary stacks live in this repo:
-
-- **`mosgarage-wsl`** (git submodule → [mosgarage/mosgarage-wsl](https://github.com/mosgarage/mosgarage-wsl)):
-  the host-side WSL2 maintenance stack — `mgw install`, auto-updates, auto-backups, distro export.
-  Use `make wsl-install`, `make wsl-enter`, `make wsl-backup`. Its `mgw` remains separate
-  from the container `mgw` because the two CLIs manage different runtimes.
-- **`code-server/`**: the standalone code-server stack with `wsl-pack.sh` /
-  `wsl-import.ps1` / `wsl-export.ps1` for turning any image variant into a WSL2 distro.
+This repository ships the container image only. The WSL2 maintenance stack
+(`mgw install`, auto-updates, auto-backups, distro export) lives in the separate
+[mosgarage/mosgarage-wsl](https://github.com/mosgarage/mosgarage-wsl) repo.
 
 ## Security notes
 

@@ -42,9 +42,6 @@ configs:
 
 ## Notes
 
-- `code-server/` stack keeps its own vendored copies of supervisor/config files
-  under `code-server/` — that directory builds with itself as Docker context, so
-  its `Dockerfile` is unaffected by this layout.
-- The standalone `zsh-configs/` directory is a separate repo checkout (has its
-  own `.git`), listing split-per-topic zsh snippets; the image uses the
-  consolidated `config/zshrc.zsh` et al.
+- All image-referenced paths are consolidated here; the Dockerfile copies from
+  `config/` at build time. See the repository README for the full asset map
+  (volumes, mounts, ports, paths, env vars).

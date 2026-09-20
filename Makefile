@@ -8,8 +8,7 @@ VERSION     ?= latest
 PASSWORD    ?= mosgarage
 
 .PHONY: help build build-ide build-all push push-ide auto auto-ide auto-build \
-        dev ide shell stop status logs backup update bootstrap \
-        wsl-install wsl-enter wsl-backup clean
+        dev ide shell stop status logs backup update bootstrap clean
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -85,16 +84,6 @@ auto-build: ## Build both targets only (no container start)
 
 status: ## Show running mosgarage containers
 	bash scripts/mg status
-
-# ── WSL2 stack (mosgarage-wsl submodule) ──────────────────────────────────────
-wsl-install: ## First-time WSL2 install via mosgarage-wsl mgw
-	cd mosgarage-wsl && bash scripts/mgw.sh install
-
-wsl-enter: ## Open zsh in the mosgarage-wsl distro
-	cd mosgarage-wsl && bash scripts/mgw.sh enter
-
-wsl-backup: ## Snapshot the WSL distro + databases
-	cd mosgarage-wsl && bash scripts/mgw.sh backup
 
 clean: ## Remove local build cache artifacts
 	rm -rf dist/

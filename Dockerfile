@@ -154,10 +154,8 @@ COPY install-system-dependencies.sh /usr/local/bin/install-system-dependencies
 RUN chmod +x /usr/local/bin/install-system-dependencies && \
     /usr/local/bin/install-system-dependencies
 
-COPY adp-connect.sh /usr/local/bin/adp-connect
 COPY install-user-dependencies.sh /usr/local/bin/install-user-dependencies
-RUN chmod +x /usr/local/bin/install-user-dependencies \
-    /usr/local/bin/adp-connect
+RUN chmod +x /usr/local/bin/install-user-dependencies
 
 USER ${USERNAME}
 
