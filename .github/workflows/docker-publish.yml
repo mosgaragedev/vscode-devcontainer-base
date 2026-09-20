@@ -23,6 +23,10 @@ jobs:
     permissions:
       contents: read
       packages: write
+    # secrets are not usable directly in step `if:` — map to env here and
+    # test env.HAS_DHUB below.
+    env:
+      HAS_DHUB: ${{ secrets.DOCKERHUB_USERNAME != '' }}
     strategy:
       fail-fast: false
       matrix:
@@ -43,7 +47,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Log in to Docker Hub
-        if: github.event_name != 'pull_request' && secrets.DOCKERHUB_USERNAME != ''
+        if: github.event_name != 'pull_request' && env.HAS_DHUB == 'true'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -51,8 +55,6 @@ jobs:
 
       - name: Compute tags
         id: tags
-        env:
-          HAS_DHUB: ${{ secrets.DOCKERHUB_USERNAME != '' }}
         run: |
           DATE_TAG="$(date +%Y%m%d)"
           TAGS=""
