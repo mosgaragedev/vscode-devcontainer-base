@@ -1,6 +1,6 @@
 {
   // ── .NET / C# ──────────────────────────────────────────────────
-  "dotnet.defaultSolution": "basedevcontainer-workspace.sln",
+  "dotnet.defaultSolution": "vscode-devcontainer-base.sln",
   "omnisharp.enableRoslynAnalyzers": true,
   "omnisharp.enableEditorConfigSupport": true,
   "omnisharp.organizeImportsOnFormat": true,

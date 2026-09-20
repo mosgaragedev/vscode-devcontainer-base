@@ -26,9 +26,10 @@ services:
   # Based on your existing mosgarage/build image (falls back to ubuntu if not found)
   # ---------------------------------------------------------------------------
   workspace:
+    image: mosgarage/codeserver-base:latest
     build:
       context: .
-      dockerfile: Dockerfile.workspace
+      dockerfile: Dockerfile.bootstrap
     volumes:
       - ..:/workspace:cached                    # your project root
       - workspace-data:/home/mosgarage             # persist home dir (extensions, history)

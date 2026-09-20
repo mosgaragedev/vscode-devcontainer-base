@@ -1,6 +1,8 @@
 {
+  "name": "vscode-devcontainer-base",
   "dependencies": {
     "make": "^0.8.1",
     "serve": "^14.2.6"
+    }
   }
 }

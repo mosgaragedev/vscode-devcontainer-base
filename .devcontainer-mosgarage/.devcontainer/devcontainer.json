@@ -9,6 +9,9 @@
   // ==========================================================================
   "name": "mosgarage-workspace",
 
+  // Pull bootstrap image before build (skips gracefully if offline)
+  "initializeCommand": "docker pull mosgarage/codeserver-base:latest || true",
+
   // Use Docker Compose so all services + databases start together
   "dockerComposeFile": "docker-compose.yml",
   "service": "workspace",
@@ -31,6 +34,7 @@
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
         "bradlc.vscode-tailwindcss",
+        "Google.google-antigravity"
 
         // Docker & containers (even inside container — for managing stacks)
         "ms-azuretools.vscode-docker",

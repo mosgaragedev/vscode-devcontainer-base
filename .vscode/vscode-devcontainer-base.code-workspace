@@ -1,0 +1,13 @@
+{
+  "folders": [
+    {
+      "path": "C:/Users/igewe/vscode-devcontainer-base/.devcontainer-mosgarage/.devcontainer",
+    },
+    {
+      "path": "C:/Users/igewe/vscode-devcontainer-base",
+    },
+  ],
+  "settings": {
+    "git.ignoreLimitWarning": true,
+  },
+}

@@ -1,0 +1,90 @@
+# =============================================================================
+# Dockerfile.bootstrap — mosgarage/codeserver-base
+#
+# Lean bootstrap image for:
+#   • Cloning repositories into Docker volumes
+#   • Inspect and recovery containers
+#   • Devcontainer workspace base
+#
+# Tools included: Docker CLI, Git, SSH, Git LFS, Node.js 20 LTS
+#
+# Pull:   docker pull mosgarage/codeserver-base:latest
+# Build:  docker build -f Dockerfile.bootstrap -t mosgarage/codeserver-base .
+# =============================================================================
+
+FROM ubuntu:22.04
+
+LABEL maintainer="mosgarage"
+LABEL org.opencontainers.image.source="https://github.com/mosgarage/vscode-devcontainer-base"
+LABEL org.opencontainers.image.description="Bootstrap container: Docker CLI, Git, SSH, Git LFS, Node.js"
+
+# ── Prevent interactive prompts ──────────────────────────────
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=UTC
+
+# ── 1. Core system packages ─────────────────────────────────
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    wget \
+    ca-certificates \
+    gnupg \
+    lsb-release \
+    # Git + SSH
+    git \
+    openssh-client \
+    # Utilities for health checks / recovery scripts
+    jq \
+    unzip \
+    zip \
+    # sudo for non-root user elevation
+    sudo \
+    && rm -rf /var/lib/apt/lists/*
+
+# ── 2. Git LFS ──────────────────────────────────────────────
+RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash \
+    && apt-get install -y --no-install-recommends git-lfs \
+    && git lfs install --system \
+    && rm -rf /var/lib/apt/lists/*
+
+# ── 3. Docker CLI (no daemon — uses host socket) ────────────
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+    | gpg --dearmor -o /etc/apt/keyrings/docker.gpg \
+    && echo \
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+      https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
+      > /etc/apt/sources.list.d/docker.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+      docker-ce-cli \
+      docker-compose-plugin \
+    && rm -rf /var/lib/apt/lists/*
+
+# ── 4. Node.js 20 LTS (via NodeSource) ──────────────────────
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y --no-install-recommends nodejs \
+    && npm install -g npm@latest \
+    && npm install -g @devcontainers/cli \
+    && rm -rf /var/lib/apt/lists/*
+
+# ── 5. Non-root user: mosgarage (uid 1000) ──────────────────
+RUN groupadd -g 1000 mosgarage || true \
+    && useradd -m -u 1000 -g 1000 -s /bin/bash mosgarage \
+    && usermod -aG docker mosgarage || true \
+    && echo "mosgarage ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/mosgarage \
+    && chmod 0440 /etc/sudoers.d/mosgarage
+
+# ── 6. SSH config for GitHub / common hosts ──────────────────
+RUN mkdir -p /home/mosgarage/.ssh \
+    && ssh-keyscan -t rsa,ecdsa,ed25519 github.com >> /home/mosgarage/.ssh/known_hosts 2>/dev/null \
+    && ssh-keyscan -t rsa,ecdsa,ed25519 gitlab.com >> /home/mosgarage/.ssh/known_hosts 2>/dev/null \
+    && ssh-keyscan -t rsa,ecdsa,ed25519 bitbucket.org >> /home/mosgarage/.ssh/known_hosts 2>/dev/null \
+    && chown -R mosgarage:mosgarage /home/mosgarage/.ssh \
+    && chmod 700 /home/mosgarage/.ssh \
+    && chmod 644 /home/mosgarage/.ssh/known_hosts
+
+# ── Switch to non-root ───────────────────────────────────────
+USER mosgarage
+WORKDIR /workspace
+
+# ── Default: keep alive for devcontainer attach ──────────────
+CMD ["sleep", "infinity"]

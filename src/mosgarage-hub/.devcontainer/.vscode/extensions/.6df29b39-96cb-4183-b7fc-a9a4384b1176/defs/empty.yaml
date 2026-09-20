@@ -1,5 +1,0 @@
-type: layout-form
-id: root
-form:
-  - type: section
-    subitems: []

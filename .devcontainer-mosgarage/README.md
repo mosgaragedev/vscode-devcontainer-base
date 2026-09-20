@@ -1,8 +1,37 @@
 # mosgarage devcontainer
 
+[![Build & Push Bootstrap Image](https://github.com/mosgarage/vscode-devcontainer-base/actions/workflows/build-push-bootstrap.yml/badge.svg)](https://github.com/mosgarage/vscode-devcontainer-base/actions/workflows/build-push-bootstrap.yml)
+
 Mixed-stack microservice dev environment. Runs entirely in WSL with no Docker Desktop required.
 
 ---
+
+## Bootstrap image — `mosgarage/codeserver-base`
+
+A lean, pre-built Docker image used as the **base** for the workspace container. Includes Docker CLI, Git, SSH, Git LFS, and Node.js 20 LTS.
+
+**Pull from DockerHub or GHCR:**
+```bash
+docker pull mosgarage/codeserver-base:latest
+# or
+docker pull ghcr.io/mosgarage/codeserver-base:latest
+```
+
+**CI/CD**: Automatically built and pushed on every `main` push + weekly rebuild (Sunday 03:00 UTC) for security patches.
+
+| Tool | Version |
+|------|---------|
+| Docker CLI + Compose | Latest stable |
+| Git | Latest stable |
+| Git LFS | Latest stable |
+| SSH client | OpenSSH |
+| Node.js | 20 LTS |
+| `@devcontainers/cli` | Latest |
+
+**Override with a local build:**
+```bash
+docker compose -f .devcontainer/docker-compose.yml build workspace
+```
 
 ## What's included
 

@@ -1,6 +1,6 @@
 FROM ubuntu:24.04
 
-LABEL org.opencontainers.image.source https://github.com/mosgarage/vscode-basedevcontainer-base
+LABEL org.opencontainers.image.source https://github.com/mosgaragedev/vscode-basedevcontainer-base
 
 ARG USERNAME=mosgarage
 ARG USER_UID=1001
