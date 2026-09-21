@@ -8,7 +8,7 @@ VERSION     ?= latest
 PASSWORD    ?= mosgarage
 
 .PHONY: help build build-ide build-all push push-ide auto auto-ide auto-build \
-        dev ide shell stop status logs backup update bootstrap \
+        dev ide shell stop status logs backup update bootstrap portainer \
         wsl-install wsl-enter wsl-backup clean
 
 help: ## Show this help
@@ -65,6 +65,9 @@ update: ## Backup + pull latest images
 
 bootstrap: ## Run the one-shot bootstrap (auto pull + setup)
 	bash scripts/bootstrap.sh
+
+portainer: ## Start the Portainer container-management UI on :9443
+	bash scripts/portainer start
 
 # ── One-command auto build + run ──────────────────────────────────────────────
 # Rebuilds the local image(s) and (re)creates the running IDE container.

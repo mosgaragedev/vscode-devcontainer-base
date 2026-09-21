@@ -70,3 +70,4 @@ ddev_linux_amd64.deb
 # Embedded clones at repo root (were stale gitlinks; kept as local clones only)
 /wsl-configurations/
 /zsh-configs/
+/docker-portainer-letsencrypt/

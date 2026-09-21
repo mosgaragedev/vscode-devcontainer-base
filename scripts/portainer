@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  portainer — manage the Portainer CE stack (host-side)           ║
+# ║  start/stop/status/logs/update for the container management UI.  ║
+# ╚══════════════════════════════════════════════════════════════════╝
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+COMPOSE_FILE="${SCRIPT_DIR}/../config/portainer/docker-compose.portainer.yml"
+# Reuses the admin password configured for the vendored
+# docker-portainer-letsencrypt clone in the same workspace. Override with
+# PORTAINER_ENV or PORTAINER_ADMIN_PASSWORD.
+PORTAINER_ENV="${PORTAINER_ENV:-${SCRIPT_DIR}/../docker-portainer-letsencrypt/.env}"
+PORTAINER_HTTPS_PORT="${MOSGARAGE_PORTAINER_PORT:-9443}"
+
+_log() { echo "▸ $*"; }
+_ok()  { echo "✓ $*"; }
+_err() { echo "✗ $*" >&2; exit 1; }
+_need_docker() { command -v docker >/dev/null || _err "docker not found"; }
+
+_compose() {
+    docker compose -f "${COMPOSE_FILE}" "$@"
+}
+
+get_admin_password() {
+    if [[ -n "${PORTAINER_ADMIN_PASSWORD:-}" ]]; then
+        echo "${PORTAINER_ADMIN_PASSWORD}"
+        return 0
+    fi
+    if [[ ! -f "${PORTAINER_ENV}" ]]; then
+        return 1
+    fi
+    grep -E '^ADMIN_PASSWORD=' "${PORTAINER_ENV}" | head -1 | cut -d '=' -f 2- | tr -d '"'"'"
+}
+
+cmd_start() {
+    _need_docker
+    local pw hash
+    if ! pw="$(get_admin_password)"; then
+        _err "no admin password: set ADMIN_PASSWORD in ${PORTAINER_ENV} or export PORTAINER_ADMIN_PASSWORD"
+    fi
+    if [[ -z "${pw}" ]]; then
+        _err "ADMIN_PASSWORD is empty in ${PORTAINER_ENV}"
+    fi
+    hash="$(docker run --rm httpd:2.4-alpine htpasswd -nbB admin "${pw}" | cut -d ':' -f 2-)"
+    export ADMIN_PASSWORD_HASH="${hash}"
+    export PORTAINER_HTTPS_PORT
+    _log "Starting Portainer (TLS on :${PORTAINER_HTTPS_PORT}, data in mosgarage-portainer-data)"
+    _compose up -d
+    _ok "Portainer → https://localhost:${PORTAINER_HTTPS_PORT} (self-signed cert; password from ${PORTAINER_ENV})"
+}
+
+cmd_stop() {
+    _need_docker
+    export PORTAINER_HTTPS_PORT
+    ADMIN_PASSWORD_HASH="" _compose stop
+    _ok "Portainer stopped"
+}
+
+cmd_restart() {
+    cmd_stop
+    cmd_start
+}
+
+cmd_status() {
+    _need_docker
+    docker ps -a --filter "name=mosgarage-portainer" \
+        --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+}
+
+cmd_logs() {
+    _need_docker
+    export PORTAINER_HTTPS_PORT
+    ADMIN_PASSWORD_HASH="" _compose logs -f --tail 100
+}
+
+cmd_update() {
+    _need_docker
+    export PORTAINER_HTTPS_PORT
+    ADMIN_PASSWORD_HASH="" _compose pull
+    cmd_start
+    _ok "Portainer updated"
+}
+
+cmd_down() {
+    _need_docker
+    export PORTAINER_HTTPS_PORT
+    ADMIN_PASSWORD_HASH="" _compose down
+    _ok "Portainer removed (volume mosgarage-portainer-data kept — 'docker volume rm' to purge)"
+}
+
+case "${1:-start}" in
+    start)          cmd_start ;;
+    stop)           cmd_stop ;;
+    restart)        cmd_restart ;;
+    status)         cmd_status ;;
+    logs)           cmd_logs ;;
+    update)         cmd_update ;;
+    down|remove)    cmd_down ;;
+    *)  echo "Usage: scripts/portainer {start|stop|restart|status|logs|update|down}"
+        echo "  start    Start Portainer CE (TLS :${PORTAINER_HTTPS_PORT})"
+        echo "  stop     Stop the container"
+        echo "  status   Show container status"
+        echo "  logs     Follow container logs"
+        echo "  update   Pull the latest image and restart"
+        echo "  down     Remove the container (keeps data volume)"
+        exit 1 ;;
+esac

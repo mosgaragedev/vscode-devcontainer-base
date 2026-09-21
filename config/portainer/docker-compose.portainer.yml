@@ -1,0 +1,36 @@
+# Portainer CE — container management UI for the mosgarage stack.
+#
+# This variant is standalone: it serves TLS on :9443 directly (self-signed
+# certificate generated on first start) and does not depend on the nginx-proxy
+# "webproxy" network that the vendored docker-portainer-letsencrypt clone
+# expects — that proxy stack conflicts with the host Apache on ports 80/443.
+#
+# ADMIN_PASSWORD_HASH is exported by scripts/portainer (bcrypt hash of the
+# admin password from docker-portainer-letsencrypt/.env). Portainer ignores
+# the flag once the admin account exists, so it is safe to keep it set.
+
+name: mosgarage-portainer
+
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: mosgarage-portainer
+    restart: unless-stopped
+    ports:
+      - "${PORTAINER_HTTPS_PORT:-9443}:9443"
+    volumes:
+      - mosgarage-portainer-data:/data
+      # Read-only socket: the Docker API stays fully usable, but the socket
+      # file itself cannot be tampered with from inside the container.
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command:
+      - --ssl
+      - --http-disabled
+      - --bind-https
+      - ":9443"
+      - --admin-password
+      - ${ADMIN_PASSWORD_HASH:?export ADMIN_PASSWORD_HASH (bcrypt) or run via scripts/portainer}
+
+volumes:
+  mosgarage-portainer-data:
+    name: mosgarage-portainer-data

@@ -20,12 +20,13 @@
 6. [The `mg` and `mgw` CLIs](#the-mg-and-mgw-clis)
 7. [Running and maintaining](#running-and-maintaining)
 8. [Automatic backups (cron)](#automatic-backups-cron)
-9. [Kubernetes / Helm host configuration](#kubernetes--helm-host-configuration)
-10. [Hooks](#hooks)
-11. [Building locally](#building-locally)
-12. [CI / publishing (GitHub Actions)](#ci--publishing-github-actions)
-13. [WSL2](#wsl2)
-14. [Security notes](#security-notes)
+9. [Portainer — container management UI](#portainer--container-management-ui)
+10. [Kubernetes / Helm host configuration](#kubernetes--helm-host-configuration)
+11. [Hooks](#hooks)
+12. [Building locally](#building-locally)
+13. [CI / publishing (GitHub Actions)](#ci--publishing-github-actions)
+14. [WSL2](#wsl2)
+15. [Security notes](#security-notes)
 
 ## What's inside
 
@@ -304,6 +305,7 @@ make shell        # zsh into the running IDE container
 make logs         # follow IDE container logs
 make status       # list mosgarage containers
 make stop         # remove the IDE container
+make portainer    # start the Portainer container-management UI on :9443
 ```
 
 ### What persists and what doesn't
@@ -314,6 +316,7 @@ make stop         # remove the IDE container
 | VS Code server + extensions (devcontainer) | ✅ | `mosgarage-home` volume |
 | Tunnel login | ✅ | `mosgarage-code-tunnel` volume |
 | Backup archives | ✅ | `mosgarage-backups` volume |
+| Portainer users, endpoints, settings | ✅ | `mosgarage-portainer-data` volume |
 | code-server settings, extensions, `~/.ssh`, `~/.gitconfig` | ❌ | Container layer |
 
 > The backup directory is backed by the `mosgarage-backups` **named volume by
@@ -410,6 +413,30 @@ that survives container removal by default (fallback `~/backups/mosgarage`).
 | `MOSGARAGE_BACKUP_CRON` | `0 2 * * *`                    | Override the schedule (edit the cron file) |
 
 Run one manually: `sudo -u mosgarage backup-workspace` or `mgw backup`.
+
+## Portainer — container management UI
+
+A standalone Portainer CE stack (`config/portainer/docker-compose.portainer.yml`)
+manages all containers on the host. It serves **TLS on :9443** with a self-signed
+certificate (browser warning is expected) and stores state in the named volume
+`mosgarage-portainer-data`. The Docker socket is mounted read-only.
+
+```bash
+make portainer                # start (or: bash scripts/portainer start)
+bash scripts/portainer status # container status
+bash scripts/portainer logs   # follow logs
+bash scripts/portainer update # pull latest image + restart
+bash scripts/portainer down   # remove container (data volume kept)
+```
+
+Then open `https://<server-host>:9443`. The admin password is sourced from
+`docker-portainer-letsencrypt/.env` (`ADMIN_PASSWORD`) and bcrypt-hashed at
+start — override with `PORTAINER_ADMIN_PASSWORD` or `PORTAINER_ENV`.
+
+> The vendored `docker-portainer-letsencrypt/` clone (nginx-proxy + Let's Encrypt
+> companion design) is not used on this host: it expects a `webproxy` network and
+> ports 80/443, which are owned by the host Apache. It remains available for
+> deployments where that proxy stack exists.
 
 ## Kubernetes / Helm host configuration
 
