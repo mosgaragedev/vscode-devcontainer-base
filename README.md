@@ -422,16 +422,36 @@ certificate (browser warning is expected) and stores state in the named volume
 `mosgarage-portainer-data`. The Docker socket is mounted read-only.
 
 ```bash
-make portainer                # start (or: bash scripts/portainer start)
-bash scripts/portainer status # container status
-bash scripts/portainer logs   # follow logs
-bash scripts/portainer update # pull latest image + restart
-bash scripts/portainer down   # remove container (data volume kept)
+make portainer                 # start (or: bash scripts/portainer start)
+bash scripts/portainer status  # container status
+bash scripts/portainer logs    # follow logs
+bash scripts/portainer restart # restart (re-hashes the admin password)
+bash scripts/portainer update  # pull latest image + restart
+bash scripts/portainer down    # remove container (data volume kept)
 ```
 
-Then open `https://<server-host>:9443`. The admin password is sourced from
-`docker-portainer-letsencrypt/.env` (`ADMIN_PASSWORD`) and bcrypt-hashed at
-start — override with `PORTAINER_ADMIN_PASSWORD` or `PORTAINER_ENV`.
+Then open `https://<server-host>:9443` (accept the self-signed certificate
+warning) and log in as `admin`. Quick check that it is serving:
+
+```bash
+curl -sk -o /dev/null -w '%{http_code}\n' https://localhost:9443   # → 200
+```
+
+### Configuration
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `MOSGARAGE_PORTAINER_PORT` | `9443` | Host port published for HTTPS |
+| `PORTAINER_ADMIN_PASSWORD` | *(from `PORTAINER_ENV`)* | Admin password, bcrypt-hashed at start |
+| `PORTAINER_ENV` | `docker-portainer-letsencrypt/.env` | Env file to read `ADMIN_PASSWORD` from |
+
+The admin password is sourced from `docker-portainer-letsencrypt/.env`
+(`ADMIN_PASSWORD`) and bcrypt-hashed at start — override with
+`PORTAINER_ADMIN_PASSWORD` or point `PORTAINER_ENV` at another file. Portainer
+ignores the `--admin-password` flag once the admin account exists, so the value
+only matters on first initialization; changing it later requires wiping the
+`mosgarage-portainer-data` volume. The published port can be moved with e.g.
+`MOSGARAGE_PORTAINER_PORT=9444 bash scripts/portainer start`.
 
 > The vendored `docker-portainer-letsencrypt/` clone (nginx-proxy + Let's Encrypt
 > companion design) is not used on this host: it expects a `webproxy` network and
