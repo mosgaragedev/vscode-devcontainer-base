@@ -41,6 +41,11 @@ case "$LOCAL_ARCH" in
         LOCAL_ARCH=("amd64" "x86_64")
         KUBECTL_ARCH="amd64"
         ;;
+    aarch64|arm64)
+        # Release assets use Go-style naming (arm64); uname -m reports aarch64.
+        LOCAL_ARCH=("arm64" "aarch64")
+        KUBECTL_ARCH="arm64"
+        ;;
     *)
         # shellcheck disable=SC2128
         KUBECTL_ARCH="${LOCAL_ARCH}"

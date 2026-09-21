@@ -43,12 +43,12 @@ git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions "${HOME}/.o
 git clone --depth=1 https://github.com/johanhaleby/kubetail.git "${HOME}/.oh-my-zsh/custom/plugins/kubetail"
 
 # ADP tooling is only present in the internal build; the release image ships without it.
+# A failed ADP install must not break the image build (upstream releases lag on
+# some architectures); it can be re-run interactively via adp-connect.
 if [ -x /usr/local/bin/adp-connect ]; then
     echo "Installing ADP Tooling..."
-    PATH="${HOME}/.local/bin:${PATH}" /usr/local/bin/adp-connect -D -I || {
-        echo "ADP Tooling installation failed"
-        exit 1
-    }
+    PATH="${HOME}/.local/bin:${PATH}" /usr/local/bin/adp-connect -D -I \
+        || echo "skipping ADP Tooling (installation failed; run adp-connect interactively)"
 fi
 
 echo "✓ User dependencies installed"

@@ -126,7 +126,8 @@ docker run -d --name mosgarage-ide \
 ```
 
 Or with the `mg` CLI: `mg start --ide` → `mg open` (the same volumes are attached
-automatically).
+automatically). The IDE container is created with `--restart unless-stopped`, so
+it stays up across host reboots (stop it with `mg stop mosgarage-ide`).
 
 ### VS Code Remote Tunnel
 

@@ -22,7 +22,15 @@ _err() { echo "✗ $*" >&2; exit 1; }
 _need_docker() { command -v docker >/dev/null || _err "docker not found"; }
 
 _base_args() {
-    echo "--rm -it --name $1 \
+    local name="$1"
+    # Foreground runs are interactive and disposable (--rm -it); daemon runs
+    # must survive host reboots and cannot be --rm (restart policy requires
+    # AutoRemove to be off).
+    local run_flags="--rm -it"
+    if [[ "${2:-}" == "--daemon" ]]; then
+        run_flags="--restart unless-stopped"
+    fi
+    echo "${run_flags} --name ${name} \
         -e HOST_HOME=${HOST_HOME} \
         -e VSCODE_CLI_DATA_DIR=/home/mosgarage/.vscode-cli \
         -v ${HOST_HOME}:${HOST_HOME}:ro \
@@ -52,7 +60,7 @@ cmd_start_ide() {
     docker rm -f "${IDE_CONTAINER}" 2>/dev/null || true
     _log "Starting ${IDE_CONTAINER} (browser IDE on :${IDE_HTTP_PORT}, SSH :${IDE_SSH_PORT})"
     # shellcheck disable=SC2086
-    docker run -d $(_base_args "${IDE_CONTAINER}") \
+    docker run -d $(_base_args "${IDE_CONTAINER}" --daemon) \
         -p "${IDE_HTTP_PORT}:8080" -p "${IDE_SSH_PORT}:2222" \
         -e CODE_SERVER_PASSWORD="${PASSWORD}" \
         "${IDE_IMAGE}" >/dev/null
